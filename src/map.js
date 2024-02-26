@@ -5,9 +5,21 @@ class Map {
     constructor(options = {}) {
         this.k = options.k || 1; // the spacing parameter (# vertices skipped)
         this.l = options.l || 2; // the diagonal parameter (# vertices skipped)
+        this.prev = []; // keep charge of previous operations
     }
 
     act(vertices) {
+        /*
+            Take in a set of vertices and apply the map to it
+        */
+
+        // record the previous vertices for undo purposes
+        this.prev.push(vertices);
+        if (this.prev.length > 20) {
+            this.prev.shift();
+        }
+
+        // apply the map
         const n = Object.keys(vertices).length;
         let newVertices = {};
         for (let idx in vertices) {
@@ -21,6 +33,27 @@ class Map {
             newVertices[i] = ver;
         }
         return newVertices;
+    }
+
+    canRevert() {
+        return this.prev.length;
+    }
+
+    revert() {
+        /*
+            Revert the last action. Can only revert up to 20 times
+        */
+        console.log(this.prev);
+        if (this.prev.length === 0) {
+            console.log("nothing to revert")
+            return null;
+        }
+        return this.prev.pop();
+    }
+
+    clearHistory() {
+        this.prev = [];
+        return null;
     }
 
     intersect(ver1, ver2, ver3, ver4) {
