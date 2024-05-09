@@ -5,7 +5,7 @@ class Map {
     constructor(options = {}) {
         this.k = options.k || 1; // the spacing parameter (# vertices skipped)
         this.l = options.l || 2; // the diagonal parameter (# vertices skipped)
-        this.prev = []; // keep charge of previous operations
+        this.prev = []; // keep charge of previous operations (in the form of vertices)
     }
 
     act(vertices) {
@@ -36,6 +36,9 @@ class Map {
     }
 
     canRevert() {
+        /*
+            A function that checks whether there are any actions to revert
+        */
         return this.prev.length;
     }
 
@@ -48,10 +51,14 @@ class Map {
             console.log("nothing to revert")
             return null;
         }
+        // pop the last set of vertices
         return this.prev.pop();
     }
 
     clearHistory() {
+        /*
+            Clear all histories of the revert actions
+        */
         this.prev = [];
         return null;
     }

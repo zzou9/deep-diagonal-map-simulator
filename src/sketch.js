@@ -9,7 +9,7 @@ function setup() {
 }
 
 function draw() {
-    background(255);
+    background(0, 255, 255);
 
     push();
     polygon.show();
@@ -35,7 +35,9 @@ function keyPressed() {
     if (keyCode === UP_ARROW) { // up arrow
         polygon.setDefault(polygon.numVertex+1);
     } else if (keyCode === DOWN_ARROW){ 
-        polygon.setDefault(Math.max(polygon.numVertex-1,5));
+        // the number of vertices has to > 4
+        polygon.setDefault(Math.max(polygon.numVertex-1,5)); 
+        // TODO: may adopt Schwartz 2024 notations
     }
 }
 

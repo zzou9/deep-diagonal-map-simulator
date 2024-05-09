@@ -11,16 +11,13 @@ class Polygon{
         this.center = createVector(options.centerX || windowWidth/2, options.centerY || windowHeight/2) // only used to draw regular n-gons
 
         // if regular, populate vertices
-        if (this.regular) {
-            let angle = TWO_PI / this.numVertex;
-            let counter = 0;
-            for (let a = 0; a < TWO_PI; a += angle) {
-                let sx = this.center.x + cos(a) * this.radius;
-                let sy = this.center.y + sin(a) * this.radius;
+        this.vertices = {};
+        let angle = TWO_PI / this.numVertex;
+            for (let counter = 0; counter < this.numVertex; counter++) {
+                let sx = this.center.x + cos(angle*counter) * this.radius;
+                let sy = this.center.y + sin(angle*counter) * this.radius;
                 this.vertices[counter] = createVector(sx, sy);
-                counter++;
             }
-        }
     }
 
     setDefault(numVertex) {
@@ -33,12 +30,10 @@ class Polygon{
         // re-populate the vertices
         this.vertices = {};
         let angle = TWO_PI / this.numVertex;
-            let counter = 0;
-            for (let a = 0; a < TWO_PI; a += angle) {
-                let sx = this.center.x + cos(a) * this.radius;
-                let sy = this.center.y + sin(a) * this.radius;
+            for (let counter = 0; counter < this.numVertex; counter++) {
+                let sx = this.center.x + cos(angle*counter) * this.radius;
+                let sy = this.center.y + sin(angle*counter) * this.radius;
                 this.vertices[counter] = createVector(sx, sy);
-                counter++;
             }
     }
 
