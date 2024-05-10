@@ -1,6 +1,7 @@
-let polygons = [];
 let polygon;
 let map;
+// define the visualization of the polygon
+const modes = ["Planar", "Unit Square Normalized"]
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
@@ -18,13 +19,15 @@ function draw() {
 
 function mouseClicked() {
 
-    // debug();
+    debug();
 }
 
 function keyPressed() {
     // applying the map
     if (key === ' ') {
         polygon.vertices = map.act({...polygon.vertices});
+
+        console.log("Vertices after the map acts: ", polygon.vertices);
     } else if (key === 'r' || key === 'R') {
         if (map.canRevert()) {
             polygon.vertices = map.revert();
@@ -45,9 +48,23 @@ function keyPressed() {
 
 function debug() {
     // for debug purposes, gets called when the mouse is clicked
-    let map = new Map();
-    mat1 = [[1,1,0],[0,0,1]];
-    b = [[0], [1], [0]];
-    mult = map.matrixMult(mat1, b)
-    console.log(mult);
+
+    // const matrix = [
+    //     [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+    //     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], 
+    //     [0, 0, 0, 0, 0, 0, 0, 0, 1, -2, 0, 0, 0], 
+    //     [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0],
+    //     [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0], 
+    //     [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0],
+    //     [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0],
+    //     [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, -1, 0],
+    //     [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, -1, 0], 
+    //     [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+    //     [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, -1], 
+    //     [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, -1]
+    // ];
+    // const rrefMatrix = MathHelper.computeRREF(matrix);
+    // console.log(rrefMatrix);
+
+    polygon.squareNormalize();
 }

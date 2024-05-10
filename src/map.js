@@ -3,8 +3,8 @@ class Map {
         a class that applys the map on the polygon
     */
     constructor(options = {}) {
-        this.k = options.k || 1; // the spacing parameter (# vertices skipped)
         this.l = options.l || 2; // the diagonal parameter (# vertices skipped)
+        this.k = options.k || 1; // the spacing parameter (# vertices skipped)
         this.prev = []; // keep charge of previous operations (in the form of vertices)
     }
 
@@ -24,11 +24,11 @@ class Map {
         let newVertices = {};
         for (let idx in vertices) {
             const i = Number(idx);
-            // may be negative, probably need to debug
+            // the numbering of the vertices follows from Schwartz's bird paper
             let ver1 = vertices[i%n];
             let ver2 = vertices[(i+this.l)%n];
-            let ver3 = vertices[(i+this.k)%n];
-            let ver4 = vertices[(i+this.k+this.l)%n];
+            let ver3 = vertices[(i-this.k+2*n)%n];
+            let ver4 = vertices[(i-this.k+this.l+2*n)%n];
             let ver = this.intersect(ver1, ver2, ver3, ver4);
             newVertices[i] = ver;
         }
