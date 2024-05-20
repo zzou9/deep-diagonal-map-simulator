@@ -19,15 +19,13 @@ function draw() {
 
 function mouseClicked() {
 
-    debug();
+    Test.debug();
 }
 
 function keyPressed() {
     // applying the map
     if (key === ' ') {
-        polygon.vertices = map.act({...polygon.vertices});
-
-        console.log("Vertices after the map acts: ", polygon.vertices);
+        polygon.vertices = map.act(polygon.cloneVertices());
     } else if (key === 'r' || key === 'R') {
         if (map.canRevert()) {
             polygon.vertices = map.revert();
@@ -46,25 +44,3 @@ function keyPressed() {
 
 // TODO: need to add buttons for changing number of edges
 
-function debug() {
-    // for debug purposes, gets called when the mouse is clicked
-
-    // const matrix = [
-    //     [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
-    //     [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0], 
-    //     [0, 0, 0, 0, 0, 0, 0, 0, 1, -2, 0, 0, 0], 
-    //     [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0],
-    //     [0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0], 
-    //     [0, 0, 0, 0, 0, 0, 1, 0, 1, 0, -1, 0, 0],
-    //     [1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0],
-    //     [0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, -1, 0],
-    //     [0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, -1, 0], 
-    //     [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
-    //     [0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, -1], 
-    //     [0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, -1]
-    // ];
-    // const rrefMatrix = MathHelper.computeRREF(matrix);
-    // console.log(rrefMatrix);
-
-    polygon.squareNormalize();
-}

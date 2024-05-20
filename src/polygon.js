@@ -5,14 +5,13 @@ class Polygon{
     
     constructor(options = {}) {
         this.numVertex = options.numVertex || 7; // number of vertices of a polygon
-        this.vertices = {};
+        this.vertices = new Array(); // store the vertex as an array
         this.regular = options.regular || true;
         this.inscribed = options.inscribed || true;
         this.scale = options.I || (windowWidth + windowHeight)/20; // scaling factor
         this.center = createVector(options.centerX || 0, options.centerY || 0) // only used to draw regular n-gons
 
         // if regular, populate vertices
-        this.vertices = {};
         let angle = TWO_PI / this.numVertex;
         for (let counter = 0; counter < this.numVertex; counter++) {
             let sx = this.center.x + cos(angle*counter);
@@ -29,7 +28,7 @@ class Polygon{
         this.center = createVector(0, 0);
         
         // re-populate the vertices
-        this.vertices = {};
+        this.vertices = new Array();
         let angle = TWO_PI / this.numVertex;
         for (let counter = 0; counter < this.numVertex; counter++) {
             let sx = this.center.x + cos(angle*counter);
@@ -48,50 +47,24 @@ class Polygon{
         endShape(CLOSE);
     }
 
-    squareNormalize() {
-        /*
-            Normalize the shape so that the first four vertices are on the unit square
+    print() {
+        /* 
+            Print the info of this polygon
         */
-
-        // First, record the homogeneous coords of the points
-        // to project from, which will be the first four vertices
-        // of the polygon
-
-        console.log("Vertices before normalize: ", this.vertices);
-        console.log("vertex 0: ", this.vertices[0]);
-        console.log("vertex 1: ", this.vertices[1]);
-        console.log("vertex 2: ", this.vertices[2]);
-        console.log("vertex 3: ", this.vertices[3]);
-        const source = [
-            [this.vertices[0].x, this.vertices[0].y, 1], 
-            [this.vertices[1].x, this.vertices[1].y, 1], 
-            [this.vertices[2].x, this.vertices[2].y, 1], 
-            [this.vertices[3].x, this.vertices[3].y, 1], 
-        ];
-
-        // set up the homogeneous coords of the unit square
-        const unitSquare = [
-            [1, 1, 1],
-            [0, 1, 1],
-            [0, 0, 1],
-            [1, 0, 1]
-        ];
-
-        // get the projection map
-        const T = MathHelper.fourToFourProjection(source, unitSquare);
-        console.log("T: ", T);
-        console.log("Image of v0 under T: ", MathHelper.affineTransform(T, this.vertices[0]));
-        console.log("Image of v1 under T: ", MathHelper.affineTransform(T, this.vertices[1]));
-        console.log("v2: ", this.vertices[2]);
-        console.log("Image of v2 under T: ", MathHelper.affineTransform(T, this.vertices[2]));
-        console.log("Image of v3 under T: ", MathHelper.affineTransform(T, this.vertices[3]));
-
-        // transform all the vertices 
-        let newVertices = {}
-        for (let i in this.vertices) {
-            newVertices[i] = MathHelper.affineTransform(T, this.vertices[i]);
+        console.log("This is a polygon with", this.numVertex, "vertices:");
+        for (let v in this.vertices) {
+            // I don't know how to deal with rounding ups
+            console.log("vertex", v, "is at", this.vertices[v].x, this.vertices[v].y);
         }
-        this.vertices = newVertices;
+    }
 
+    cloneVertices() {
+        /*
+            Return a deep clone of the vertices
+        */
+        function cloneP5Vector(vector) {
+            return createVector(vector.x, vector.y); 
+        }
+        return this.vertices.map(cloneP5Vector);
     }
 }

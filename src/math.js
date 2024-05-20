@@ -50,6 +50,19 @@ class MathHelper {
         return result;
     }
 
+    static det3(mat) {
+        /*
+            Compute the determinant of a 3x3 matrix
+        */
+        const a = mat[0][0] * mat[1][1] * mat[2][2];
+        const b = mat[0][0] * mat[1][2] * mat[2][1];
+        const c = mat[0][1] * mat[1][0] * mat[2][2];
+        const d = mat[0][1] * mat[1][2] * mat[2][0];
+        const e = mat[0][2] * mat[1][0] * mat[2][1];
+        const f = mat[0][2] * mat[1][1] * mat[2][0];
+        return a - b - c + d + e - f;
+    }
+
     static affineTransform(T, v) {
         /* 
             Apply the affine transformation T on v 
@@ -65,8 +78,8 @@ class MathHelper {
         // }
 
         // apply the affine transform on the vector
-        let vert = [[v.x], [v.y], [1]];
-        let result = this.matrixMult(T, vert);
+        const vert = [[v.x], [v.y], [1]];
+        const result = this.matrixMult(T, vert);
 
         // error if v is not on the affine plane
         if (result[2][0] == 0) {

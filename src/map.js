@@ -20,10 +20,9 @@ class Map {
         }
 
         // apply the map
-        const n = Object.keys(vertices).length;
-        let newVertices = {};
-        for (let idx in vertices) {
-            const i = Number(idx);
+        const n = vertices.length;
+        let newVertices = new Array();
+        for (let i = 0; i < n; i++) {
             // the numbering of the vertices follows from Schwartz's bird paper
             let ver1 = vertices[i%n];
             let ver2 = vertices[(i+this.l)%n];
