@@ -18,15 +18,13 @@ class Normalize {
         // set up the homogeneous coords of the unit square
         const unitSquare = [
             [1, 1, 1],
-            [0, 1, 1],
-            [0, 0, 1],
-            [1, 0, 1]
+            [-1, 1, 1],
+            [-1, -1, 1],
+            [1, -1, 1]
         ];
 
         // get the projection map
         const T = MathHelper.fourToFourProjection(source, unitSquare);
-        console.log("Source", source);
-        console.log("T:", T);
 
         // transform all the vertices 
         let newVertices = new Array();

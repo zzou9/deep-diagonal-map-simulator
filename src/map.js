@@ -45,7 +45,6 @@ class Map {
         /*
             Revert the last action. Can only revert up to 20 times
         */
-        console.log(this.prev);
         if (this.prev.length === 0) {
             console.log("nothing to revert")
             return null;

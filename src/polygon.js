@@ -39,9 +39,9 @@ class Polygon{
 
     show() {
         beginShape();
+        const xT = windowWidth/2;
+        const yT = windowHeight/2;
         for (let i in this.vertices) {
-            const xT = windowWidth/2;
-            const yT = windowHeight/2;
             vertex(this.vertices[i].x * this.scale + xT, this.vertices[i].y * this.scale + yT);
         }
         endShape(CLOSE);

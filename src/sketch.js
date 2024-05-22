@@ -18,8 +18,8 @@ function draw() {
 }
 
 function mouseClicked() {
-
     Test.debug();
+    polygon.vertices = Normalize.squareNormalize(polygon.cloneVertices());
 }
 
 function keyPressed() {

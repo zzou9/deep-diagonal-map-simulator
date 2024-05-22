@@ -1,3 +1,5 @@
+const r = 10; // default digit to round to
+
 class MathHelper {
     /*
         vector and matrix operations
@@ -63,19 +65,25 @@ class MathHelper {
         return a - b - c + d + e - f;
     }
 
+    static checkAffineTransform(T) {
+        /*
+            Check whether a projective transformation fixes the line at infinity
+        */
+        const v1 = this.matrixMult(T, [[1], [0], [0]]);
+        const v2 = this.matrixMult(T, [[0], [1], [0]]);
+        console.log(T);
+        console.log(v1, v2);
+        if (v1[2][0] != 0 || v2[2][0] != 0) {
+            return false;
+        }
+        return true;
+    }
+
     static affineTransform(T, v) {
         /* 
             Apply the affine transformation T on v 
             (provided that T is an affine transform)
         */
-
-        // check whether T is an affine transform
-        // let v1 = this.matrixMult(T, [[1], [0], [0]]);
-        // let v2 = this.matrixMult(T, [[0], [1], [0]]);
-        // if (v1[2][0] != 0 || v2[2][0] != 0) {
-        //     console.error("T is not an affine transform!");
-        //     return null;
-        // }
 
         // apply the affine transform on the vector
         const vert = [[v.x], [v.y], [1]];
@@ -86,7 +94,10 @@ class MathHelper {
             console.error("v is on the line at infinity!");
             return null;
         }
-        return createVector(result[0][0] / result[2][0], result[1][0] / result[2][0]);
+
+        const x = this.round(result[0][0] / result[2][0], r);
+        const y = this.round(result[1][0] / result[2][0], r);
+        return createVector(x, y);
     }
 
     static fourToFourProjection(s, t) {
@@ -102,6 +113,14 @@ class MathHelper {
                 - t: the four vertices of the target given in 4-by-3 matrix
                     where each row is the homogeneous coordinate
         */
+
+        // // normalize s
+        // for (let i = 0; i < s.length; i++) {
+        //     for (let j = 0; j < s[0].length; j++) {
+        //         s[i][j] = this.round(s[i][j], r);
+        //     }
+        // }
+
         // populate the augmented matrix 
         const A = [
             [s[0][0], s[0][1], s[0][2], 0, 0, 0, 0, 0, 0, -t[0][0], 0, 0, 0], 
@@ -125,6 +144,14 @@ class MathHelper {
             [-AR[3][12], -AR[4][12], -AR[5][12]], 
             [-AR[6][12], -AR[7][12], -AR[8][12]]
         ];
+
+        // const x = [[-AR[0][12]], [-AR[1][12]], [-AR[2][12]], 
+        //     [-AR[3][12]], [-AR[4][12]], [-AR[5][12]], 
+        //     [-AR[6][12]], [-AR[7][12]], [-AR[8][12]], 
+        //     [-AR[9][12]], [-AR[10][12]], [-AR[11][12]], [1]
+        // ]
+        // console.log("multiplying A by x", this.matrixMult(A, x));
+
         return T;
     }
 
@@ -177,10 +204,19 @@ class MathHelper {
                     }
                 }
             }
-    
             lead++;
         }
     
         return m;
+    }
+
+    static round(number, digit) {
+        /*   
+            round a number to the nearest digit 
+        */
+        const scale = Math.pow(10, digit);
+        const scaledNumber = number * scale;
+        const roundedScaledNumber = Math.round(scaledNumber);
+        return roundedScaledNumber / scale;
     }
 }
