@@ -8,22 +8,19 @@ class Polygon{
      * @param {PentagramMap} map the map associated to the polygon
      * @param {Number} numVertex number of vertices of the polygon
      * @param {Array} vertices an array that stores the coords of verteices
-     * @param {Boolean} regular whether the polygon is regular
      * @param {Boolean} inscribed whether the polygon is inscribed
      * @param {Number} scale scaling when plotting
      * @param {Boolean} canDrag whether the polygon vertices can be dragged
      */
     constructor(map,
                 numVertex=7, 
-                vertices=new Array(), 
-                regular=true,
-                inscribed=true,
+                vertices=new Array(7), 
+                inscribed=false,
                 scale=(windowWidth + windowHeight)/20,
                 canDrag=true) {
         this.map = map;
         this.numVertex = numVertex; 
         this.vertices = vertices; 
-        this.regular = regular;
         this.inscribed = inscribed;
         this.scale = scale; 
         this.center = createVector(0, 0, 1);
@@ -46,18 +43,16 @@ class Polygon{
      */
     setDefault(numVertex) {
         this.numVertex = numVertex;
-        this.regular = true;
-        this.inscribed = true;
         this.scale = (windowWidth + windowHeight)/20;
         this.center = createVector(0, 0, 1);
         
         // re-populate the vertices
-        this.vertices = new Array();
+        this.vertices = new Array(numVertex);
         let angle = TWO_PI / this.numVertex;
-        for (let counter = 0; counter < this.numVertex; counter++) {
-            let sx = this.center.x + cos(angle*counter);
-            let sy = this.center.y + sin(angle*counter);
-            this.vertices[counter] = createVector(sx, sy, 1);
+        for (let i = 0; i < this.numVertex; i++) {
+            let sx = this.center.x + cos(angle*i);
+            let sy = this.center.y + sin(angle*i);
+            this.vertices[i] = createVector(sx, sy, 1);
         }
     }
 
@@ -67,6 +62,14 @@ class Polygon{
     show() {
         // translate the coordinate system 
         translate(xT, yT);
+
+        // draw the inscribed circle if the polygon is inscribed
+        if (this.inscribed) {
+            noFill();
+            stroke(color.RED);
+            circle(0, 0, this.scale*2);
+            console.log("hello");
+        }
 
         // draw edges
         fill(color.WHITE);
@@ -147,7 +150,12 @@ class Polygon{
                     && mY - w <= this.vertices[i].y && mY + w >= this.vertices[i].y
                     && dragging == false) {
                     dragging = true;
-                    this.vertices[i] = createVector(mX, mY, 1);
+                    if (this.inscribed) {
+                        const r = Math.sqrt(mX * mX + mY * mY);
+                        this.vertices[i] = createVector(mX/r, mY/r, 1);
+                    } else {
+                        this.vertices[i] = createVector(mX, mY, 1);
+                    }
                 }
             }
         }

@@ -22,7 +22,8 @@ class MathHelper {
      */
     static solveQuadratic(a, b, c) {
         console.log(a, b, c);
-        if (MathHelper.round(b * b - 4 * a * c, 10) < 0) {
+        if (MathHelper.round(b * b - 4 * a * c) < 0) {
+            console.log(b * b - 4 * a * c);
             console.error("The quadratic equation has negative discriminant.");
         }
         if (a == 0) {
@@ -31,7 +32,7 @@ class MathHelper {
             }
             return [-c/b, -c/b];
         }
-        const delta = Math.sqrt(b * b - 4 * a * c);
+        const delta = Math.sqrt(MathHelper.round(b * b - 4 * a * c));
         const x1 = (-b + delta) / (2 * a);
         const x2 = (-b - delta) / (2 * a);
         return [x1, x2];
@@ -81,7 +82,7 @@ class MathHelper {
      * @returns {Array} Q, the eigenbasis; Lambda, the diagonal matrix
      */
     static spectralDecomposition2(mat) {
-        if (MathHelper.round(mat[0][1], 10) != MathHelper.round(mat[1][0], 10)) {
+        if (MathHelper.round(mat[0][1]) != MathHelper.round(mat[1][0])) {
             console.error("The input matrix is not symmetric");
         }
         const eigenval = MathHelper.eigenvalue2(mat);
@@ -90,7 +91,7 @@ class MathHelper {
             [mat[0][0] - lambda, mat[0][1]], 
             [mat[1][0], mat[1][1] - lambda]
         ];
-        if (MathHelper.round(eigenmat[0][0], 10) == 0) {
+        if (MathHelper.round(eigenmat[0][0]) == 0) {
             const Q = [[1, 0], [0, 1]];
             const Lambda = [[lambda, 0], [0, eigenval[1]]];
             return [Q, Lambda];
@@ -330,7 +331,7 @@ class MathHelper {
      * @param {Number} digit the decimals to keep
      * @returns {Number} the rounded number
      */
-    static round(number, digit) {
+    static round(number, digit=16) {
         /*   
             round a number to the nearest digit 
         */
@@ -375,7 +376,7 @@ class MathHelper {
         const Qinv = MathHelper.invert2(Q);
         for (let i = 0; i < 2; i++) {
             for (let j = 0; j < 2; j++) {
-                if (MathHelper.round(Qt[i][j] - Qinv[i][j], 10) != 0) {
+                if (MathHelper.round(Qt[i][j] - Qinv[i][j]) != 0) {
                     return false;
                 }
             }

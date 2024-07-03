@@ -74,6 +74,14 @@ class ActionPanel extends Panel {
     }
 
     /**
+     * Update the diagonal and spacing box 
+     */
+    updateDiagonalAndSpacing() {
+        this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
+        this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
+    }
+
+    /**
      * Call methods when the buttons are clicked
      */
     buttonMouseAction() {

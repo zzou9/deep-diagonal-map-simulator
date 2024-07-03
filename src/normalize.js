@@ -141,6 +141,7 @@ class Normalize {
         const Q = decomp[0];
         const Qt = MathHelper.transpose(Q);
         const L = decomp[1];
+        console.log(L);
         const sqrtInvL = [
             [1 / Math.sqrt(L[0][0]), 0], 
             [0, 1 / Math.sqrt(L[1][1])]

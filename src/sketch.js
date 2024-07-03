@@ -56,6 +56,9 @@ function mouseClicked() {
     ctrlPanel.buttonMouseAction();
     normPanel.buttonMouseAction();
     actionPanel.buttonMouseAction();
+    if (actionPanel.isRunning) {
+        ctrlPanel.disableInscribe();
+    }
 
     Test.debug();
 }
@@ -68,9 +71,11 @@ function mouseDragged() {
 function keyPressed() {
     // applying the map
     if (key === ' ') {
+        ctrlPanel.disableInscribe();
         polygon.vertices = map.act(polygon.cloneVertices());
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
+            ctrlPanel.disableInscribe();
             polygon.vertices = map.revert();
         }
     }
@@ -84,6 +89,11 @@ function keyPressed() {
         polygon.setDefault(Math.max(polygon.numVertex-1,5)); 
         ctrlPanel.updateNumVertices(polygon.numVertex);
         // TODO: may adopt Schwartz 2024 notations
+    }
+
+    // changing the diagonals of the map
+    if (keyCode === LEFT_ARROW) {
+        
     }
 }
 

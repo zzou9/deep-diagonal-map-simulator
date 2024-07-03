@@ -65,7 +65,7 @@ class PentagramMap {
         }
 
         // apply the map
-        return applyMap(vertices, this.l, this.k, this.power, this.normalization);
+        return applyMap(vertices, this.l, this.k, this.power, this.normalization);;
     }
 
     /**

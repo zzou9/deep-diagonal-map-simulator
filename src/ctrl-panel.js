@@ -12,7 +12,7 @@ class CtrlPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=100) {
+    constructor(x, y, polygon, map, w=200, h=130) {
         super(x, y, w, h, "Control Panel", color.CADET_BLUE);
         this.polygon = polygon;
         this.map = map;
@@ -25,6 +25,8 @@ class CtrlPanel extends Panel {
         this.buttons.push(this.incNumVertex);
         this.dragButton = new Button(this.x+25, this.y+70, 150, 20, [["Drag: ", color.BLACK], ["On", color.GREEN]]);
         this.buttons.push(this.dragButton);
+        this.inscribeButton = new Button(this.x+25, this.y+100, 150, 20, [["Inscribed: ", color.BLACK], ["Off", color.RED]]);
+        this.buttons.push(this.inscribeButton);
     }
 
     /**
@@ -43,6 +45,14 @@ class CtrlPanel extends Panel {
     }
 
     /**
+     * Disable the inscribed feature of vertices
+     */
+    disableInscribe() {
+        this.polygon.inscribed = false;
+        this.inscribeButton.text = [["Inscribed: ", color.BLACK], ["Off", color.RED]];
+    }
+
+    /**
      * Mouse Action
      */
     buttonMouseAction() {
@@ -55,12 +65,22 @@ class CtrlPanel extends Panel {
             this.numVertexBox.text = [["# Vertices: " + this.polygon.numVertex, color.BLACK]];
         }
         if (this.dragButton.isHovering()) {
-            if (polygon.canDrag) {
-                polygon.canDrag = false;
+            if (this.polygon.canDrag) {
+                this.polygon.canDrag = false;
                 this.dragButton.text = [["Drag: ", color.BLACK], ["Off", color.RED]];
             } else {
-                polygon.canDrag = true;
+                this.polygon.canDrag = true;
                 this.dragButton.text = [["Drag: ", color.BLACK], ["On", color.GREEN]];
+            }
+        }
+        if (this.inscribeButton.isHovering()) {
+            if (this.polygon.inscribed) {
+                this.polygon.inscribed = false;
+                this.inscribeButton.text = [["Inscribed: ", color.BLACK], ["Off", color.RED]];
+            } else {
+                this.polygon.setDefault(this.polygon.numVertex);
+                this.polygon.inscribed = true;
+                this.inscribeButton.text = [["Inscribed: ", color.BLACK], ["On", color.GREEN]];
             }
         }
     }

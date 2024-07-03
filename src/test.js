@@ -4,6 +4,7 @@ class Test {
      */
     static debug() {
         // for debug purposes, gets called when the mouse is clicked
+        // Test.testSpectralDecomposition();
     }
 
     static testNormalize() {
@@ -86,7 +87,10 @@ class Test {
     }
 
     static testSpectralDecomposition() {
-        const M = [[1, -1], [-1, 2]];
+        const M = [
+            [0.1055728091, 0],
+            [0, 0.1055728089]
+        ];
         const decomp = MathHelper.spectralDecomposition2(M)
         console.log(decomp);
         const Q = decomp[0];
