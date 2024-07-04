@@ -5,7 +5,7 @@ class Normalize {
 
     /**
      * Normalize the shape so that the first four vertices are on the unit square
-     * @param {vertices of the polygon} vertices 
+     * @param {Array<Array<Number>>} vertices vertices of the polygon
      * @returns vertices after normalization
      */
     static squareNormalize(vertices) {
@@ -13,10 +13,10 @@ class Normalize {
         // to project from, which will be the first four vertices
         // of the polygon
         const source = [
-            [vertices[0].x, vertices[0].y, 1], 
-            [vertices[1].x, vertices[1].y, 1], 
-            [vertices[2].x, vertices[2].y, 1], 
-            [vertices[3].x, vertices[3].y, 1], 
+            [vertices[0][0], vertices[0][1], 1], 
+            [vertices[1][0], vertices[1][1], 1], 
+            [vertices[2][0], vertices[2][1], 1], 
+            [vertices[3][0], vertices[3][1], 1], 
         ];
 
         // set up the homogeneous coords of the unit square
@@ -35,14 +35,14 @@ class Normalize {
         for (let i = 0; i < vertices.length; i++) {
             const v = MathHelper.affineTransform(T, vertices[i]);
             // error if v is not on the affine plane
-            if (v.z == 0) {
+            if (v[2] == 0) {
                 console.error("v is on the line at infinity!");
                 return null;
             }
             // normalize and round
-            const x = MathHelper.round(v.x/v.z);
-            const y = MathHelper.round(v.y/v.z);
-            newVertices[i] = createVector(x, y, 1);
+            const x = MathHelper.round(v[0]/v[2],10); // need to round to 10 digits, otherwise would explode
+            const y = MathHelper.round(v[1]/v[2],10);
+            newVertices[i] = [x, y, 1];
         }
         return newVertices;
     }
@@ -57,33 +57,34 @@ class Normalize {
     /**
      * Get the center of mass of the polygon. The polygon is assumed to have point mass evenly
      * distributed to its vertices.
-     * @param {Array} vertices the vertices to take the center of mass
-     * @returns {p5.Vector} the vector that represents the center of mass of the polygon
+     * @param {Array<Array<Number>>} vertices the vertices to take the center of mass
+     * @returns {Array<Number>} the vector that represents the center of mass of the polygon
      */
     static getCenterOfMass(vertices) {
         const n = vertices.length;
         let x0 = 0;
         let y0 = 0;
         for (let i = 0; i < n; i++) {
-            x0 = x0 + vertices[i].x; 
-            y0 = y0 + vertices[i].y;
+            x0 = x0 + vertices[i][0]; 
+            y0 = y0 + vertices[i][1];
         }
         const x = x0 / n;
         const y = y0 / n;
-        return createVector(x, y, 1);
+        return [x, y, 1];
     }
 
     /**
      * Translate the vertices so that the center of mass lies at (0, 0, 1).
-     * @returns {Array} the list of vertex coordinates normalized to center of mass.
+     * @param {Array<Array<Number>>} vertices the vertices to normalize
+     * @returns {Array<Array<Number>>} the list of vertex coordinates normalized to center of mass.
      */
     static normalizeCOM(vertices) {
         const v0 = Normalize.getCenterOfMass(vertices);
         let vNew  = new Array(vertices.length);
         for (let i = 0; i < vertices.length; i++) {
-            const x = vertices[i].x - v0.x;
-            const y = vertices[i].y - v0.y;
-            vNew[i] = createVector(x, y, 1);
+            const x = vertices[i][0] - v0[0];
+            const y = vertices[i][1] - v0[1];
+            vNew[i] = [x, y, 1];
         }
         return vNew;
     }
@@ -91,13 +92,13 @@ class Normalize {
     /**
      * Get the inertia matrix of the polygon with respect to the origin. 
      * Here the polygon assumed to have its center of mass at the origin. 
-     * @param {Array} vertices vertices to derive inertia matrix
-     * @returns {Array} the inertia matrix
+     * @param {Array<Array<Number>>} vertices vertices to derive inertia matrix
+     * @returns {Array<Array<Number>>} the inertia matrix
      */
     static getInertiaMatrix(vertices) {
         /**
          * Helper method for inertia calculation
-         * @param {Array} vertices vertices coordinates centered at COM
+         * @param {Array<Array<Number>>} vertices vertices coordinates centered at COM
          * @param {Number} x0 x weights
          * @param {Number} y0 y weights
          * @returns {Number} the inertia value
@@ -105,7 +106,7 @@ class Normalize {
         function inertia(vertices, x0, y0) {
             let total = 0;
             for (let i = 0; i < vertices.length; i++) {
-                const s = x0 * vertices[i].x + y0 * vertices[i].y;
+                const s = x0 * vertices[i][0] + y0 * vertices[i][1];
                 total = total + s * s;
             }
             return total / vertices.length;
@@ -126,8 +127,8 @@ class Normalize {
     /**
      * Normalize the vertices of a polygon so that the ellipse of inertia 
      * is the unit circle.
-     * @param {Array} vertices homogeneous coordinates of vertices to normalize
-     * @returns {Array} normalized homogeneous coordinates
+     * @param {Array<Array<Number>>} vertices homogeneous coordinates of vertices to normalize
+     * @returns {Array<Array<Number>>} normalized homogeneous coordinates
      */
     static ellipseNormalize(vertices) {
         // calculate the new coordinates
@@ -146,11 +147,11 @@ class Normalize {
         ];
 
         for (let i = 0; i < normalizedVert.length; i++) {
-            const vec = [[normalizedVert[i].x], [normalizedVert[i].y]];
+            const vec = [[normalizedVert[i][0]], [normalizedVert[i][1]]];
             const result = MathHelper.matrixMult(Qt, MathHelper.matrixMult(sqrtInvL, MathHelper.matrixMult(Q, vec)));
             const xNew = MathHelper.round(result[0][0]);
             const yNew = MathHelper.round(result[1][0]);
-            newVertices[i] = createVector(xNew, yNew, 1);
+            newVertices[i] = [xNew, yNew, 1];
         }
         return newVertices;
     }

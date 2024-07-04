@@ -25,12 +25,12 @@ class PentagramMap {
         
         /**
          * A helper method that applies the map
-         * @param {Array} vertices vertices of the polygon
+         * @param {Array<Array<Number>>} vertices vertices of the polygon
          * @param {Number} l diagonal parameter
          * @param {Number} k spacing parameter
          * @param {Number} p number of times to apply the map 
          * @param {String} normalization normalization to apply
-         * @returns {Array} the resulting homogeneous coordinates of the vertices
+         * @returns {Array<Array<Number>>} the resulting homogeneous coordinates of the vertices
          */
         function applyMap(vertices, l, k, p, normalization) {
             const n = vertices.length;
@@ -78,7 +78,7 @@ class PentagramMap {
 
     /**
      * Revert the last action. Can only revert up to 20 times
-     * @returns {Array} the vertices of the last stored polygon
+     * @returns {Array<Array<Number>>} the vertices of the last stored polygon
      */
     revert() {
         if (this.prev.length === 0) {

@@ -7,7 +7,7 @@ class Polygon{
      * Constructor
      * @param {PentagramMap} map the map associated to the polygon
      * @param {Number} numVertex number of vertices of the polygon
-     * @param {Array} vertices an array that stores the coords of verteices
+     * @param {Array<Array<Number>>} vertices an array that stores the coords of verteices
      * @param {Boolean} inscribed whether the polygon is inscribed
      * @param {Number} scale scaling when plotting
      * @param {Boolean} canDrag whether the polygon vertices can be dragged
@@ -23,7 +23,7 @@ class Polygon{
         this.vertices = vertices; 
         this.inscribed = inscribed;
         this.scale = scale; 
-        this.center = createVector(0, 0, 1);
+        this.center = [0, 0, 1];
         this.canDrag = canDrag;
         this.showDiagonal = false; // display the diagonals in the map
         this.showEllipse = false; // display the ellipse of inertia
@@ -31,9 +31,9 @@ class Polygon{
         // if regular, populate vertices
         let angle = TWO_PI / this.numVertex;
         for (let counter = 0; counter < this.numVertex; counter++) {
-            let sx = this.center.x + cos(angle*counter);
-            let sy = this.center.y + sin(angle*counter);
-            this.vertices[counter] = createVector(sx, sy, 1);
+            let sx = this.center[0] + cos(angle*counter);
+            let sy = this.center[1] + sin(angle*counter);
+            this.vertices[counter] = [sx, sy, 1];
         }
     }
 
@@ -44,15 +44,15 @@ class Polygon{
     setDefault(numVertex) {
         this.numVertex = numVertex;
         this.scale = (windowWidth + windowHeight)/20;
-        this.center = createVector(0, 0, 1);
+        this.center = [0, 0, 1];
         
         // re-populate the vertices
         this.vertices = new Array(numVertex);
         let angle = TWO_PI / this.numVertex;
         for (let i = 0; i < this.numVertex; i++) {
-            let sx = this.center.x + cos(angle*i);
-            let sy = this.center.y + sin(angle*i);
-            this.vertices[i] = createVector(sx, sy, 1);
+            let sx = this.center[0] + cos(angle*i);
+            let sy = this.center[1] + sin(angle*i);
+            this.vertices[i] = [sx, sy, 1];
         }
     }
 
@@ -75,7 +75,7 @@ class Polygon{
         stroke(color.BLACK);
         beginShape();
         for (let i in this.vertices) {
-            vertex(this.vertices[i].x * this.scale, this.vertices[i].y * this.scale);
+            vertex(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale);
         }
         endShape(CLOSE);
 
@@ -88,8 +88,8 @@ class Polygon{
             // draw diagonals
             stroke(color.GREEN);
             for (let i = 0; i < n; i++) {
-                line(this.vertices[i%n].x * this.scale, this.vertices[i%n].y * this.scale,
-                    this.vertices[(i+l)%n].x * this.scale, this.vertices[(i+l)%n].y * this.scale
+                line(this.vertices[i%n][0] * this.scale, this.vertices[i%n][1] * this.scale,
+                    this.vertices[(i+l)%n][0] * this.scale, this.vertices[(i+l)%n][1] * this.scale
                 );
 
             }
@@ -103,7 +103,7 @@ class Polygon{
                 const ver3 = this.vertices[(i-k+2*n)%n];
                 const ver4 = this.vertices[(i-k+l+2*n)%n];
                 const ver = MathHelper.intersect(ver1, ver2, ver3, ver4);
-                circle(ver.x * this.scale, ver.y * this.scale, 5);
+                circle(ver[0] * this.scale, ver[1] * this.scale, 5);
             }
         }
 
@@ -128,7 +128,7 @@ class Polygon{
             fill(color.RED);
             noStroke();
             for (let i = 0; i < this.vertices.length; i++) {
-                circle(this.vertices[i].x * this.scale, this.vertices[i].y * this.scale, 5);
+                circle(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale, 5);
             }
         }
 
@@ -145,15 +145,15 @@ class Polygon{
             const mY = (mouseY - yT) / this.scale;
             let dragging = false;
             for (let i in this.vertices) {
-                if (mX - w <= this.vertices[i].x && mX + w >= this.vertices[i].x 
-                    && mY - w <= this.vertices[i].y && mY + w >= this.vertices[i].y
+                if (mX - w <= this.vertices[i][0] && mX + w >= this.vertices[i][0] 
+                    && mY - w <= this.vertices[i][1] && mY + w >= this.vertices[i][1]
                     && dragging == false) {
                     dragging = true;
                     if (this.inscribed) {
                         const r = Math.sqrt(mX * mX + mY * mY);
-                        this.vertices[i] = createVector(mX/r, mY/r, 1);
+                        this.vertices[i] = [mX/r, mY/r, 1];
                     } else {
-                        this.vertices[i] = createVector(mX, mY, 1);
+                        this.vertices[i] = [mX, mY, 1];
                     }
                 }
             }
@@ -168,23 +168,26 @@ class Polygon{
             Print the info of this polygon
         */
         console.log("This is a polygon with", this.numVertex, "vertices:");
-        for (let v in this.vertices) {
+        for (let i = 0; i < this.numVertex; i++) {
             // I don't know how to deal with rounding ups
-            console.log("vertex", v, "is at", this.vertices[v].x, this.vertices[v].y);
+            console.log("vertex", v, "is at", this.vertices[i][0], this.vertices[i][1]);
         }
     }
 
     /**
      * Deep clone the vertices
-     * @returns {Array} a deep clone of the vertices
+     * @returns {Array<Array<Number>>} a deep clone of the vertices
      */
     cloneVertices() {
         /*
             Return a deep clone of the vertices
         */
-        function cloneP5Vector(vector) {
-            return createVector(vector.x, vector.y, 1); 
+        function cloneVector(vector) {
+            const x = vector[0]; 
+            const y = vector[1];
+            const z = vector[2];
+            return [x, y, z];
         }
-        return this.vertices.map(cloneP5Vector);
+        return this.vertices.map(cloneVector);
     }
 }

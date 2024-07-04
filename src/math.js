@@ -5,11 +5,12 @@ const r = 10; // default digit to round to
  */
 class MathHelper {
     /**
-     * Converts a p5 vector object to a column vector
-     * @param {p5.Vector} vecToConvert 
+     * Converts a row vector to a column vector
+     * @param {Array<Number>} vecToConvert the row vector storing vertices
+     * @returns {Array<Array<Number>>} the converted column vector
      */
     static vec(vecToConvert) {
-        return [[vecToConvert.x], [vecToConvert.y], [vecToConvert.z]];
+        return [[vecToConvert[0]], [vecToConvert[1]], [vecToConvert[2]]];
     }
 
     /**
@@ -18,7 +19,7 @@ class MathHelper {
      * @param {Number} a 2nd order coefficient
      * @param {Number} b 1st order coefficient
      * @param {Number} c 0th order coefficient
-     * @returns {Array} the solution to the quadratic equation
+     * @returns {Array<Number>} the solution to the quadratic equation
      */
     static solveQuadratic(a, b, c) {
         if (MathHelper.round(b * b - 4 * a * c) < 0) {
@@ -39,7 +40,7 @@ class MathHelper {
     /**
      * Convert an angle to a 2d rotation matrix
      * @param {Number} theta the angle to rotate
-     * @returns {Array} the 2-by-2 rotation matrix
+     * @returns {Array<Array<Number>>} the 2-by-2 rotation matrix
      */
     static angleToMatrix(theta) {
         const Q = [
@@ -51,7 +52,7 @@ class MathHelper {
 
     /**
      * Given a 2-by-2 orthogonal matrix, return its rotation angle
-     * @param {Array} Q the 2-by-2 orthogonal matrix
+     * @param {Array<Array<Number>>} Q the 2-by-2 orthogonal matrix
      * @returns {Number} the angle of rotation
      */
     static matrixToAngle(Q) {
@@ -64,7 +65,7 @@ class MathHelper {
 
     /**
      * Compute the eigenvalues of a 2-by-2 matrix
-     * @param {Array} mat the matrix to take the eigenvalues
+     * @param {Array<Array<Number>>} mat the matrix to take the eigenvalues
      * @returns the two eigenvalues
      */
     static eigenvalue2(mat) {
@@ -76,8 +77,8 @@ class MathHelper {
 
     /**
      * Take the spectral decomposition of a 2-by-2 real symmetric matrix.
-     * @param {Array} mat the symmetric matrix to take the spectral decomposition
-     * @returns {Array} Q, the eigenbasis; Lambda, the diagonal matrix
+     * @param {Array<Array<Number>>} mat the symmetric matrix to take the spectral decomposition
+     * @returns {Array<Array<Number>>} Q, the eigenbasis; Lambda, the diagonal matrix
      */
     static spectralDecomposition2(mat) {
         if (MathHelper.round(mat[0][1]) != MathHelper.round(mat[1][0])) {
@@ -108,8 +109,8 @@ class MathHelper {
 
     /**
      * Take the transpose of a matrix
-     * @param {Array} mat the matrix to be transposed
-     * @returns {Array} the transposed matrix
+     * @param {Array<Array<Number>>} mat the matrix to be transposed
+     * @returns {Array<Array<Number>>} the transposed matrix
      */
     static transpose(mat) {
         const m = mat.length;
@@ -132,8 +133,8 @@ class MathHelper {
 
     /**
      * Invert a 2x2 matrix
-     * @param {Array} mat matrix to invert
-     * @returns {Array} the inverted matrix
+     * @param {Array<Array<Number>>} mat matrix to invert
+     * @returns {Array<Array<Number>>} the inverted matrix
      */
     static invert2(mat) {
         const det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
@@ -151,9 +152,9 @@ class MathHelper {
     
     /**
      * Multiplies two matrices. Raises an error if they cannot be multiplied.
-     * @param {Array} mat1 first matrix 
-     * @param {Array} mat2 second matrix
-     * @returns {Array} the resulting matrix after multiplication
+     * @param {Array<Array<Number>>} mat1 first matrix 
+     * @param {Array<Array<Number>>} mat2 second matrix
+     * @returns {Array<Array<Number>>} the resulting matrix after multiplication
      */
     static matrixMult(mat1, mat2) {
         // calculate the product of two matrices
@@ -189,7 +190,7 @@ class MathHelper {
 
     /**
      * Compute the determinant of a 3x3 matrix
-     * @param {Array} mat the matrix to compute
+     * @param {Array<Array<Number>>} mat the matrix to compute
      * @returns {Number} the determinant of the matrix
      */
     static det3(mat) {
@@ -218,9 +219,9 @@ class MathHelper {
 
     /**
      * Apply a projective transformation T on a vector v 
-     * @param {Array} T the transformation
-     * @param {p5.Vector} v the homogeneous coord of the vector
-     * @returns Tv
+     * @param {Array<Array<Number>>} T the transformation
+     * @param {Array<Number>} v the homogeneous coord of the vector
+     * @returns {Array<Number>} Tv
      */
     static affineTransform(T, v) {
         // apply the projective transformation on the vector
@@ -229,15 +230,15 @@ class MathHelper {
         const x = result[0][0];
         const y = result[1][0];
         const z = result[2][0];
-        return createVector(x, y, z);
+        return [x, y, z];
     }
 
     /**
      * Takes in two lists of four points in general position of the projective plane. 
      * Done by solving a linear equation.
-     * @param {Array} s the four vertices of the source
-     * @param {Array} t the four vertices of the target
-     * @returns {Array} the projective transformation that maps s to t
+     * @param {Array<Array<Number>>} s the four vertices of the source
+     * @param {Array<Array<Number>>} t the four vertices of the target
+     * @returns {Array<Array<Number>>} the projective transformation that maps s to t
      */
     static fourToFourProjection(s, t) {
         // populate the augmented matrix 
@@ -269,8 +270,8 @@ class MathHelper {
 
     /**
      * Compute the reduced row echelon form of a rectangular matrix
-     * @param {Array} matrix the matrix to compute
-     * @returns {Array} the RREF of the matrix
+     * @param {Array<Array<Number>>} matrix the matrix to compute
+     * @returns {Array<Array<Number>>} the RREF of the matrix
      */
     static computeRREF(matrix) {
         // Make a copy of the matrix to avoid modifying the original
@@ -347,39 +348,39 @@ class MathHelper {
      *  l_1(s) = v_1 + s * (v_2 - v_1)
      *  l_2(t) = v_3 + s * (v_4 - v_3)
      * It then solves for s and t by solving a linear system
-     * @param {Vector} ver1 line 1 vertex 1
-     * @param {Vector} ver2 line 1 vertex 2
-     * @param {Vector} ver3 line 2 vertex 1
-     * @param {Vector} ver4 line 2 vertex 2
-     * @returns {Vector} the vertex of the intersection
+     * @param {Array<Number>} ver1 line 1 vertex 1
+     * @param {Array<Number>} ver2 line 1 vertex 2
+     * @param {Array<Number>} ver3 line 2 vertex 1
+     * @param {Array<Number>} ver4 line 2 vertex 2
+     * @returns {Array<Number>} the vertex of the intersection
      */
     static getIntersection(ver1, ver2, ver3, ver4) {
         // setting up the linear system
-        const mat = [[ver2.x - ver1.x, ver3.x - ver4.x], 
-                   [ver2.y - ver1.y, ver3.y - ver4.y]];
-        const b = [[ver3.x - ver1.x], 
-                 [ver3.y - ver1.y]];
+        const mat = [[ver2[0] - ver1[0], ver3[0] - ver4[0]], 
+                   [ver2[1] - ver1[1], ver3[1] - ver4[1]]];
+        const b = [[ver3[0] - ver1[0]], 
+                 [ver3[1] - ver1[1]]];
         const matInverse = MathHelper.invert2(mat);
         const param = MathHelper.matrixMult(matInverse, b);
 
         // finding the intersection point
         const s = param[0][0];
-        const interX = ver1.x + s * (ver2.x - ver1.x);
-        const interY = ver1.y + s * (ver2.y - ver1.y);
-        return createVector(interX, interY, 1);
+        const interX = ver1[0] + s * (ver2[0] - ver1[0]);
+        const interY = ver1[1] + s * (ver2[1] - ver1[1]);
+        return [interX, interY, 1];
     }
 
     /**
      * Check the orientation of a triangle (given as 3 ordered vertices)
-     * @param {Vector} ver1 first vertex
-     * @param {Vector} ver2 second vertex
-     * @param {Vector} ver3 third vertex
+     * @param {Array<Number>} ver1 first vertex
+     * @param {Array<Number>} ver2 second vertex
+     * @param {Array<Number>} ver3 third vertex
      * @returns 1 if counterclockwise, -1 if clockwise, 0 if collinear
      */
     static triangleOrientation(ver1, ver2, ver3) {
         const M = [
-            [ver1.x, ver2.x, ver3.x],
-            [ver1.y, ver2.y, ver3.y],
+            [ver1[0], ver2[0], ver3[0]],
+            [ver1[1], ver2[1], ver3[1]],
             [1, 1, 1]
         ]
         const det = MathHelper.round(MathHelper.det3(M));
