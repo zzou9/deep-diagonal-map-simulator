@@ -40,8 +40,8 @@ class Normalize {
                 return null;
             }
             // normalize and round
-            const x = MathHelper.round(v.x/v.z, 10);
-            const y = MathHelper.round(v.y/v.z, 10);
+            const x = MathHelper.round(v.x/v.z);
+            const y = MathHelper.round(v.y/v.z);
             newVertices[i] = createVector(x, y, 1);
         }
         return newVertices;
@@ -106,16 +106,16 @@ class Normalize {
             let total = 0;
             for (let i = 0; i < vertices.length; i++) {
                 const s = x0 * vertices[i].x + y0 * vertices[i].y;
-                total = total + s * s / vertices.length;
+                total = total + s * s;
             }
-            return total;
+            return total / vertices.length;
         }
 
         // normalize
         const vn = Normalize.normalizeCOM(vertices);
-        const ixx = MathHelper.round(inertia(vn, 1, 0), 10);
-        const iyy = MathHelper.round(inertia(vn, 0, 1), 10);
-        const ixy = MathHelper.round(0.5 * (inertia(vn, 1, 1) - ixx - iyy), 10);
+        const ixx = inertia(vn, 1, 0);
+        const iyy = inertia(vn, 0, 1);
+        const ixy = 0.5 * (inertia(vn, 1, 1) - ixx - iyy);
         const Ip = [
             [ixx, -ixy],
             [-ixy, iyy]
@@ -134,14 +134,12 @@ class Normalize {
         let newVertices = new Array(vertices.length);
         const normalizedVert = Normalize.normalizeCOM(vertices);
         const Ip = Normalize.getInertiaMatrix(normalizedVert);
-        console.log(Ip);
 
         // get the spectral decomposition of the inertia matrix
         const decomp = MathHelper.spectralDecomposition2(Ip);
         const Q = decomp[0];
         const Qt = MathHelper.transpose(Q);
         const L = decomp[1];
-        console.log(L);
         const sqrtInvL = [
             [1 / Math.sqrt(L[0][0]), 0], 
             [0, 1 / Math.sqrt(L[1][1])]
@@ -150,8 +148,8 @@ class Normalize {
         for (let i = 0; i < normalizedVert.length; i++) {
             const vec = [[normalizedVert[i].x], [normalizedVert[i].y]];
             const result = MathHelper.matrixMult(Qt, MathHelper.matrixMult(sqrtInvL, MathHelper.matrixMult(Q, vec)));
-            const xNew = MathHelper.round(result[0][0], 10);
-            const yNew = MathHelper.round(result[1][0], 10);
+            const xNew = MathHelper.round(result[0][0]);
+            const yNew = MathHelper.round(result[1][0]);
             newVertices[i] = createVector(xNew, yNew, 1);
         }
         return newVertices;

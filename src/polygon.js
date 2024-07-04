@@ -68,7 +68,6 @@ class Polygon{
             noFill();
             stroke(color.RED);
             circle(0, 0, this.scale*2);
-            console.log("hello");
         }
 
         // draw edges

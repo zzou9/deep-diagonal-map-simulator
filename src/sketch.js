@@ -92,8 +92,14 @@ function keyPressed() {
     }
 
     // changing the diagonals of the map
-    if (keyCode === LEFT_ARROW) {
-        
+    if (keyCode === LEFT_ARROW && map.l > 2) {
+        map.l--;
+        map.k = map.l - 1;
+        actionPanel.updateDiagonalAndSpacing();
+    } else if (keyCode === RIGHT_ARROW && polygon.numVertex > 3 * map.l) {
+        map.l++;
+        map.k = map.l - 1;
+        actionPanel.updateDiagonalAndSpacing();
     }
 }
 

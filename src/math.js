@@ -21,9 +21,7 @@ class MathHelper {
      * @returns {Array} the solution to the quadratic equation
      */
     static solveQuadratic(a, b, c) {
-        console.log(a, b, c);
         if (MathHelper.round(b * b - 4 * a * c) < 0) {
-            console.log(b * b - 4 * a * c);
             console.error("The quadratic equation has negative discriminant.");
         }
         if (a == 0) {
@@ -331,7 +329,7 @@ class MathHelper {
      * @param {Number} digit the decimals to keep
      * @returns {Number} the rounded number
      */
-    static round(number, digit=16) {
+    static round(number, digit=15) {
         /*   
             round a number to the nearest digit 
         */
@@ -340,6 +338,8 @@ class MathHelper {
         const roundedScaledNumber = Math.round(scaledNumber);
         return roundedScaledNumber / scale;
     }
+
+    // geometry methods
 
     /**
      * This method calculates the intersection of two lines by solving a linear system.
@@ -353,7 +353,7 @@ class MathHelper {
      * @param {Vector} ver4 line 2 vertex 2
      * @returns {Vector} the vertex of the intersection
      */
-    static intersect(ver1, ver2, ver3, ver4) {
+    static getIntersection(ver1, ver2, ver3, ver4) {
         // setting up the linear system
         const mat = [[ver2.x - ver1.x, ver3.x - ver4.x], 
                    [ver2.y - ver1.y, ver3.y - ver4.y]];
@@ -367,6 +367,34 @@ class MathHelper {
         const interX = ver1.x + s * (ver2.x - ver1.x);
         const interY = ver1.y + s * (ver2.y - ver1.y);
         return createVector(interX, interY, 1);
+    }
+
+    /**
+     * Check the orientation of a triangle (given as 3 ordered vertices)
+     * @param {Vector} ver1 first vertex
+     * @param {Vector} ver2 second vertex
+     * @param {Vector} ver3 third vertex
+     * @returns 1 if counterclockwise, -1 if clockwise, 0 if collinear
+     */
+    static triangleOrientation(ver1, ver2, ver3) {
+        const M = [
+            [ver1.x, ver2.x, ver3.x],
+            [ver1.y, ver2.y, ver3.y],
+            [1, 1, 1]
+        ]
+        const det = MathHelper.round(MathHelper.det3(M));
+        if (det > 0) {
+            return 1;
+        }
+        if (det < 0) {
+            return -1;
+        }
+        return 0;
+    }
+    
+    
+    static intersects(ver1, ver2, ver3, ver4) {
+
     }
 
     // for debugging purposes

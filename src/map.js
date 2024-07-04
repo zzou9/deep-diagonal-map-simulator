@@ -41,7 +41,7 @@ class PentagramMap {
                 const ver2 = vertices[(i+l)%n];
                 const ver3 = vertices[(i-k+2*n)%n];
                 const ver4 = vertices[(i-k+l+2*n)%n];
-                const ver = MathHelper.intersect(ver1, ver2, ver3, ver4);
+                const ver = MathHelper.getIntersection(ver1, ver2, ver3, ver4);
                 newVertices[i] = ver;
             }
             // apply normalization
