@@ -15,7 +15,7 @@ class ActionPanel extends Panel {
      * @param {Number} h the height of the panel
      */
     constructor(x, y, map, polygon, w=200, h=260) {
-        super(x, y, w, h, "Action Panel", color.CADET_BLUE);
+        super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
         this.speed = 1;

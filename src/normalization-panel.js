@@ -12,7 +12,7 @@ class NormalizationPanel extends Panel {
      * @param {Number} h height of the panel
      */
     constructor(x, y, map, w=200, h=130) {
-        super(x, y, w, h, "Normalization Panel", color.CADET_BLUE);
+        super(x, y, w, h, "Normalization", color.CADET_BLUE);
         this.mode = "None";
         this.map = map;
         // populate the buttons

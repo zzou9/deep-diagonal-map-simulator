@@ -59,6 +59,7 @@ class Polygon{
 
         // reset the number of iterations of the map
         this.map.numIterations = 0;
+        console.log(Normalize.getInertiaMatrix(this.vertices));
 
         // update embedded and convexity information
         this.embedded = true;
@@ -171,6 +172,38 @@ class Polygon{
                 }
             }
         }
+    }
+
+    /**
+     * Compute a triangle embedding of the polygon.
+     * The embedding is stored in a 3D array E, where E[i][j][k]
+     * stores the orientation of the triangle spanned by the vertices
+     * i, j, k. 
+     * @returns {Array<Array<Array<Number>>>} the embedding array
+     */
+    triangleEmbedding() {
+        // setting up the embedding array
+        const n = this.numVertex;
+        let E = new Array(n);
+        for (let i = 0; i < n; i++) {
+            E[i] = new Array(n);
+            for (let j = 0; j < n; j++) {
+                E[i][j] = new Array(n);
+            }
+        }
+
+        // populate the values
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < n; j++) {
+                for (let k = 0; k < n; k++) {
+                    E[i][j][k] = MathHelper.triangleOrientation(
+                        this.vertices[i], this.vertices[j], this.vertices[k]
+                    );
+                }
+            }
+        }
+
+        return E;
     }
 
     /**

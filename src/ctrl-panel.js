@@ -13,7 +13,7 @@ class CtrlPanel extends Panel {
      * @param {Number} h (optional) height of the panel
      */
     constructor(x, y, polygon, map, w=200, h=130) {
-        super(x, y, w, h, "Control Panel", color.CADET_BLUE);
+        super(x, y, w, h, "Control", color.CADET_BLUE);
         this.polygon = polygon;
         this.map = map;
         // populate the buttons

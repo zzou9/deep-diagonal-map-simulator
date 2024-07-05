@@ -511,7 +511,6 @@ class MathHelper {
         const n = vertices.length
         for (let i = 1; i < n; i++) {
             if (orientation != this.triangleOrientation(vertices[i%n], vertices[(i+1)%n], vertices[(i+2)%n])) {
-                console.log("orientation:", i, this.triangleOrientation(vertices[i%n], vertices[(i+1)%n], vertices[(i+2)%n]));
                 return false;
             }
         }

@@ -63,6 +63,7 @@ function mouseClicked() {
         ctrlPanel.disableInscribe();
     }
     Test.debug();
+    console.log(polygon.triangleEmbedding());
 }
 
 function mouseDragged() {
