@@ -21,6 +21,7 @@ const color = {
 let normPanel;
 let ctrlPanel;
 let actionPanel;
+let infoPanel;
 
 function setup() {
     xT = windowWidth/2;
@@ -34,6 +35,7 @@ function setup() {
     ctrlPanel = new CtrlPanel(10, 10, polygon, map);
     normPanel = new NormalizationPanel(10, ctrlPanel.y+ctrlPanel.h+10, map);
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
+    infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
 }
 
 function draw() {
@@ -50,6 +52,7 @@ function draw() {
     ctrlPanel.show();
     normPanel.show();
     actionPanel.show();
+    infoPanel.show();
 }
 
 function mouseClicked() {
@@ -59,7 +62,6 @@ function mouseClicked() {
     if (actionPanel.isRunning) {
         ctrlPanel.disableInscribe();
     }
-
     Test.debug();
 }
 
@@ -76,7 +78,9 @@ function keyPressed() {
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
             ctrlPanel.disableInscribe();
-            polygon.vertices = map.revert();
+            const prev = map.revert();
+            polygon.vertices = prev[0];
+            map.numIterations = prev[1];
         }
     }
 
@@ -95,12 +99,18 @@ function keyPressed() {
     if (keyCode === LEFT_ARROW && map.l > 2) {
         map.l--;
         map.k = map.l - 1;
+        map.numIterations = 0;
         actionPanel.updateDiagonalAndSpacing();
     } else if (keyCode === RIGHT_ARROW && polygon.numVertex > 3 * map.l) {
         map.l++;
         map.k = map.l - 1;
+        map.numIterations = 0;
         actionPanel.updateDiagonalAndSpacing();
     }
+
+    // update information of the polygon
+    polygon.updateEmbedded();
+    polygon.updateConvex();
 }
 
 // TODO: need to add buttons for changing number of edges

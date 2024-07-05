@@ -22,7 +22,7 @@ class MathHelper {
      * @returns {Array<Number>} the solution to the quadratic equation
      */
     static solveQuadratic(a, b, c) {
-        if (MathHelper.round(b * b - 4 * a * c) < 0) {
+        if (this.round(b * b - 4 * a * c) < 0) {
             console.error("The quadratic equation has negative discriminant.");
         }
         if (a == 0) {
@@ -31,7 +31,7 @@ class MathHelper {
             }
             return [-c/b, -c/b];
         }
-        const delta = Math.sqrt(MathHelper.round(b * b - 4 * a * c));
+        const delta = Math.sqrt(this.round(b * b - 4 * a * c));
         const x1 = (-b + delta) / (2 * a);
         const x2 = (-b - delta) / (2 * a);
         return [x1, x2];
@@ -56,7 +56,7 @@ class MathHelper {
      * @returns {Number} the angle of rotation
      */
     static matrixToAngle(Q) {
-        if (!MathHelper.isOrthogonal2(Q)) {
+        if (!this.isOrthogonal2(Q)) {
             console.error("The input is not an orthogonal matrix.");
             return null;
         }
@@ -72,7 +72,7 @@ class MathHelper {
         const a = 1;
         const b = -mat[0][0] - mat[1][1];
         const c = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
-        return MathHelper.solveQuadratic(a, b, c);
+        return this.solveQuadratic(a, b, c);
     }
 
     /**
@@ -81,16 +81,16 @@ class MathHelper {
      * @returns {Array<Array<Number>>} Q, the eigenbasis; Lambda, the diagonal matrix
      */
     static spectralDecomposition2(mat) {
-        if (MathHelper.round(mat[0][1]) != MathHelper.round(mat[1][0])) {
+        if (this.round(mat[0][1]) != this.round(mat[1][0])) {
             console.error("The input matrix is not symmetric");
         }
-        const eigenval = MathHelper.eigenvalue2(mat);
+        const eigenval = this.eigenvalue2(mat);
         const lambda = eigenval[0];
         const eigenmat = [
             [mat[0][0] - lambda, mat[0][1]], 
             [mat[1][0], mat[1][1] - lambda]
         ];
-        if (MathHelper.round(eigenmat[0][0]) == 0) {
+        if (this.round(eigenmat[0][0]) == 0) {
             const Q = [[1, 0], [0, 1]];
             const Lambda = [[lambda, 0], [0, eigenval[1]]];
             return [Q, Lambda];
@@ -340,7 +340,10 @@ class MathHelper {
         return roundedScaledNumber / scale;
     }
 
-    // geometry methods
+
+    /**
+     * geometry methods
+     */
 
     /**
      * This method calculates the intersection of two lines by solving a linear system.
@@ -356,12 +359,16 @@ class MathHelper {
      */
     static getIntersection(ver1, ver2, ver3, ver4) {
         // setting up the linear system
-        const mat = [[ver2[0] - ver1[0], ver3[0] - ver4[0]], 
-                   [ver2[1] - ver1[1], ver3[1] - ver4[1]]];
-        const b = [[ver3[0] - ver1[0]], 
-                 [ver3[1] - ver1[1]]];
-        const matInverse = MathHelper.invert2(mat);
-        const param = MathHelper.matrixMult(matInverse, b);
+        const mat = [
+            [ver2[0] - ver1[0], ver3[0] - ver4[0]], 
+            [ver2[1] - ver1[1], ver3[1] - ver4[1]]
+        ];
+        const b = [
+            [ver3[0] - ver1[0]], 
+            [ver3[1] - ver1[1]]
+        ];
+        const matInverse = this.invert2(mat);
+        const param = this.matrixMult(matInverse, b);
 
         // finding the intersection point
         const s = param[0][0];
@@ -383,7 +390,7 @@ class MathHelper {
             [ver1[1], ver2[1], ver3[1]],
             [1, 1, 1]
         ]
-        const det = MathHelper.round(MathHelper.det3(M));
+        const det = this.round(this.det3(M));
         if (det > 0) {
             return 1;
         }
@@ -393,19 +400,137 @@ class MathHelper {
         return 0;
     }
     
-    
+    /**
+     * Check if two line segments intersect each other
+     * @param {Array<Number>} ver1 segment 1 vertex 1
+     * @param {Array<Number>} ver2 segment 1 vertex 2
+     * @param {Array<Number>} ver3 segment 2 vertex 1
+     * @param {Array<Number>} ver4 segment 2 vertex 2
+     * @returns {Boolean} whether two segments intersect
+     */
     static intersects(ver1, ver2, ver3, ver4) {
+        // if the two lines are colinear
+        if (this.triangleOrientation(ver1, ver2, ver3) == 0 && this.triangleOrientation(ver1, ver2, ver4) == 0) { 
+            // check if any one point lies in between a line
+            let t1;
+            let t2; 
+            let t3;
+            let t4;
+            if (this.round(ver4[0] - ver3[0]) != 0) {
+                t1 = this.round((ver1[0] - ver3[0]) / (ver4[0] - ver3[0]));
+                t2 = this.round((ver2[0] - ver3[0]) / (ver4[0] - ver3[0]));
+            } else {
+                t1 = this.round((ver1[1] - ver3[1]) / (ver4[1] - ver3[1]));
+                t2 = this.round((ver2[1] - ver3[1]) / (ver4[1] - ver3[1]));
+            }
+            if (this.round(ver2[0] - ver1[0]) != 0) {
+                t3 = this.round((ver3[0] - ver1[0]) / (ver2[0] - ver1[0]));
+                t4 = this.round((ver4[0] - ver1[0]) / (ver2[0] - ver1[0]));
+            } else {
+                t3 = this.round((ver3[1] - ver1[1]) / (ver2[1] - ver1[1]));
+                t4 = this.round((ver4[1] - ver1[1]) / (ver2[1] - ver1[1]));
+            }
+            if (t1 >= 0 && t1 <= 1) {
+                return true;
+            }
+            if (t2 >= 0 && t2 <= 1) {
+                return true;
+            }
+            if (t3 >= 0 && t3 <= 1) {
+                return true;
+            }
+            if (t4 >= 0 && t4 <= 1) {
+                return true;
+            }
+        }
 
+        // if the two lines are parallel
+        const M = [
+            [ver2[0] - ver1[0], ver3[0] - ver4[0]], 
+            [ver2[1] - ver1[1], ver3[1] - ver4[1]]
+        ];
+        const det = this.round(M[0][0] * M[1][1] - M[0][1] * M[1][0]);
+        if (det == 0) {
+            return false;
+        }
+
+        // if not parallel or colinear
+        const vint = this.getIntersection(ver1, ver2, ver3, ver4);
+        let t5;
+        let t6;
+        if (this.round(ver2[0] - ver1[0]) != 0) {
+            t5 = this.round((vint[0] - ver1[0]) / (ver2[0] - ver1[0]));
+        } else {
+            t5 = this.round((vint[1] - ver1[1]) / (ver2[1] - ver1[1]));
+        }
+        if (this.round(ver4[0] - ver3[0]) != 0) {
+            t6 = this.round((vint[0] - ver3[0]) / (ver4[0] - ver3[0]));
+        } else {
+            t6 = this.round((vint[1] - ver3[1]) / (ver4[1] - ver3[1]));
+        }
+        if (t5 >= 0 && t5 <= 1 && t6 >= 0 && t6 <= 1) {
+            return true;
+        }
+        return false;
+    }
+    
+
+    /**
+     * Check whether a polygon is embedded (whether the edges intersect)
+     * @param {Array<Array<Number>>} vertices the coords of the vertices of the polygon
+     * @returns {Boolean} whether the polygon is embedded
+     */
+    static isEmbedded(vertices) {
+        const n = vertices.length;
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < i-1; j++) {
+                if (this.intersects(vertices[i%n], vertices[(i+1)%n], vertices[j%n], vertices[(j+1)%n])) {
+                    if (i != n-1 || j != 0) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check whether a polygon is convex
+     * @param {Array<Array<Number>>} vertices the coords of the vertices of the polygon
+     * @returns {Boolean} whether the polygon is convex
+     */
+    static isConvex(vertices) {
+        // first, check whether the polygon is embedded
+        if (!this.isEmbedded(vertices)) {
+            return false;
+        }
+        const orientation = this.triangleOrientation(vertices[0], vertices[1], vertices[2]);
+        if (orientation == 0) {
+            return false;
+        }
+        const n = vertices.length
+        for (let i = 1; i < n; i++) {
+            if (orientation != this.triangleOrientation(vertices[i%n], vertices[(i+1)%n], vertices[(i+2)%n])) {
+                console.log("orientation:", i, this.triangleOrientation(vertices[i%n], vertices[(i+1)%n], vertices[(i+2)%n]));
+                return false;
+            }
+        }
+        return true;
     }
 
     // for debugging purposes
+    /**
+     * Check whether a 2-by-2 matrix is orthogonal
+     * @param {Array<Array<Number>>} Q matrix to check
+     * @returns {Boolean} whether Q is an orthogonal matrix
+     */
     static isOrthogonal2(Q) {
         // check whether a 2-by-2 matrix is orthogonal
-        const Qt = MathHelper.transpose(Q);
-        const Qinv = MathHelper.invert2(Q);
+        const Qt = this.transpose(Q);
+        const Qinv = this.invert2(Q);
         for (let i = 0; i < 2; i++) {
             for (let j = 0; j < 2; j++) {
-                if (MathHelper.round(Qt[i][j] - Qinv[i][j]) != 0) {
+                if (this.round(Qt[i][j] - Qinv[i][j]) != 0) {
                     return false;
                 }
             }

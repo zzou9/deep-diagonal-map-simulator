@@ -22,6 +22,8 @@ class Polygon{
         this.numVertex = numVertex; 
         this.vertices = vertices; 
         this.inscribed = inscribed;
+        this.embedded = true;
+        this.convex = true;
         this.scale = scale; 
         this.center = [0, 0, 1];
         this.canDrag = canDrag;
@@ -54,6 +56,13 @@ class Polygon{
             let sy = this.center[1] + sin(angle*i);
             this.vertices[i] = [sx, sy, 1];
         }
+
+        // reset the number of iterations of the map
+        this.map.numIterations = 0;
+
+        // update embedded and convexity information
+        this.embedded = true;
+        this.convex = true;
     }
 
     /**
@@ -102,7 +111,7 @@ class Polygon{
                 const ver2 = this.vertices[(i+l)%n];
                 const ver3 = this.vertices[(i-k+2*n)%n];
                 const ver4 = this.vertices[(i-k+l+2*n)%n];
-                const ver = MathHelper.intersect(ver1, ver2, ver3, ver4);
+                const ver = MathHelper.getIntersection(ver1, ver2, ver3, ver4);
                 circle(ver[0] * this.scale, ver[1] * this.scale, 5);
             }
         }
@@ -148,6 +157,8 @@ class Polygon{
                 if (mX - w <= this.vertices[i][0] && mX + w >= this.vertices[i][0] 
                     && mY - w <= this.vertices[i][1] && mY + w >= this.vertices[i][1]
                     && dragging == false) {
+                    // clear the number of iterations
+                    this.map.numIterations = 0;
                     dragging = true;
                     if (this.inscribed) {
                         const r = Math.sqrt(mX * mX + mY * mY);
@@ -155,9 +166,25 @@ class Polygon{
                     } else {
                         this.vertices[i] = [mX, mY, 1];
                     }
+                    this.updateEmbedded();
+                    this.updateConvex();
                 }
             }
         }
+    }
+
+    /**
+     * Update whether the polygon is embedded
+     */
+    updateEmbedded() {
+        this.embedded = MathHelper.isEmbedded(this.vertices);
+    }
+
+    /**
+     * Update whether the polygon is convex
+     */
+    updateConvex() {
+        this.convex = MathHelper.isConvex(this.vertices);
     }
 
     /**

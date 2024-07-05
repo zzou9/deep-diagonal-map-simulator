@@ -14,11 +14,12 @@ class PentagramMap {
         this.prev = new Array(); // keep charge of previous operations (in the form of vertices)
         this.normalization = "None";
         this.power = 1; // the power of the map (# of times to apply the map)
+        this.numIterations = 0;
     }
 
     /**
      * Take in a set of vertices and apply the map to it
-     * @param {Array} vertices 
+     * @param {Array<Array<Number>>} vertices 
      * @returns the vertices of the image polygon of the pentagram map
      */
     act(vertices) {
@@ -59,10 +60,13 @@ class PentagramMap {
         }
 
         // record the previous vertices for undo purposes
-        this.prev.push(vertices);
+        this.prev.push([vertices, this.numIterations]);
         if (this.prev.length > 20) {
             this.prev.shift();
         }
+
+        // record the number of iterations
+        this.numIterations = this.numIterations + this.power;
 
         // apply the map
         return applyMap(vertices, this.l, this.k, this.power, this.normalization);;
@@ -86,6 +90,7 @@ class PentagramMap {
             return null;
         }
         // pop the last set of vertices
+        this.numIterations = this.numIterations - this.power;
         return this.prev.pop();
     }
 

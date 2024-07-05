@@ -10,8 +10,9 @@ class ActionPanel extends Panel {
      * @param {Number} y y coordinate
      * @param {PentagramMap} map the map
      * @param {Polygon} polygon the polygon
+     * @param {InfoPanel} infoPanel information panel
      * @param {Number} w the width of the panel
-     * @param {Height} h the height of the panel
+     * @param {Number} h the height of the panel
      */
     constructor(x, y, map, polygon, w=200, h=260) {
         super(x, y, w, h, "Action Panel", color.CADET_BLUE);
@@ -129,7 +130,11 @@ class ActionPanel extends Panel {
         if (this.actionButton.isHovering()) {
             if (!this.isRunning) {
                 this.actionButton.text = [["Pause Action", color.RED]];
-                this.action = setInterval(() => {this.polygon.vertices = this.map.act(polygon.cloneVertices());}, 1000/this.speed);
+                this.action = setInterval(() => {
+                    this.polygon.vertices = this.map.act(polygon.cloneVertices());
+                    this.polygon.updateEmbedded();
+                    this.polygon.updateConvex();
+                }, 1000/this.speed);
                 this.isRunning = true;
             } else {
                 this.actionButton.text = [["Start Action", color.GREEN]];

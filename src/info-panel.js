@@ -12,12 +12,17 @@ class InfoPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=100) {
+    constructor(x, y, polygon, map, w=200, h=130) {
         super(x, y, w, h, "Information Panel", color.CADET_BLUE);
         this.polygon = polygon;
         this.map = map;
         // populate the panels
-        
+        this.iterateBox = new Button(this.x+25, this.y+40, 150, 20, [["Iteration: " + this.map.numIterations, color.BLACK]], color.CADET_BLUE);
+        this.buttons.push(this.iterateBox);
+        this.embedBox = new Button(this.x+25, this.y+70, 150, 20, [["Embedded: " + this.polygon.embedded, color.BLACK]], color.CADET_BLUE);
+        this.buttons.push(this.embedBox);
+        this.convexBox = new Button(this.x+25, this.y+100, 150, 20, [["Convex: " + this.polygon.embedded, color.BLACK]], color.CADET_BLUE);
+        this.buttons.push(this.convexBox);
     }
 
     /**
@@ -25,36 +30,15 @@ class InfoPanel extends Panel {
      */
     show() {
         super.show();
-    }
-
-    /**
-     * Update the text in the numVertex box
-     * @param {String} num number of vertices
-     */
-    updateNumVertices(num) {
-        this.numVertexBox.text = [["# Vertices: " + num, color.BLACK]];
+        this.iterateBox.text = [["Iteration: " + this.map.numIterations, color.BLACK]];
+        this.embedBox.text = [["Embedded: " + this.polygon.embedded, color.BLACK]];
+        this.convexBox.text = [["Convex: " + this.polygon.convex, color.BLACK]];
     }
 
     /**
      * Mouse Action
      */
     buttonMouseAction() {
-        if (this.decNumVertex.isHovering() && this.polygon.numVertex > 5 && this.polygon.numVertex > 3*this.map.k+1) {
-            this.polygon.setDefault(this.polygon.numVertex - 1);
-            this.numVertexBox.text = [["# Vertices: " + this.polygon.numVertex, color.BLACK]];
-        }
-        if (this.incNumVertex.isHovering()) {
-            this.polygon.setDefault(this.polygon.numVertex + 1);
-            this.numVertexBox.text = [["# Vertices: " + this.polygon.numVertex, color.BLACK]];
-        }
-        if (this.dragButton.isHovering()) {
-            if (polygon.canDrag) {
-                polygon.canDrag = false;
-                this.dragButton.text = [["Drag: ", color.BLACK], ["Off", color.RED]];
-            } else {
-                polygon.canDrag = true;
-                this.dragButton.text = [["Drag: ", color.BLACK], ["On", color.GREEN]];
-            }
-        }
+        this.updateNumIterations();
     }
 }
