@@ -12,9 +12,11 @@ class PentagramMap {
         this.l = l; // the diagonal parameter (# vertices skipped)
         this.k = k; // the spacing parameter (# vertices skipped)
         this.prev = new Array(); // keep charge of previous operations (in the form of vertices)
-        this.normalization = "None";
+        this.normalization = "Ellipse";
         this.power = 1; // the power of the map (# of times to apply the map)
-        this.numIterations = 0;
+        this.numIterations = 0; // number of iterations applied to the map
+        this.onlyEmbedded = false; // skip to the nearest embedded power of the map
+        this.onlyConvex = false; // skip to the nearest convex power of the map
     }
 
     /**
@@ -42,8 +44,8 @@ class PentagramMap {
                 const ver2 = vertices[(i+l)%n];
                 const ver3 = vertices[(i-k+2*n)%n];
                 const ver4 = vertices[(i-k+l+2*n)%n];
-                const ver = MathHelper.getIntersection(ver1, ver2, ver3, ver4);
-                newVertices[i] = ver;
+                const vint = MathHelper.getIntersection(ver1, ver2, ver3, ver4);
+                newVertices[i] = vint;
             }
             // apply normalization
             if (normalization == "Square") {
@@ -60,16 +62,52 @@ class PentagramMap {
         }
 
         // record the previous vertices for undo purposes
+        this.store(vertices);
+
+        if (this.onlyEmbedded) {
+            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization);
+            let count = 1;
+            while (!MathHelper.isEmbedded(vTemp)) {
+                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization);
+                if (count > 1000) {
+                    console.error("Cannot find power that is embedded.");
+                    return vertices;
+                }
+                count++;
+            }
+            this.numIterations += this.power * count;
+            return vTemp;
+        }
+
+        if (this.onlyConvex) {
+            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization);
+            let count = 1;
+            while (!MathHelper.isConvex(vTemp)) {
+                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization);
+                if (count > 10000) {
+                    console.error("Cannot find power that is convex.");
+                    return vertices;
+                }
+                count++;
+            }
+            this.numIterations += this.power * count;
+            return vTemp;
+        }
+
+        // record the number of iterations
+        this.numIterations += this.power;
+        return applyMap(vertices, this.l, this.k, this.power, this.normalization);
+    }
+
+    /**
+     * Record the previous vertices for undo purposes
+     * @param {Array<Array<Number>>} vertices the vertices to store
+     */
+    store(vertices) {
         this.prev.push([vertices, this.numIterations]);
         if (this.prev.length > 20) {
             this.prev.shift();
         }
-
-        // record the number of iterations
-        this.numIterations = this.numIterations + this.power;
-
-        // apply the map
-        return applyMap(vertices, this.l, this.k, this.power, this.normalization);;
     }
 
     /**

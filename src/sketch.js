@@ -14,7 +14,8 @@ const color = {
     BLUE: "#0000ff",
     CYAN: "#00ffff", 
     CADET_BLUE: "#5f9ea0",
-    ROYAL_BLUE: "#4169e1"
+    ROYAL_BLUE: "#4169e1", 
+    KHAKI: "#f0e68c"
 }
 
 // panels
@@ -22,6 +23,7 @@ let normPanel;
 let ctrlPanel;
 let actionPanel;
 let infoPanel;
+let shapePanel;
 
 function setup() {
     xT = windowWidth/2;
@@ -36,6 +38,7 @@ function setup() {
     normPanel = new NormalizationPanel(10, ctrlPanel.y+ctrlPanel.h+10, map);
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
+    shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
 }
 
 function draw() {
@@ -53,6 +56,7 @@ function draw() {
     normPanel.show();
     actionPanel.show();
     infoPanel.show();
+    shapePanel.show();
 }
 
 function mouseClicked() {
@@ -63,7 +67,6 @@ function mouseClicked() {
         ctrlPanel.disableInscribe();
     }
     Test.debug();
-    console.log(polygon.triangleEmbedding());
 }
 
 function mouseDragged() {

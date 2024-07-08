@@ -536,4 +536,33 @@ class MathHelper {
         }
         return true;
     }
+
+    /**
+     * Compute the cross ratio of four lines
+     * @param {Array<Number>} l1 l1 coords
+     * @param {Array<Number>} l2 l2 coords
+     * @param {Array<Number>} l3 l3 coords
+     * @param {Array<Number>} l4 l4 coords
+     * @returns the cross ratio
+     */
+    static crossRatio(l1, l2, l3, l4) {
+        // check if parallel to y-axis
+        if (this.round(l1[0]) == 0) {
+            return (l4[1]/l4[0] - l2[1]/l2[0]) / (l3[1]/l3[0] - l2[1]/l2[0]);
+        }
+        if (this.round(l2[0]) == 0) {
+            return (l3[1]/l3[0] - l1[1]/l1[0]) / (l4[1]/l4[0] - l1[1]/l1[0]);
+        }
+        if (this.round(l3[0]) == 0) {
+            return (l4[1]/l4[0] - l2[1]/l2[0]) / (l4[1]/l4[0] - l1[1]/l1[0]);
+        }
+        if (this.round(l4[0]) == 0) {
+            return (l3[1]/l3[0] - l1[1]/l1[0]) / (l3[1]/l3[0] - l2[1]/l2[0]);
+        }
+
+        // if not, take the cross ratio
+        const num = (l3[1]/l3[0] - l1[1]/l1[0]) * (l4[1]/l4[0] - l2[1]/l2[0]);
+        const denom = (l3[1]/l3[0] - l2[1]/l2[0]) * (l4[1]/l4[0] - l1[1]/l1[0]);
+        return num / denom;
+    }
 }

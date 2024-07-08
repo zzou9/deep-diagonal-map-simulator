@@ -13,15 +13,15 @@ class InfoPanel extends Panel {
      * @param {Number} h (optional) height of the panel
      */
     constructor(x, y, polygon, map, w=200, h=130) {
-        super(x, y, w, h, "Information", color.CADET_BLUE);
+        super(x, y, w, h, "Information", color.KHAKI);
         this.polygon = polygon;
         this.map = map;
         // populate the panels
-        this.iterateBox = new Button(this.x+25, this.y+40, 150, 20, [["Iteration: " + this.map.numIterations, color.BLACK]], color.CADET_BLUE);
+        this.iterateBox = new Button(this.x+25, this.y+40, 150, 20, [["Iteration: " + this.map.numIterations, color.BLACK]], color.KHAKI);
         this.buttons.push(this.iterateBox);
-        this.embedBox = new Button(this.x+25, this.y+60, 150, 20, [["Embedded: " + this.polygon.embedded, color.BLACK]], color.CADET_BLUE);
+        this.embedBox = new Button(this.x+25, this.y+60, 150, 20, [["Embedded: " + this.polygon.embedded, color.BLACK]], color.KHAKI);
         this.buttons.push(this.embedBox);
-        this.convexBox = new Button(this.x+25, this.y+80, 150, 20, [["Convex: " + this.polygon.embedded, color.BLACK]], color.CADET_BLUE);
+        this.convexBox = new Button(this.x+25, this.y+80, 150, 20, [["Convex: " + this.polygon.embedded, color.BLACK]], color.KHAKI);
         this.buttons.push(this.convexBox);
     }
 

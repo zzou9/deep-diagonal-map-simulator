@@ -59,7 +59,6 @@ class Polygon{
 
         // reset the number of iterations of the map
         this.map.numIterations = 0;
-        console.log(Normalize.getInertiaMatrix(this.vertices));
 
         // update embedded and convexity information
         this.embedded = true;
@@ -204,6 +203,26 @@ class Polygon{
         }
 
         return E;
+    }
+
+    /**
+     * Compute the energy of the map (as in [Sch24])
+     * @returns the energy
+     */
+    computeEnergy() {
+        const n = this.numVertex;
+        const l = this.map.l;
+        const k = this.map.k;
+        const v = this.vertices;
+        let energy = 1;
+        for (let i = 0; i < n; i++) {
+            const l1 = [v[i][0] - v[(i-k+n)%n][0], v[i][1] - v[(i-k+n)%n][1]];
+            const l2 = [v[i][0] - v[(i-l+n)%n][0], v[i][1] - v[(i-l+n)%n][1]];
+            const l3 = [v[i][0] - v[(i+l)%n][0], v[i][1] - v[(i+l)%n][1]];
+            const l4 = [v[i][0] - v[(i+k+n)%n][0], v[i][1] - v[(i+k+n)%n][1]];
+            energy *= MathHelper.crossRatio(l1, l2, l3, l4);
+        }
+        return energy;
     }
 
     /**

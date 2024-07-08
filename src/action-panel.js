@@ -14,7 +14,7 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=260) {
+    constructor(x, y, map, polygon, w=200, h=310) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
@@ -65,6 +65,12 @@ class ActionPanel extends Panel {
         this.buttons.push(this.showDiagonalButton);
         this.showEllipseButton = new Button(this.x+25, this.y+220, 150, 20, [["Show Ellipse of Inertia", color.GREEN]]);
         this.buttons.push(this.showEllipseButton);
+
+        // convex and embed control
+        this.embedButton = new Button(this.x+25, this.y+250, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
+        this.buttons.push(this.embedButton); 
+        this.convexButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Nonconvex", color.BLACK]]);
+        this.buttons.push(this.convexButton); 
     }
 
     /**
@@ -158,6 +164,26 @@ class ActionPanel extends Panel {
             } else {
                 this.polygon.showEllipse = false;
                 this.showEllipseButton.text = [["Show Ellipse of Inertia", color.GREEN]];
+            }
+        }
+
+        // convex and embedded control
+        if (this.embedButton.isHovering()) {
+            if (this.map.onlyEmbedded) {
+                this.map.onlyEmbedded = false;
+                this.embedButton.text = [["Skip Non-Embedded", color.BLACK]];
+            } else {
+                this.map.onlyEmbedded = true;
+                this.embedButton.text = [["Skip Non-Embedded", color.GREEN]];
+            }
+        }
+        if (this.convexButton.isHovering()) {
+            if (this.map.onlyConvex) {
+                this.map.onlyConvex = false;
+                this.convexButton.text = [["Skip Nonconvex", color.BLACK]];
+            } else {
+                this.map.onlyConvex = true;
+                this.convexButton.text = [["Skip Nonconvex", color.GREEN]];
             }
         }
     }

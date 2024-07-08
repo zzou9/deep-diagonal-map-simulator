@@ -29,10 +29,11 @@ class Panel {
     show() {
         // background
         noStroke();
-        fill(color.CADET_BLUE);
+        fill(this.fill);
         rect(this.x, this.y, this.w, this.h, 5);
         
         // title
+        noStroke();
         textAlign(CENTER, CENTER);
         textFont("Georgia", 15);
         fill(color.BLACK);

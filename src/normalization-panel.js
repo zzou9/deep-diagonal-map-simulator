@@ -16,9 +16,9 @@ class NormalizationPanel extends Panel {
         this.mode = "None";
         this.map = map;
         // populate the buttons
-        this.noneButton = new Button(this.x+25, this.y+40, 150, 20, [["None", color.GREEN]]);
+        this.noneButton = new Button(this.x+25, this.y+40, 150, 20, [["None", color.BLACK]]);
         this.squareButton = new Button(this.x+25, this.y+70, 150, 20, [["Square-Normalized", color.BLACK]]);
-        this.ellipseButton = new Button(this.x+25, this.y+100, 150, 20, [["Ellipse of Inertia", color.BLACK]]);
+        this.ellipseButton = new Button(this.x+25, this.y+100, 150, 20, [["Ellipse of Inertia", color.GREEN]]);
         this.buttons.push(this.noneButton);
         this.buttons.push(this.squareButton);
         this.buttons.push(this.ellipseButton);
