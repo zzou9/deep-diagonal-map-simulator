@@ -22,6 +22,7 @@ const color = {
 let normPanel;
 let ctrlPanel;
 let actionPanel;
+let modulePanel;
 let infoPanel;
 let shapePanel;
 
@@ -34,7 +35,8 @@ function setup() {
     polygon = new Polygon(map);
 
     // instantiate panels
-    ctrlPanel = new CtrlPanel(10, 10, polygon, map);
+    modulePanel = new ModulePanel(10, 10, map);
+    ctrlPanel = new CtrlPanel(10, modulePanel.y+modulePanel.h+10, polygon, map);
     normPanel = new NormalizationPanel(10, ctrlPanel.y+ctrlPanel.h+10, map);
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
@@ -52,6 +54,7 @@ function draw() {
     fill(color.BLACK);
     text("Pentagram Map Simulator", xT, 20);
     
+    modulePanel.show();
     ctrlPanel.show();
     normPanel.show();
     actionPanel.show();
@@ -60,6 +63,7 @@ function draw() {
 }
 
 function mouseClicked() {
+    modulePanel.buttonMouseAction();
     ctrlPanel.buttonMouseAction();
     normPanel.buttonMouseAction();
     actionPanel.buttonMouseAction();

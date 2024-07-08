@@ -11,17 +11,15 @@ class ModulePanel extends Panel {
      * @param {Number} w width of the panel
      * @param {Number} h height of the panel
      */
-    constructor(x, y, map, w=200, h=130) {
-        super(x, y, w, h, "Normalization Panel", color.CADET_BLUE);
-        this.mode = "None";
+    constructor(x, y, map, w=200, h=100) {
+        super(x, y, w, h, "Module", color.CADET_BLUE);
+        this.module = "Default";
         this.map = map;
         // populate the buttons
-        this.noneButton = new Button(this.x+25, this.y+40, 150, 20, [["None", color.GREEN]]);
-        this.squareButton = new Button(this.x+25, this.y+70, 150, 20, [["Square-Normalized", color.BLACK]]);
-        this.ellipseButton = new Button(this.x+25, this.y+100, 150, 20, [["Ellipse of Inertia", color.BLACK]]);
-        this.buttons.push(this.noneButton);
-        this.buttons.push(this.squareButton);
-        this.buttons.push(this.ellipseButton);
+        this.defaultButton = new Button(this.x+25, this.y+40, 150, 20, [["Default", color.GREEN]]);
+        this.twistedButton = new Button(this.x+25, this.y+70, 150, 20, [["Twisted", color.BLACK]]);
+        this.buttons.push(this.defaultButton);
+        this.buttons.push(this.twistedButton);
     }
 
     /**
@@ -32,33 +30,26 @@ class ModulePanel extends Panel {
     }
 
     buttonMouseAction() {  
-        if (this.noneButton.isHovering()) {
+        if (this.defaultButton.isHovering()) {
             this.setDefaultButtonColor();
-            this.map.normalization = "None";
-            this.noneButton.text[0][1] = color.GREEN;
+            this.defaultButton.text[0][1] = color.GREEN;
+            this.module = "Default";
         }
-        if (this.squareButton.isHovering()) {
+        if (this.twistedButton.isHovering()) {
             this.setDefaultButtonColor();
-            this.map.normalization = "Square";
-            this.squareButton.text[0][1] = color.GREEN;
-        }
-        if (this.ellipseButton.isHovering()) {
-            this.setDefaultButtonColor();
-            this.map.normalization = "Ellipse";
-            this.ellipseButton.text[0][1] = color.GREEN;
+            this.twistedButton.text[0][1] = color.GREEN;
+            this.module = "Twisted";
         }
     }
 
     setDefaultButtonColor() {
-        switch (this.map.normalization) {
-            case "None":
-                this.noneButton.text[0][1] = color.BLACK;
+        switch (this.module) {
+            case "Default":
+                this.defaultButton.text[0][1] = color.BLACK;
                 break;
-            case "Square":
-                this.squareButton.text[0][1] = color.BLACK;
-                break;
-            case "Ellipse":
-                this.ellipseButton.text[0][1] = color.BLACK;
+            case "Twisted":
+                this.twistedButton.text[0][1] = color.BLACK;
         }
+        console.log(this.module);
     }
 }
