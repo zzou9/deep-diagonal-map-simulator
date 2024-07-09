@@ -47,6 +47,49 @@ class Normalize {
         return newVertices;
     }
 
+    /**
+     * Square normalize for twisted polygons. 
+     * Fixes the first vertex of the first four iterations.
+     * @param {Array<Array<Number>>} vertices vertices of the polygon
+     * @returns vertices after normalization
+     */
+    static twistedSquareNormalize(vertices) {
+        const k = Math.floor(vertices.length / 4);
+
+        const source = [
+            [vertices[0][0], vertices[0][1], 1], 
+            [vertices[k][0], vertices[k][1], 1], 
+            [vertices[2*k][0], vertices[2*k][1], 1], 
+            [vertices[3*k][0], vertices[3*k][1], 1], 
+        ];
+
+        const unitSquare = [
+            [1, 1, 1],
+            [-1, 1, 1],
+            [-1, -1, 1],
+            [1, -1, 1]
+        ];
+
+        // get the projection map
+        const T = MathHelper.fourToFourProjection(source, unitSquare);
+
+        // transform all the vertices 
+        let newVertices = new Array(vertices.length);
+        for (let i = 0; i < vertices.length; i++) {
+            const v = MathHelper.affineTransform(T, vertices[i]);
+            // error if v is not on the affine plane
+            if (v[2] == 0) {
+                console.error("v is on the line at infinity!");
+                return null;
+            }
+            // normalize and round
+            const x = MathHelper.round(v[0]/v[2],10); // need to round to 10 digits, otherwise would explode
+            const y = MathHelper.round(v[1]/v[2],10);
+            newVertices[i] = [x, y, 1];
+        }
+        return newVertices;
+    }
+
 
     // normalization using the moment of inertia matrix 
 

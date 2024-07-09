@@ -23,9 +23,9 @@ class CtrlPanel extends Panel {
         this.buttons.push(this.decNumVertex);
         this.incNumVertex = new TriangleButton(this.x+155, this.y+45, 10, 10, "right");
         this.buttons.push(this.incNumVertex);
-        this.dragButton = new Button(this.x+25, this.y+70, 150, 20, [["Drag: ", color.BLACK], ["On", color.GREEN]]);
+        this.dragButton = new Button(this.x+25, this.numVertexBox.y+this.numVertexBox.h+10, 150, 20, [["Drag: ", color.BLACK], ["On", color.GREEN]]);
         this.buttons.push(this.dragButton);
-        this.inscribeButton = new Button(this.x+25, this.y+100, 150, 20, [["Inscribed: ", color.BLACK], ["Off", color.RED]]);
+        this.inscribeButton = new Button(this.x+25, this.dragButton.y+this.dragButton.h+10, 150, 20, [["Inscribed: ", color.BLACK], ["Off", color.RED]]);
         this.buttons.push(this.inscribeButton);
     }
 
@@ -34,14 +34,18 @@ class CtrlPanel extends Panel {
      */
     show() {
         super.show();
+        this.updateNumVertices();
     }
 
     /**
      * Update the text in the numVertex box
-     * @param {String} num number of vertices
      */
-    updateNumVertices(num) {
-        this.numVertexBox.text = [["# Vertices: " + num, color.BLACK]];
+    updateNumVertices() {
+        if (this.polygon.twisted) {
+            this.numVertexBox.text[0][0] = "# Vertices: " + Math.floor(this.polygon.numVertex/4);
+        } else {
+            this.numVertexBox.text[0][0] = "# Vertices: " + this.polygon.numVertex;
+        }
     }
 
     /**
@@ -56,14 +60,26 @@ class CtrlPanel extends Panel {
      * Mouse Action
      */
     buttonMouseAction() {
-        if (this.decNumVertex.isHovering() && this.polygon.numVertex > 5 && this.polygon.numVertex > 3*this.map.k+1) {
-            this.polygon.setDefault(this.polygon.numVertex - 1);
-            this.numVertexBox.text = [["# Vertices: " + this.polygon.numVertex, color.BLACK]];
+        // changing number of vertices for normal polygons
+        if (!this.polygon.twisted) {
+            if (this.decNumVertex.isHovering() && this.polygon.numVertex > 5 && this.polygon.numVertex > 3*this.map.k+1) {
+                this.polygon.setDefault(this.polygon.numVertex - 1);
+            }
+            if (this.incNumVertex.isHovering()) {
+                this.polygon.setDefault(this.polygon.numVertex + 1);
+            }
         }
-        if (this.incNumVertex.isHovering()) {
-            this.polygon.setDefault(this.polygon.numVertex + 1);
-            this.numVertexBox.text = [["# Vertices: " + this.polygon.numVertex, color.BLACK]];
+        
+        // changing number of vertices for twisted polygons
+        if (this.polygon.twisted) {
+            if (this.decNumVertex.isHovering() && this.polygon.numVertex > 11 && this.polygon.numVertex > 3*this.map.k+1) {
+                this.polygon.setDefault(this.polygon.numVertex - 4);
+            }
+            if (this.incNumVertex.isHovering()) {
+                this.polygon.setDefault(this.polygon.numVertex + 4);
+            }
         }
+
         if (this.dragButton.isHovering()) {
             if (this.polygon.canDrag) {
                 this.polygon.canDrag = false;

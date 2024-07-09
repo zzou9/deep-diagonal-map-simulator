@@ -88,6 +88,20 @@ class ActionPanel extends Panel {
         this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
     }
 
+    mapAction() {
+        try {
+            this.polygon.vertices = this.map.act(polygon.cloneVertices());
+            this.polygon.updateEmbedded();
+            this.polygon.updateConvex();
+        }
+        catch (err) {
+            clearInterval(this.action);
+            console.log(err);
+            this.actionButton.text = [["Start Action", color.GREEN]];
+            this.isRunning = false;
+        }
+    }
+
     /**
      * Call methods when the buttons are clicked
      */
@@ -136,11 +150,7 @@ class ActionPanel extends Panel {
         if (this.actionButton.isHovering()) {
             if (!this.isRunning) {
                 this.actionButton.text = [["Pause Action", color.RED]];
-                this.action = setInterval(() => {
-                    this.polygon.vertices = this.map.act(polygon.cloneVertices());
-                    this.polygon.updateEmbedded();
-                    this.polygon.updateConvex();
-                }, 1000/this.speed);
+                this.action = setInterval(() => this.mapAction(), 1000/this.speed);
                 this.isRunning = true;
             } else {
                 this.actionButton.text = [["Start Action", color.GREEN]];

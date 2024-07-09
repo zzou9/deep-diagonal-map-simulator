@@ -6,8 +6,8 @@ class Polygon{
     /**
      * Constructor
      * @param {PentagramMap} map the map associated to the polygon
-     * @param {Number} numVertex number of vertices of the polygon
-     * @param {Array<Array<Number>>} vertices an array that stores the coords of verteices
+     * @param {Number} [numVertex=7] number of vertices of the polygon
+     * @param {Array<Array<Number>>} [vertices=new Array(7)] an array that stores the coords of vertices
      * @param {Boolean} inscribed whether the polygon is inscribed
      * @param {Number} scale scaling when plotting
      * @param {Boolean} canDrag whether the polygon vertices can be dragged
@@ -29,6 +29,7 @@ class Polygon{
         this.canDrag = canDrag;
         this.showDiagonal = false; // display the diagonals in the map
         this.showEllipse = false; // display the ellipse of inertia
+        this.twisted = false; // whether it is a twisted n-gon
 
         // if regular, populate vertices
         let angle = TWO_PI / this.numVertex;
@@ -37,6 +38,9 @@ class Polygon{
             let sy = this.center[1] + sin(angle*counter);
             this.vertices[counter] = [sx, sy, 1];
         }
+
+        // normalize vertices
+        this.vertices = Normalize.ellipseNormalize(this.cloneVertices());
     }
 
     /**
@@ -63,6 +67,9 @@ class Polygon{
         // update embedded and convexity information
         this.embedded = true;
         this.convex = true;
+
+        // normalize vertices
+        this.vertices = Normalize.ellipseNormalize(this.cloneVertices());
     }
 
     /**
@@ -76,7 +83,7 @@ class Polygon{
         if (this.inscribed) {
             noFill();
             stroke(color.RED);
-            circle(0, 0, this.scale*2);
+            circle(0, 0, this.scale*2*Math.sqrt(2));
         }
 
         // draw edges
@@ -153,18 +160,35 @@ class Polygon{
             const mX = (mouseX - xT) / this.scale;
             const mY = (mouseY - yT) / this.scale;
             let dragging = false;
-            for (let i in this.vertices) {
+            for (let i = 0; i < this.numVertex; i++) {
                 if (mX - w <= this.vertices[i][0] && mX + w >= this.vertices[i][0] 
                     && mY - w <= this.vertices[i][1] && mY + w >= this.vertices[i][1]
                     && dragging == false) {
                     // clear the number of iterations
                     this.map.numIterations = 0;
                     dragging = true;
-                    if (this.inscribed) {
-                        const r = Math.sqrt(mX * mX + mY * mY);
-                        this.vertices[i] = [mX/r, mY/r, 1];
+                    if (this.twisted) {
+                        const k = this.numVertex / 4;
+                        const n = this.numVertex;
+                        if (this.inscribed) {
+                            const r = Math.sqrt(mX * mX + mY * mY);
+                            this.vertices[i] = [mX/r*Math.sqrt(2), mY/r*Math.sqrt(2), 1];
+                            this.vertices[(i+k)%n] = [-mY/r*Math.sqrt(2), mX/r*Math.sqrt(2), 1];
+                            this.vertices[(i+2*k)%n] = [-mX/r*Math.sqrt(2), -mY/r*Math.sqrt(2), 1];
+                            this.vertices[(i+3*k)%n] = [mY/r*Math.sqrt(2), -mX/r*Math.sqrt(2), 1];
+                        } else {
+                            this.vertices[i] = [mX, mY, 1];
+                            this.vertices[(i+k)%n] = [-mY, mX, 1];
+                            this.vertices[(i+2*k)%n] = [-mX, -mY, 1];
+                            this.vertices[(i+3*k)%n] = [mY, -mX, 1];
+                        }
                     } else {
-                        this.vertices[i] = [mX, mY, 1];
+                        if (this.inscribed) {
+                            const r = Math.sqrt(mX * mX + mY * mY);
+                            this.vertices[i] = [mX/r*Math.sqrt(2), mY/r*Math.sqrt(2), 1];
+                        } else {
+                            this.vertices[i] = [mX, mY, 1];
+                        }
                     }
                     this.updateEmbedded();
                     this.updateConvex();

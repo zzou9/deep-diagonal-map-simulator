@@ -8,13 +8,14 @@ class ModulePanel extends Panel {
      * @param {Number} x x coordinate
      * @param {Number} y y coordinate
      * @param {PentagramMap} map the map object
+     * @param {Polygon} polygon the polygon object
      * @param {Number} w width of the panel
      * @param {Number} h height of the panel
      */
-    constructor(x, y, map, w=200, h=100) {
+    constructor(x, y, map, polygon, w=200, h=100) {
         super(x, y, w, h, "Module", color.CADET_BLUE);
-        this.module = "Default";
         this.map = map;
+        this.polygon = polygon;
         // populate the buttons
         this.defaultButton = new Button(this.x+25, this.y+40, 150, 20, [["Default", color.GREEN]]);
         this.twistedButton = new Button(this.x+25, this.y+70, 150, 20, [["Twisted", color.BLACK]]);
@@ -30,26 +31,26 @@ class ModulePanel extends Panel {
     }
 
     buttonMouseAction() {  
-        if (this.defaultButton.isHovering()) {
+        if (this.defaultButton.isHovering() && this.map.twisted) {
             this.setDefaultButtonColor();
             this.defaultButton.text[0][1] = color.GREEN;
-            this.module = "Default";
+            this.map.twisted = false;
+            this.map.clearHistory();
+            this.polygon.twisted = false;
+            this.polygon.setDefault(7); // set to a 7-gon
         }
-        if (this.twistedButton.isHovering()) {
+        if (this.twistedButton.isHovering() && !this.map.twisted) {
             this.setDefaultButtonColor();
             this.twistedButton.text[0][1] = color.GREEN;
-            this.module = "Twisted";
+            this.map.twisted = true;
+            this.map.clearHistory();
+            this.polygon.twisted = true;
+            this.polygon.setDefault(8); // set to a twisted bi-gon
         }
     }
 
     setDefaultButtonColor() {
-        switch (this.module) {
-            case "Default":
-                this.defaultButton.text[0][1] = color.BLACK;
-                break;
-            case "Twisted":
-                this.twistedButton.text[0][1] = color.BLACK;
-        }
-        console.log(this.module);
+        this.defaultButton.text[0][1] = color.BLACK;
+        this.twistedButton.text[0][1] = color.BLACK;
     }
 }

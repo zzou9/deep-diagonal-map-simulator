@@ -35,9 +35,9 @@ function setup() {
     polygon = new Polygon(map);
 
     // instantiate panels
-    modulePanel = new ModulePanel(10, 10, map);
+    modulePanel = new ModulePanel(10, 10, map, polygon);
     ctrlPanel = new CtrlPanel(10, modulePanel.y+modulePanel.h+10, polygon, map);
-    normPanel = new NormalizationPanel(10, ctrlPanel.y+ctrlPanel.h+10, map);
+    normPanel = new NormalizationPanel(10, ctrlPanel.y+ctrlPanel.h+10, map, polygon);
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
@@ -93,14 +93,18 @@ function keyPressed() {
     }
 
     // changing the number of vertices of a polygon
-    if (keyCode === UP_ARROW) { // up arrow
-        polygon.setDefault(polygon.numVertex+1);
-        ctrlPanel.updateNumVertices(polygon.numVertex);
+    if (keyCode === UP_ARROW) { 
+        if (polygon.twisted) {
+            polygon.setDefault(polygon.numVertex+4);
+        } else {
+            polygon.setDefault(polygon.numVertex+1);
+        }
     } else if (keyCode === DOWN_ARROW){ 
-        // the number of vertices has to > 4
-        polygon.setDefault(Math.max(polygon.numVertex-1,5)); 
-        ctrlPanel.updateNumVertices(polygon.numVertex);
-        // TODO: may adopt Schwartz 2024 notations
+        if (polygon.twisted && polygon.numVertex > 3*map.k+4) {
+            polygon.setDefault(Math.max(polygon.numVertex-4, 8));
+        } else if (polygon.numVertex > 3*map.k+1) {
+            polygon.setDefault(Math.max(polygon.numVertex-1, 5));
+        }
     }
 
     // changing the diagonals of the map

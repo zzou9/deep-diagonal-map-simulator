@@ -378,6 +378,104 @@ class MathHelper {
     }
 
     /**
+     * Project a 2d vector onto another 2d vector.
+     * @param {Array<Number>} u the vector to project
+     * @param {Array<Number>} v the direction of the projection
+     * @returns the projected vector
+     */
+    static proj2(u, v) {
+        if (this.round(v[0]) == 0 && this.round(v[1]) == 0) {
+            return [0, 0];
+        }
+        const lambda = (u[0] * v[0] + u[1] * v[1]) / (v[0] * v[0] + v[1] * v[1]);
+        return [v[0] * lambda, v[1] * lambda];
+    }
+
+    /**
+     * Take the orthogonal component of a 2d vector with respect to a 1d linear subspace
+     * @param {Array<Number>} u the vector to take the orthogonal component
+     * @param {Array<Number>} v the linear subspace to take the orthogonal component
+     * @returns the orthogonal component
+     */
+    static orthoComp2(u, v) {
+        const proj = this.proj2(u, v); 
+        return [u[0] - proj[0], u[1] - proj[1]];
+    }
+
+    /**
+     * Check whether the polygon has collapsed to a point
+     * @param {Array<Array<Number>>} vertices vertices of the polygon
+     * @param {number} [threshold=0.00000001] distance threshold of two points. 
+     * @returns true if all vertices of the polygon are within some distance of each other.
+     */
+    static isPoint(vertices, threshold=0.0001) {
+        for (let i = 0; i < vertices.length; i++) {
+            for (let j = 0; j < i; j++) {
+                const r = [vertices[i][0] - vertices[j][0], vertices[i][1] - vertices[j][1]];
+                const mag = Math.sqrt(r[0] * r[0] + r[1] * r[1]);
+                if (mag > threshold) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check whether the polygon has collapsed to a linear subspace
+     * @param {Array<Array<Number>>} vertices vertices of the polygon
+     * @param {number} [threshold=0.0000001] threshold of the distance to the line
+     */
+    static isLinear(vertices, threshold=0.00001) {
+        
+        /**
+         * Choose a pair of vertices that are enough distance away from each other for the line reference.
+         * @param {Array<Number>} vertices the vertices of the polygon
+         * @returns 
+         */
+        function chooseLine(vertices) {
+            let maxDist = 0;
+            const threshold = 0.01;
+            let maxInd = [0, 1];
+            for (let i = 0; i < vertices.length; i++) {
+                for (let j = 0; j < i; j++) {
+                    const r = [vertices[i][0] - vertices[j][0], vertices[i][1] - vertices[j][1]];
+                    const mag = Math.sqrt(r[0] * r[0] + r[1] * r[1]);
+                    if (mag > threshold) {
+                        return [i, j];
+                    }
+                    if (mag > maxDist) {
+                        maxDist = mag;
+                        maxInd = [i, j];
+                    }
+                }
+            }
+            return maxInd;
+        }
+
+        const ind = chooseLine(vertices);
+        const v = [
+            vertices[ind[1]][0] - vertices[ind[0]][0], 
+            vertices[ind[1]][1] - vertices[ind[0]][1] 
+        ]
+
+        // project to v and calculate the distance
+        for (let i = 0; i < vertices.length; i++) {
+            const u = [
+                vertices[i][0] - vertices[ind[0]][0],
+                vertices[i][1] - vertices[ind[0]][1]
+            ]
+            const orth = this.orthoComp2(u, v);
+            const mag = Math.sqrt(orth[0] * orth[0] + orth[1] * orth[1]);
+            // if the distance exceeds the threshold, return false.\
+            if (mag > threshold) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Check the orientation of a triangle (given as 3 ordered vertices)
      * @param {Array<Number>} ver1 first vertex
      * @param {Array<Number>} ver2 second vertex

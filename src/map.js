@@ -13,6 +13,7 @@ class PentagramMap {
         this.k = k; // the spacing parameter (# vertices skipped)
         this.prev = new Array(); // keep charge of previous operations (in the form of vertices)
         this.normalization = "Ellipse";
+        this.twisted = false;
         this.power = 1; // the power of the map (# of times to apply the map)
         this.numIterations = 0; // number of iterations applied to the map
         this.onlyEmbedded = false; // skip to the nearest embedded power of the map
@@ -33,9 +34,18 @@ class PentagramMap {
          * @param {Number} k spacing parameter
          * @param {Number} p number of times to apply the map 
          * @param {String} normalization normalization to apply
+         * @param {Boolean} twisted whether the polygon is twisted
          * @returns {Array<Array<Number>>} the resulting homogeneous coordinates of the vertices
          */
-        function applyMap(vertices, l, k, p, normalization) {
+        function applyMap(vertices, l, k, p, normalization, twisted) {
+            // if the polygon has collapsed to a point or a line, stop applying the map
+            if (MathHelper.isPoint(vertices)) {
+                throw "The polygon collapsed to a point";
+            }
+            if (MathHelper.isLinear(vertices)) {
+                throw "The polygon collapsed to a line.";
+            }
+
             const n = vertices.length;
             let newVertices = new Array(n);
             for (let i = 0; i < n; i++) {
@@ -49,26 +59,32 @@ class PentagramMap {
             }
             // apply normalization
             if (normalization == "Square") {
-                newVertices =  Normalize.squareNormalize(newVertices);
+                if (twisted) {
+                    newVertices = Normalize.twistedSquareNormalize(newVertices);
+                } else {
+                    newVertices = Normalize.squareNormalize(newVertices);
+                }
             }
-            if (normalization === "Ellipse") {
+            if (normalization == "Ellipse") {
                 newVertices = Normalize.ellipseNormalize(newVertices);
             }
 
             if (p == 1) {
                 return newVertices;
             }
-            return applyMap(newVertices, l, k, p-1, normalization);
+
+            return applyMap(newVertices, l, k, p-1, normalization, twisted);
         }
 
         // record the previous vertices for undo purposes
         this.store(vertices);
 
+        // only showing embedded powers
         if (this.onlyEmbedded) {
-            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization);
+            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted);
             let count = 1;
             while (!MathHelper.isEmbedded(vTemp)) {
-                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization);
+                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization, this.twisted);
                 if (count > 1000) {
                     console.error("Cannot find power that is embedded.");
                     return vertices;
@@ -79,11 +95,12 @@ class PentagramMap {
             return vTemp;
         }
 
+        // only showing convex powers
         if (this.onlyConvex) {
-            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization);
+            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted);
             let count = 1;
             while (!MathHelper.isConvex(vTemp)) {
-                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization);
+                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization, this.twisted);
                 if (count > 10000) {
                     console.error("Cannot find power that is convex.");
                     return vertices;
@@ -96,7 +113,7 @@ class PentagramMap {
 
         // record the number of iterations
         this.numIterations += this.power;
-        return applyMap(vertices, this.l, this.k, this.power, this.normalization);
+        return applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted);
     }
 
     /**
