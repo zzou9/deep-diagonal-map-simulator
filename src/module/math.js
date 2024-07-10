@@ -73,6 +73,7 @@ class MathHelper {
         let a = 1;
         let b = -mat[0][0] - mat[1][1];
         let c = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
+        // round if floating point error occurs
         try {
             return this.solveQuadratic(a, b, c);
         }

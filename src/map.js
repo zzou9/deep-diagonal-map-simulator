@@ -15,6 +15,7 @@ class PentagramMap {
         this.normalization = "Ellipse";
         this.twisted = false;
         this.power = 1; // the power of the map (# of times to apply the map)
+        this.shifts = 0; // shifting the vertices 
         this.numIterations = 0; // number of iterations applied to the map
         this.onlyEmbedded = false; // skip to the nearest embedded power of the map
         this.onlyConvex = false; // skip to the nearest convex power of the map
@@ -35,9 +36,10 @@ class PentagramMap {
          * @param {Number} p number of times to apply the map 
          * @param {String} normalization normalization to apply
          * @param {Boolean} twisted whether the polygon is twisted
+         * @param {Number} shifts shifting to the map
          * @returns {Array<Array<Number>>} the resulting homogeneous coordinates of the vertices
          */
-        function applyMap(vertices, l, k, p, normalization, twisted) {
+        function applyMap(vertices, l, k, p, normalization, twisted, shifts) {
             // if the polygon has collapsed to a point or a line, stop applying the map
             if (MathHelper.isPoint(vertices)) {
                 throw "The polygon collapsed to a point";
@@ -69,11 +71,20 @@ class PentagramMap {
                 newVertices = Normalize.ellipseNormalize(newVertices);
             }
 
+            // apply shifting to the array
+            if (shifts != 0) {
+                let temp = new Array(n);
+                for (let i = 0; i < n; i++) {
+                    temp[(i+shifts)%n] = newVertices[i];
+                }
+                newVertices = temp;
+            }
+
             if (p == 1) {
                 return newVertices;
             }
 
-            return applyMap(newVertices, l, k, p-1, normalization, twisted);
+            return applyMap(newVertices, l, k, p-1, normalization, twisted, shifts);
         }
 
         // record the previous vertices for undo purposes
@@ -81,10 +92,10 @@ class PentagramMap {
 
         // only showing embedded powers
         if (this.onlyEmbedded) {
-            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted);
+            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted, this.shifts);
             let count = 1;
             while (!MathHelper.isEmbedded(vTemp)) {
-                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization, this.twisted);
+                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization, this.twisted, this.shifts);
                 if (count > 1000) {
                     console.error("Cannot find power that is embedded.");
                     return vertices;
@@ -97,10 +108,10 @@ class PentagramMap {
 
         // only showing convex powers
         if (this.onlyConvex) {
-            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted);
+            let vTemp = applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted, this.shifts);
             let count = 1;
             while (!MathHelper.isConvex(vTemp)) {
-                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization, this.twisted);
+                vTemp = applyMap(vTemp, this.l, this.k, this.power, this.normalization, this.twisted, this.shifts);
                 if (count > 10000) {
                     console.error("Cannot find power that is convex.");
                     return vertices;
@@ -113,7 +124,7 @@ class PentagramMap {
 
         // record the number of iterations
         this.numIterations += this.power;
-        return applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted);
+        return applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted, this.shifts);
     }
 
     /**

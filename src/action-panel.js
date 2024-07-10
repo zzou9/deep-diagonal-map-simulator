@@ -14,7 +14,7 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=310) {
+    constructor(x, y, map, polygon, w=200, h=340) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
@@ -42,34 +42,43 @@ class ActionPanel extends Panel {
         this.incSpacing = new TriangleButton(this.x+155, this.y+75, 10, 10, "right");
         this.buttons.push(this.incSpacing);
 
+        // control shifting (numbering of vertices)
+        this.shiftsBox = new Button(this.x+25, this.y+100, 100, 20, [["Shifts: " + this.map.shifts, color.BLACK]]);
+        this.buttons.push(this.shiftsBox);
+        this.decShifts = new TriangleButton(this.x+135, this.y+105, 10, 10, "left");
+        this.buttons.push(this.decShifts);
+        this.incShifts = new TriangleButton(this.x+155, this.y+105, 10, 10, "right");
+        this.buttons.push(this.incShifts);
+
+
         // control the speed the map acts
-        this.speedBox = new Button(this.x+25, this.y+100, 100, 20, [["Speed: " + this.speed, color.BLACK]]);
+        this.speedBox = new Button(this.x+25, this.y+130, 100, 20, [["Speed: " + this.speed, color.BLACK]]);
         this.buttons.push(this.speedBox);
-        this.decSpeed = new TriangleButton(this.x+135, this.y+105, 10, 10, "left");
+        this.decSpeed = new TriangleButton(this.x+135, this.y+135, 10, 10, "left");
         this.buttons.push(this.decSpeed);
-        this.incSpeed = new TriangleButton(this.x+155, this.y+105, 10, 10, "right");
+        this.incSpeed = new TriangleButton(this.x+155, this.y+135, 10, 10, "right");
         this.buttons.push(this.incSpeed);
 
         // control the number of times the map acts
-        this.powerBox = new Button(this.x+25, this.y+130, 100, 20, [["Power: " + this.map.power, color.BLACK]]);
+        this.powerBox = new Button(this.x+25, this.y+160, 100, 20, [["Power: " + this.map.power, color.BLACK]]);
         this.buttons.push(this.powerBox);
-        this.decPower = new TriangleButton(this.x+135, this.y+135, 10, 10, "left");
+        this.decPower = new TriangleButton(this.x+135, this.y+165, 10, 10, "left");
         this.buttons.push(this.decPower);
-        this.incPower = new TriangleButton(this.x+155, this.y+135, 10, 10, "right");
+        this.incPower = new TriangleButton(this.x+155, this.y+165, 10, 10, "right");
         this.buttons.push(this.incPower);
 
         // display control
-        this.actionButton = new Button(this.x+25, this.y+160, 150, 20, [["Start Action", color.GREEN]]);
+        this.actionButton = new Button(this.x+25, this.y+190, 150, 20, [["Start Action", color.GREEN]]);
         this.buttons.push(this.actionButton);
-        this.showDiagonalButton = new Button(this.x+25, this.y+190, 150, 20, [["Show Diagonals", color.GREEN]]);
+        this.showDiagonalButton = new Button(this.x+25, this.y+220, 150, 20, [["Show Diagonals", color.GREEN]]);
         this.buttons.push(this.showDiagonalButton);
-        this.showEllipseButton = new Button(this.x+25, this.y+220, 150, 20, [["Show Ellipse of Inertia", color.GREEN]]);
+        this.showEllipseButton = new Button(this.x+25, this.y+250, 150, 20, [["Show Ellipse of Inertia", color.GREEN]]);
         this.buttons.push(this.showEllipseButton);
 
         // convex and embed control
-        this.embedButton = new Button(this.x+25, this.y+250, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
+        this.embedButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
         this.buttons.push(this.embedButton); 
-        this.convexButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Nonconvex", color.BLACK]]);
+        this.convexButton = new Button(this.x+25, this.y+310, 150, 20, [["Skip Nonconvex", color.BLACK]]);
         this.buttons.push(this.convexButton); 
     }
 
@@ -124,6 +133,23 @@ class ActionPanel extends Panel {
         if (this.incSpacing.isHovering() && this.map.k < this.map.l-1 && this.polygon.numVertex > 3*this.map.k+1) {
             this.map.k++;
             this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
+        }
+
+        // shifting control
+        if (this.decShifts.isHovering() && this.map.shifts > 0) {
+            this.map.shifts--;
+            this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
+        }
+        if (this.incShifts.isHovering()) {
+            if (this.map.twisted) {
+                if (this.map.shifts < this.polygon.numVertex/4-1) {
+                    this.map.shifts++;
+                    this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
+                }
+            } else if (this.map.shifts < this.polygon.numVertex-1) {
+                this.map.shifts++;
+                this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
+            }
         }
 
         // speed control
