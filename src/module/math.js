@@ -579,6 +579,29 @@ class MathHelper {
         return false;
     }
     
+    /**
+     * Generates a random inscribed n-gon
+     * @param {Number} numVertex number of vertices
+     * @returns the coordinates of the vertices of the random inscribe n-gon
+     */
+    static randomInscribed(numVertex) {
+        // start with a random inscribed n-gon, perturb to get a random convex n-gon
+        const n = numVertex;
+
+        // first, find random angles
+        let angle = new Array(n);
+        for (let i = 0; i < n; i++) {
+            angle[i] = Math.random() * 2 * Math.PI;
+        }
+        angle.sort((a, b) => a - b);
+
+        // populate vertices
+        let vertices = new Array(n);
+        for (let i = 0; i < n; i++) {
+            vertices[i] = [cos(angle[i]), sin(angle[i]), 1];
+        }
+        return vertices;
+    }
 
     /**
      * Check whether a polygon is embedded (whether the edges intersect)
@@ -616,6 +639,32 @@ class MathHelper {
         const n = vertices.length
         for (let i = 1; i < n; i++) {
             if (orientation != this.triangleOrientation(vertices[i%n], vertices[(i+1)%n], vertices[(i+2)%n])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Check whether a polygon is a k-bird
+     * @param {Array<Array<Number>>} vertices the coords of the vertices of the polygon 
+     * @param {Number} k k
+     * @returns whether the polygon is a k-bird
+     */
+    static isBird(vertices, k) {
+        // first, check whether the polygon is embedded
+        if (!this.isEmbedded(vertices)) {
+            return false;
+        }
+
+        // check the orientations
+        const orientation = this.triangleOrientation(vertices[0], vertices[1], vertices[k]);
+        if (orientation == 0) {
+            return false;
+        }
+        const n = vertices.length
+        for (let i = 1; i < n; i++) {
+            if (orientation != this.triangleOrientation(vertices[i%n], vertices[(i+1)%n], vertices[(i+k)%n])) {
                 return false;
             }
         }
