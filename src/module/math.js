@@ -19,19 +19,20 @@ class MathHelper {
      * @param {Number} a 2nd order coefficient
      * @param {Number} b 1st order coefficient
      * @param {Number} c 0th order coefficient
+     * @param {number} [rounding=16] rounding of the discriminant
      * @returns {Array<Number>} the solution to the quadratic equation
      */
-    static solveQuadratic(a, b, c) {
-        if (this.round(b * b - 4 * a * c) < 0) {
-            console.error("The quadratic equation has negative discriminant.");
+    static solveQuadratic(a, b, c, rounding=16) {
+        if (this.round(b * b - 4 * a * c, rounding) < 0) {
+            throw "The quadratic equation has negative discriminant.";
         }
         if (a == 0) {
             if (b == 0 & c != 0) {
-                console.error("The equation is linear but has no solution.");
+                throw "The equation is linear but has no solution.";
             }
             return [-c/b, -c/b];
         }
-        const delta = Math.sqrt(this.round(b * b - 4 * a * c));
+        const delta = Math.sqrt(this.round(b * b - 4 * a * c, rounding));
         const x1 = (-b + delta) / (2 * a);
         const x2 = (-b - delta) / (2 * a);
         return [x1, x2];
@@ -69,10 +70,15 @@ class MathHelper {
      * @returns the two eigenvalues
      */
     static eigenvalue2(mat) {
-        const a = 1;
-        const b = -mat[0][0] - mat[1][1];
-        const c = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
-        return this.solveQuadratic(a, b, c);
+        let a = 1;
+        let b = -mat[0][0] - mat[1][1];
+        let c = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
+        try {
+            return this.solveQuadratic(a, b, c);
+        }
+        catch (err) {
+            return this.solveQuadratic(a, b, c, 10);
+        }
     }
 
     /**

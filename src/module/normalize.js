@@ -180,7 +180,7 @@ class Normalize {
         const Ip = Normalize.getInertiaMatrix(normalizedVert);
 
         // get the spectral decomposition of the inertia matrix
-        const decomp = MathHelper.spectralDecomposition2(Ip);
+        let decomp = MathHelper.spectralDecomposition2(Ip);
         const Q = decomp[0];
         const Qt = MathHelper.transpose(Q);
         const L = decomp[1];
