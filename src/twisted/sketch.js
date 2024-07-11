@@ -29,13 +29,14 @@ let shapePanel;
 let homeButton;
 let convexButton;
 let twistedButton;
+let modulePanel;
 
 function setup() {
     xT = windowWidth/2;
     yT = windowHeight/2;
 
     createCanvas(windowWidth, windowHeight);
-    map = new PentagramMap();
+    map = new PentagramMap(l=2);
     polygon = new Polygon(map, numVertex=8);
     polygon.twisted = true;
     map.twisted = true;
@@ -46,11 +47,7 @@ function setup() {
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
-
-    // link buttons to other modules
-    homeButton = new Button(xT-85, 40, 50, 20, [["Home", color.BLACK]], color.WHITE);
-    convexButton = new Button(homeButton.x+homeButton.w+10, 40, 50, 20, [["Convex", color.BLACK]], color.WHITE);
-    twistedButton = new Button(convexButton.x+convexButton.w+10, 40, 50, 20, [["Twisted", color.BLACK]], color.KHAKI);
+    modulePanel = new ModulePanel(xT-115, 40, "Twisted");
 }
 
 function draw() {
@@ -69,10 +66,7 @@ function draw() {
     actionPanel.show();
     infoPanel.show();
     shapePanel.show();
-
-    homeButton.show();
-    convexButton.show();
-    twistedButton.show();
+    modulePanel.show();
 }
 
 function mouseClicked() {
@@ -82,14 +76,8 @@ function mouseClicked() {
     if (actionPanel.isRunning) {
         ctrlPanel.disableInscribe();
     }
-
-    // module buttons
-    if (homeButton.isHovering()) {
-        window.location.href = 'index.html';
-    }
-    if (convexButton.isHovering()) {
-        window.location.href = 'convex.html';
-    }
+    shapePanel.buttonMouseAction();
+    modulePanel.buttonMouseAction();
 }
 
 function mouseDragged() {

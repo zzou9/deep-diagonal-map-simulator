@@ -16,10 +16,13 @@ class ShapePanel extends Panel {
         super(x, y, w, h, "Shape", color.KHAKI);
         this.polygon = polygon;
         this.vertices = polygon.cloneVertices();
+        this.prevVertices = polygon.cloneVertices();
         this.map = map;
-        this.center = [x + w/2, y + h/2 + 10];
+        this.center = [x + w/2, y + h/2];
         this.scale = Math.min(w, h-20) / 5;
         // populate the buttons
+        this.resetButton = new Button(this.x+25, this.y+this.h-30, 150, 20, [["Reset", color.BLACK]]);
+        this.buttons.push(this.resetButton);
     }
 
     /**
@@ -35,8 +38,9 @@ class ShapePanel extends Panel {
      */
     showPolygon() {
         // check iteration
-        if (this.map.numIterations == 0) {
+        if (this.polygon.updateToPanel) {
             this.vertices = Normalize.ellipseNormalize(polygon.cloneVertices());
+            this.polygon.updateToPanel = false;
         }
 
         translate(this.center[0], this.center[1]);
@@ -66,5 +70,8 @@ class ShapePanel extends Panel {
      * Mouse Action
      */
     buttonMouseAction() {
+        if (this.resetButton.isHovering()) {
+            this.polygon.resetToVertices(this.vertices);
+        }
     }
 }
