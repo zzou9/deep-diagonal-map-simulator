@@ -26,6 +26,10 @@ let actionPanel;
 let infoPanel;
 let shapePanel;
 
+let homeButton;
+let convexButton;
+let twistedButton;
+
 function setup() {
     xT = windowWidth/2;
     yT = windowHeight/2;
@@ -35,13 +39,16 @@ function setup() {
     polygon = new Polygon(map);
 
     // instantiate panels
-    // modulePanel = new ModulePanel(10, 10, map, polygon);
-    // ctrlPanel = new CtrlPanel(10, modulePanel.y+modulePanel.h+10, polygon, map);
     ctrlPanel = new CtrlPanel(10, 10, polygon, map);
     normPanel = new NormalizationPanel(10, ctrlPanel.y+ctrlPanel.h+10, map, polygon);
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
+
+    // link buttons to other modules
+    homeButton = new Button(xT-85, 40, 50, 20, [["Home", color.BLACK]], color.WHITE);
+    convexButton = new Button(homeButton.x+homeButton.w+10, 40, 50, 20, [["Convex", color.BLACK]], color.KHAKI);
+    twistedButton = new Button(convexButton.x+convexButton.w+10, 40, 50, 20, [["Twisted", color.BLACK]], color.WHITE);
 }
 
 function draw() {
@@ -55,12 +62,15 @@ function draw() {
     fill(color.BLACK);
     text("Pentagram Map Simulator", xT, 20);
     
-    // modulePanel.show();
     ctrlPanel.show();
     normPanel.show();
     actionPanel.show();
     infoPanel.show();
     shapePanel.show();
+
+    homeButton.show();
+    convexButton.show();
+    twistedButton.show();
 }
 
 function mouseClicked() {
@@ -72,6 +82,11 @@ function mouseClicked() {
         ctrlPanel.disableInscribe();
     }
     shapePanel.buttonMouseAction();
+
+    // module buttons
+    if (homeButton.isHovering()) {
+        window.location.href = 'index.html';
+    }
     Test.debug();
 }
 
