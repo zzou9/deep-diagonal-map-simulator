@@ -141,6 +141,5 @@ function keyPressed() {
     }
 
     // update information of the polygon
-    polygon.updateEmbedded();
-    polygon.updateConvex();
+    polygon.updateInfo();
 }

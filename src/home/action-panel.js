@@ -100,8 +100,7 @@ class ActionPanel extends Panel {
     mapAction() {
         try {
             this.polygon.vertices = this.map.act(polygon.cloneVertices());
-            this.polygon.updateEmbedded();
-            this.polygon.updateConvex();
+            this.polygon.updateInfo;
         }
         catch (err) {
             clearInterval(this.action);
