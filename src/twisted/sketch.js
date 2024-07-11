@@ -22,10 +22,10 @@ const color = {
 let normPanel;
 let ctrlPanel;
 let actionPanel;
-// let modulePanel;
 let infoPanel;
 let shapePanel;
 
+// buttons to redirect to modules
 let homeButton;
 let convexButton;
 let twistedButton;
@@ -36,7 +36,9 @@ function setup() {
 
     createCanvas(windowWidth, windowHeight);
     map = new PentagramMap();
-    polygon = new Polygon(map);
+    polygon = new Polygon(map, numVertex=8);
+    polygon.twisted = true;
+    map.twisted = true;
 
     // instantiate panels
     ctrlPanel = new CtrlPanel(10, 10, polygon, map);
@@ -47,8 +49,8 @@ function setup() {
 
     // link buttons to other modules
     homeButton = new Button(xT-85, 40, 50, 20, [["Home", color.BLACK]], color.WHITE);
-    convexButton = new Button(homeButton.x+homeButton.w+10, 40, 50, 20, [["Convex", color.BLACK]], color.KHAKI);
-    twistedButton = new Button(convexButton.x+convexButton.w+10, 40, 50, 20, [["Twisted", color.BLACK]], color.WHITE);
+    convexButton = new Button(homeButton.x+homeButton.w+10, 40, 50, 20, [["Convex", color.BLACK]], color.WHITE);
+    twistedButton = new Button(convexButton.x+convexButton.w+10, 40, 50, 20, [["Twisted", color.BLACK]], color.KHAKI);
 }
 
 function draw() {
@@ -74,24 +76,20 @@ function draw() {
 }
 
 function mouseClicked() {
-    // modulePanel.buttonMouseAction();
     ctrlPanel.buttonMouseAction();
     normPanel.buttonMouseAction();
     actionPanel.buttonMouseAction();
     if (actionPanel.isRunning) {
         ctrlPanel.disableInscribe();
     }
-    shapePanel.buttonMouseAction();
 
     // module buttons
     if (homeButton.isHovering()) {
         window.location.href = 'index.html';
     }
-    if (twistedButton.isHovering()) {
-        window.location.href = 'twisted.html';
+    if (convexButton.isHovering()) {
+        window.location.href = 'convex.html';
     }
-    
-    Test.debug();
 }
 
 function mouseDragged() {
@@ -144,7 +142,3 @@ function keyPressed() {
     // update information of the polygon
     polygon.updateInfo();
 }
-
-// TODO: need to add buttons for changing number of edges
-
-
