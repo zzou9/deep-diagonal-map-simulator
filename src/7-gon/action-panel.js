@@ -110,6 +110,12 @@ class ActionPanel extends Panel {
         try {
             this.polygon.vertices = this.map.act(polygon.cloneVertices());
             this.polygon.updateInfo();
+
+            // stop if the two polygons are very similar
+            if (this.polygon.getDistanceToReference() < 0.1) {
+                throw "Distance: " + this.polygon.getDistanceToReference();
+            }
+            console.log(this.polygon.getDistanceToReference());
         }
         catch (err) {
             clearInterval(this.action);

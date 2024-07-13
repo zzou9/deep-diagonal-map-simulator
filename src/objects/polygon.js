@@ -43,7 +43,7 @@ class Polygon{
         }
 
         // normalize vertices
-        this.vertices = Normalize.ellipseNormalize(this.cloneVertices());
+        this.vertices = Normalize.ellipseNormalize(this.vertices);
     }
 
     /**
@@ -351,32 +351,46 @@ class Polygon{
     }
 
     /**
-     * Compute a triangle embedding of the polygon.
+     * Compute a triangle embedding of a 7-gon (only useful for 7-gons).
      * The embedding is stored in a 3D array E, where E[i][j][k]
      * stores the orientation of the triangle spanned by the vertices
      * i, j, k. 
      * @returns {Array<Array<Array<Number>>>} the embedding array
      */
-    triangleEmbedding() {
+    triangleEmbedding7() {
+        if (this.numVertex != 7) {
+            throw "This is not a 7-gon";
+        }
         // setting up the embedding array
-        const n = this.numVertex;
-        let E = new Array(n);
-        for (let i = 0; i < n; i++) {
-            E[i] = new Array(n);
-            for (let j = 0; j < n; j++) {
-                E[i][j] = new Array(n);
-            }
+        // The array is in the format of 1-1, 1-2, 2-1, 2-2, 1-3 triangles, each beginning with vertices 0-6
+        let E = new Array(5);
+        for (let i = 0; i < 5; i++) {
+            E[i] = new Array(7);
         }
 
-        // populate the values
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j < n; j++) {
-                for (let k = 0; k < n; k++) {
-                    E[i][j][k] = MathHelper.triangleOrientation(
-                        this.vertices[i], this.vertices[j], this.vertices[k]
-                    );
-                }
-            }
+        // first row consists of 1-1 triangles
+        for (let i = 0; i < 7; i++) {
+            E[0][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+2)%7]);
+        }
+
+        // second row consists of 1-2 triangles
+        for (let i = 0; i < 7; i++) {
+            E[1][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+3)%7]);
+        }
+
+        // third row consists of 2-1 triangles
+        for (let i = 0; i < 7; i++) {
+            E[2][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+2)%7], this.vertices[(i+3)%7]);
+        }
+
+        // fourth row consists of 2-2 triangles
+        for (let i = 0; i < 7; i++) {
+            E[3][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+2)%7], this.vertices[(i+4)%7]);
+        }
+
+        // fifth row consists of 1-3 triangles
+        for (let i = 0; i < 7; i++) {
+            E[4][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+4)%7]);
         }
 
         return E;

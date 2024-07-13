@@ -1,7 +1,7 @@
 /**
  * A class that stores and shows the shape
  */
-class ShapePanel extends Panel {
+class CoordPanel extends Panel {
 
     /**
      * Constructor
@@ -13,11 +13,8 @@ class ShapePanel extends Panel {
      * @param {Number} h (optional) height of the panel
      */
     constructor(x, y, polygon, map, w=200, h=200) {
-        super(x, y, w, h, "Shape", color.KHAKI);
+        super(x, y, w, h, "Triangle Coordinates", color.KHAKI);
         this.polygon = polygon;
-        this.vertices = polygon.cloneVertices();
-        this.prevVertices = polygon.cloneVertices();
-        this.map = map;
         this.center = [x + w/2, y + h/2];
         this.scale = Math.min(w, h-20) / 5;
         // populate the buttons
@@ -39,7 +36,7 @@ class ShapePanel extends Panel {
     showPolygon() {
         // check iteration
         if (this.polygon.updateToPanel) {
-            this.vertices = Normalize.ellipseNormalize(this.polygon.vertices);
+            this.vertices = Normalize.ellipseNormalize(polygon.cloneVertices());
             this.polygon.updateToPanel = false;
         }
 

@@ -42,16 +42,16 @@ class NormalizationPanel extends Panel {
             this.setDefaultButtonColor();
             this.map.normalization = "Square";
             if (this.map.twisted) {
-                this.polygon.vertices = Normalize.twistedSquareNormalize(this.polygon.cloneVertices());
+                this.polygon.vertices = Normalize.twistedSquareNormalize(this.polygon.vertices);
             } else {
-                this.polygon.vertices = Normalize.squareNormalize(this.polygon.cloneVertices());
+                this.polygon.vertices = Normalize.squareNormalize(this.polygon.vertices);
             }
             this.squareButton.text[0][1] = color.GREEN;
         }
         if (this.ellipseButton.isHovering() && this.map.normalization != "Ellipse") {
             this.setDefaultButtonColor();
             this.map.normalization = "Ellipse";
-            this.polygon.vertices = Normalize.ellipseNormalize(this.polygon.cloneVertices());
+            this.polygon.vertices = Normalize.ellipseNormalize(this.polygon.vertices);
             this.ellipseButton.text[0][1] = color.GREEN;
         }
     }

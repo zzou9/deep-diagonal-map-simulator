@@ -10,8 +10,12 @@ const color = {
     BLACK: "#000000",
     WHITE: "#ffffff",
     RED: "#ff0000",
+    ORANGE: "#ffa500",
+    YELLOW: "#ffff00",
     GREEN: "#00bb00",
     BLUE: "#0000ff",
+    VIOLET: "#ee82ee",
+    PURPLE: "#800080",
     CYAN: "#00ffff", 
     CADET_BLUE: "#5f9ea0",
     ROYAL_BLUE: "#4169e1", 
@@ -38,7 +42,7 @@ function setup() {
 
     createCanvas(windowWidth, windowHeight);
     map = new PentagramMap();
-    polygon = new Polygon(map);
+    polygon = new SevenGon(map);
 
     // instantiate panels
     ctrlPanel = new CtrlPanel(10, 10, polygon, map);
@@ -91,28 +95,21 @@ function keyPressed() {
     // applying the map
     if (key === ' ') {
         ctrlPanel.disableInscribe();
-        polygon.vertices = map.act(polygon.cloneVertices());
+        polygon.vertices = map.act(polygon.vertices);
+
+        // // print embedding info
+        // console.log("Embeddings");
+        // console.log(polygon.triangleEmbedding7()[0]);
+        // console.log(polygon.triangleEmbedding7()[1]);
+
+        // print distance to reference
+        console.log(polygon.getDistanceToReference());
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
             ctrlPanel.disableInscribe();
             const prev = map.revert();
             polygon.vertices = prev[0];
             map.numIterations = prev[1];
-        }
-    }
-
-    // changing the number of vertices of a polygon
-    if (keyCode === UP_ARROW) { 
-        if (polygon.twisted) {
-            polygon.setDefault(polygon.numVertex+4);
-        } else {
-            polygon.setDefault(polygon.numVertex+1);
-        }
-    } else if (keyCode === DOWN_ARROW){ 
-        if (polygon.twisted && polygon.numVertex > 3*map.k+4) {
-            polygon.setDefault(Math.max(polygon.numVertex-4, 8));
-        } else if (polygon.numVertex > 3*map.k+1) {
-            polygon.setDefault(Math.max(polygon.numVertex-1, 5));
         }
     }
 
