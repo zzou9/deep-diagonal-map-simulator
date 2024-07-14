@@ -10,60 +10,16 @@ class SevenGon extends Polygon {
     constructor(map) {
         super(map);
         this.vertexColor = [color.RED, color.ORANGE, color.YELLOW, color.GREEN, color.BLUE, color.VIOLET, color.PURPLE];
-        this.referenceCoords = this.getCornerCoords();
+        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**
-     * Get the corner coordinates of the polygon in the moduli space 
-     * (see https://en.wikipedia.org/wiki/Pentagram_map)
-     * @returns the corner coordinates of the moduli space in a 3-by-3 matrix
+     * Compute the distance of the polygon to the original polygon
+     * @returns the l_2 distance
      */
-    getCornerCoords() {
-        const n = this.numVertex;
-        let coords = new Array(2*n);
-        for (let i = 0; i < n; i++) {
-            const t1 = [
-                this.vertices[(i-2+n)%n][0]-this.vertices[(i-1+n)%n][0], 
-                this.vertices[(i-2+n)%n][1]-this.vertices[(i-1+n)%n][1]
-            ];
-            const t2 = [
-                this.vertices[i][0]-this.vertices[(i-1+n)%n][0], 
-                this.vertices[i][1]-this.vertices[(i-1+n)%n][1]
-            ];
-            const t3 = [
-                this.vertices[(i+1)%n][0]-this.vertices[(i-1+n)%n][0], 
-                this.vertices[(i+1)%n][1]-this.vertices[(i-1+n)%n][1]
-            ];
-            const t4 = [
-                this.vertices[(i+2)%n][0]-this.vertices[(i-1+n)%n][0], 
-                this.vertices[(i+2)%n][1]-this.vertices[(i-1+n)%n][1]
-            ];
-            coords[2*i] = MathHelper.inverseCrossRatio(t1, t2, t3, t4);
-
-            const s1 = [
-                this.vertices[(i+2)%n][0]-this.vertices[(i+1)%n][0], 
-                this.vertices[(i+2)%n][1]-this.vertices[(i+1)%n][1]
-            ];
-            const s2 = [
-                this.vertices[i][0]-this.vertices[(i+1)%n][0], 
-                this.vertices[i][1]-this.vertices[(i+1)%n][1]
-            ];
-            const s3 = [
-                this.vertices[(i-1+n)%n][0]-this.vertices[(i+1)%n][0], 
-                this.vertices[(i-1+n)%n][1]-this.vertices[(i+1)%n][1]
-            ];
-            const s4 = [
-                this.vertices[(i-2+n)%n][0]-this.vertices[(i+1)%n][0], 
-                this.vertices[(i-2+n)%n][1]-this.vertices[(i+1)%n][1]
-            ];
-            coords[2*i+1] = MathHelper.inverseCrossRatio(s1, s2, s3, s4);
-        }
-        return coords;
-    }
-
     getDistanceToReference() {
         let ref = this.referenceCoords;
-        let curr = this.getCornerCoords();
+        let curr = MathHelper.getCornerCoords(this.vertices);
         let n = this.numVertex
         let dist = 0
         for (let i = 0; i < 2*n; i++) {
@@ -73,12 +29,33 @@ class SevenGon extends Polygon {
     }
 
     /**
+     * Record the distance to a txt file 
+     * @param {*} iterations the number of iterations to take
+     */
+    recordDistance(iterations) {
+        // first, record the data
+        const dist = MathHelper.l2dist(MathHelper.getCornerCoords(this.vertices), this.referenceCoords);
+        let data = dist.toString();
+
+        let temp = this.vertices;
+        for (let i = 0; i < iterations; i++) {
+            temp = this.map.act(temp, false, false);
+            const dist = MathHelper.l2dist(MathHelper.getCornerCoords(temp), this.referenceCoords);
+            data = data + '\n' + dist.toString();
+        }
+        console.log(data);
+
+        // write it to a file
+        
+    }
+
+    /**
      * Set the vertices back to default (regular n-gon)
      * @param {Number} numVertex the number of vertices of the n-gon
      */
     setDefault(numVertex) {
         super.setDefault(numVertex);
-        this.referenceCoords = this.getCornerCoords();
+        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**
@@ -87,7 +64,7 @@ class SevenGon extends Polygon {
      */
     resetToVertices(verticesToSet) {
         super.resetToVertices(verticesToSet);
-        this.referenceCoords = this.getCornerCoords();
+        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**
@@ -95,7 +72,7 @@ class SevenGon extends Polygon {
      */
     randomInscribed() {
         super.randomInscribed();
-        this.referenceCoords = this.getCornerCoords();
+        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**
@@ -103,7 +80,7 @@ class SevenGon extends Polygon {
      */
     randomConvex() {
         super.randomConvex();
-        this.referenceCoords = this.getCornerCoords();
+        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**
@@ -111,7 +88,7 @@ class SevenGon extends Polygon {
      */
     randomStarShaped() {
         super.randomStarShaped();
-        this.referenceCoords = this.getCornerCoords();
+        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**
@@ -119,7 +96,7 @@ class SevenGon extends Polygon {
      */
     randomNonconvex() {
         super.randomNonconvex();
-        this.referenceCoords = this.getCornerCoords();
+        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**
@@ -206,7 +183,7 @@ class SevenGon extends Polygon {
      */
     dragVertex() {
         super.dragVertex();
-        this.referenceCoords = this.getCornerCoords();
+        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**

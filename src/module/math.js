@@ -78,6 +78,7 @@ class MathHelper {
             return this.solveQuadratic(a, b, c);
         }
         catch (err) {
+            console.log("Rounded");
             return this.solveQuadratic(a, b, c, 10);
         }
     }
@@ -112,8 +113,6 @@ class MathHelper {
         }
     }
 
-
-
     /**
      * Take the transpose of a matrix
      * @param {Array<Array<Number>>} mat the matrix to be transposed
@@ -136,6 +135,23 @@ class MathHelper {
             }
         }
         return tMat;
+    }
+
+    /**
+     * Compute the l2 distance of two finite dimensional real vectors
+     * @param {Array<Number>} v1 
+     * @param {Array<Number>} v2 
+     * @returns 
+     */
+    static l2dist(v1, v2) {
+        if (v1.length != v2.length) {
+            throw "The length of the vectors don't match up.";
+        }
+        let dist = 0;
+        for (let i = 0; i < v1.length; i++) {
+            dist += Math.pow(v1[i] - v2[i], 2);
+        }
+        return Math.sqrt(dist);
     }
 
     /**
@@ -705,5 +721,53 @@ class MathHelper {
         const num = (l2[1]/l2[0] - l1[1]/l1[0]) * (l4[1]/l4[0] - l3[1]/l3[0]);
         const denom = (l3[1]/l3[0] - l1[1]/l1[0]) * (l4[1]/l4[0] - l2[1]/l2[0]);
         return num / denom;
+    }
+
+    /**
+     * Get the corner coordinates of the polygon in the moduli space 
+     * (see https://en.wikipedia.org/wiki/Pentagram_map)
+     * @returns the corner coordinates of the moduli space in a 3-by-3 matrix
+     */
+    static getCornerCoords(vertices) {
+        const n = vertices.length;
+        let coords = new Array(2*n);
+        for (let i = 0; i < n; i++) {
+            const t1 = [
+                vertices[(i-2+n)%n][0] - vertices[(i-1+n)%n][0], 
+                vertices[(i-2+n)%n][1] - vertices[(i-1+n)%n][1]
+            ];
+            const t2 = [
+                vertices[i][0] - vertices[(i-1+n)%n][0], 
+                vertices[i][1] - vertices[(i-1+n)%n][1]
+            ];
+            const t3 = [
+                vertices[(i+1)%n][0] - vertices[(i-1+n)%n][0], 
+                vertices[(i+1)%n][1] - vertices[(i-1+n)%n][1]
+            ];
+            const t4 = [
+                vertices[(i+2)%n][0] - vertices[(i-1+n)%n][0], 
+                vertices[(i+2)%n][1] - vertices[(i-1+n)%n][1]
+            ];
+            coords[2*i] = this.inverseCrossRatio(t1, t2, t3, t4);
+
+            const s1 = [
+                vertices[(i+2)%n][0] - vertices[(i+1)%n][0], 
+                vertices[(i+2)%n][1] - vertices[(i+1)%n][1]
+            ];
+            const s2 = [
+                vertices[i][0] - vertices[(i+1)%n][0], 
+                vertices[i][1] - vertices[(i+1)%n][1]
+            ];
+            const s3 = [
+                vertices[(i-1+n)%n][0] - vertices[(i+1)%n][0], 
+                vertices[(i-1+n)%n][1] - vertices[(i+1)%n][1]
+            ];
+            const s4 = [
+                vertices[(i-2+n)%n][0] - vertices[(i+1)%n][0], 
+                vertices[(i-2+n)%n][1] - vertices[(i+1)%n][1]
+            ];
+            coords[2*i+1] = this.inverseCrossRatio(s1, s2, s3, s4);
+        }
+        return coords;
     }
 }

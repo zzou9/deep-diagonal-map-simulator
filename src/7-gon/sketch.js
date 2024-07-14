@@ -112,6 +112,9 @@ function keyPressed() {
             map.numIterations = prev[1];
         }
     }
+    if (key === 'p') {
+        polygon.recordDistance(500);
+    }
 
     // changing the diagonals of the map
     if (keyCode === LEFT_ARROW && map.l > 2) {

@@ -83,12 +83,16 @@ class PentagramMap {
 
     /**
      * Take in a set of vertices and apply the map to it
-     * @param {Array<Array<Number>>} vertices 
+     * @param {Array<Array<Number>>} vertices vertices to act
+     * @param {boolean} [store=true] whether to store the vertex
+     * @param {boolean} [countIteration=true] whether to count iterations
      * @returns the vertices of the image polygon of the pentagram map
      */
-    act(vertices) {
+    act(vertices, store=true, countIteration=true) {
         // record the previous vertices for undo purposes
-        this.store(vertices);
+        if (store) {
+            this.store(vertices);
+        }
 
         // only showing embedded powers
         if (this.onlyEmbedded) {
@@ -101,8 +105,11 @@ class PentagramMap {
                     return vertices;
                 }
                 count++;
-            } while (!MathHelper.isEmbedded(vTemp)) 
-            this.numIterations += this.power * count;
+            } while (!MathHelper.isEmbedded(vTemp)); 
+            
+            if (countIteration) {
+                this.numIterations += this.power * count;
+            }
             return vTemp;
         }
 
@@ -117,8 +124,11 @@ class PentagramMap {
                     return vertices;
                 }
                 count++;
-            } while (!MathHelper.isConvex(vTemp))
-            this.numIterations += this.power * count;
+            } while (!MathHelper.isConvex(vTemp));
+                
+            if (countIteration) {
+                this.numIterations += this.power * count;
+            }
             return vTemp;
         }
 
@@ -132,13 +142,18 @@ class PentagramMap {
                     return vertices;
                 }
                 count++;
-            } while (!MathHelper.isBird(vTemp, this.l)) 
-            this.numIterations += this.power * count;
+            } while (!MathHelper.isBird(vTemp, this.l)); 
+
+            if (countIteration) {
+                this.numIterations += this.power * count;
+            }
             return vTemp;
         }
 
         // record the number of iterations
-        this.numIterations += this.power;
+        if (countIteration) {
+            this.numIterations += this.power * count;
+        }
         return this.applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted, this.shifts);
     }
 
