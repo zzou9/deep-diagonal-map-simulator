@@ -9,8 +9,9 @@ class SevenGon extends Polygon {
      */
     constructor(map) {
         super(map);
+        this.canDrag = true;
         this.vertexColor = [color.RED, color.ORANGE, color.YELLOW, color.GREEN, color.BLUE, color.VIOLET, color.PURPLE];
-        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -19,7 +20,7 @@ class SevenGon extends Polygon {
      */
     getDistanceToReference() {
         let ref = this.referenceCoords;
-        let curr = MathHelper.getCornerCoords(this.vertices);
+        let curr = Geometry.getCornerCoords(this.vertices);
         let n = this.numVertex
         let dist = 0
         for (let i = 0; i < 2*n; i++) {
@@ -34,19 +35,16 @@ class SevenGon extends Polygon {
      */
     recordDistance(iterations) {
         // first, record the data
-        const dist = MathHelper.l2dist(MathHelper.getCornerCoords(this.vertices), this.referenceCoords);
+        const dist = MathHelper.l2dist(Geometry.getCornerCoords(this.vertices), this.referenceCoords);
         let data = dist.toString();
 
         let temp = this.vertices;
         for (let i = 0; i < iterations; i++) {
             temp = this.map.act(temp, false, false);
-            const dist = MathHelper.l2dist(MathHelper.getCornerCoords(temp), this.referenceCoords);
+            const dist = MathHelper.l2dist(Geometry.getCornerCoords(temp), this.referenceCoords);
             data = data + '\n' + dist.toString();
         }
         console.log(data);
-
-        // write it to a file
-        
     }
 
     /**
@@ -55,7 +53,7 @@ class SevenGon extends Polygon {
      */
     setDefault(numVertex) {
         super.setDefault(numVertex);
-        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -64,7 +62,7 @@ class SevenGon extends Polygon {
      */
     resetToVertices(verticesToSet) {
         super.resetToVertices(verticesToSet);
-        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -72,7 +70,7 @@ class SevenGon extends Polygon {
      */
     randomInscribed() {
         super.randomInscribed();
-        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -80,7 +78,7 @@ class SevenGon extends Polygon {
      */
     randomConvex() {
         super.randomConvex();
-        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -88,7 +86,7 @@ class SevenGon extends Polygon {
      */
     randomStarShaped() {
         super.randomStarShaped();
-        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -96,7 +94,7 @@ class SevenGon extends Polygon {
      */
     randomNonconvex() {
         super.randomNonconvex();
-        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -144,8 +142,8 @@ class SevenGon extends Polygon {
                 const ver2 = this.vertices[(i+l)%n];
                 const ver3 = this.vertices[(i-k+2*n)%n];
                 const ver4 = this.vertices[(i-k+l+2*n)%n];
-                const ver = MathHelper.getIntersection(ver1, ver2, ver3, ver4);
-                fill(this.vertexColor[i]);
+                const ver = Geometry.getIntersection(ver1, ver2, ver3, ver4);
+                fill(this.vertexColor[(i+this.map.shifts)%n]);
                 circle(ver[0] * this.scale, ver[1] * this.scale, 5);
             }
         }
@@ -183,7 +181,6 @@ class SevenGon extends Polygon {
      */
     dragVertex() {
         super.dragVertex();
-        this.referenceCoords = MathHelper.getCornerCoords(this.vertices);
     }
 
     /**

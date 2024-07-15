@@ -17,7 +17,7 @@ class CtrlPanel extends Panel {
         this.polygon = polygon;
         this.map = map;
         // populate the buttons
-        this.dragButton = new Button(this.x+25, this.y+40, 150, 20, [["Drag: ", color.BLACK], ["Off", color.RED]]);
+        this.dragButton = new Button(this.x+25, this.y+40, 150, 20, [["Drag: ", color.BLACK], ["On", color.GREEN]]);
         this.buttons.push(this.dragButton);
         this.inscribeButton = new Button(this.x+25, this.dragButton.y+this.dragButton.h+10, 150, 20, [["Inscribed: ", color.BLACK], ["Off", color.RED]]);
         this.buttons.push(this.inscribeButton);

@@ -44,6 +44,7 @@ class Polygon{
 
         // normalize vertices
         this.vertices = Normalize.ellipseNormalize(this.vertices);
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices); // the reference corner coordinates
     }
 
     /**
@@ -69,6 +70,7 @@ class Polygon{
         // normalize vertices
         this.vertices = Normalize.ellipseNormalize(this.cloneVertices());
         this.updateToPanel = true;
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -80,6 +82,7 @@ class Polygon{
         this.map.numIterations = 0;
         this.updateInfo();
         this.updateToPanel = true;
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -109,6 +112,7 @@ class Polygon{
         // update info
         this.updateInfo();
         this.updateToPanel = true;
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -144,7 +148,7 @@ class Polygon{
             }
             counter++;
         }
-        while (!MathHelper.isConvex(temp)) 
+        while (!Geometry.isConvex(temp)) 
 
         // normalize vertices
         this.vertices = Normalize.ellipseNormalize(temp);
@@ -152,6 +156,7 @@ class Polygon{
         // update info
         this.updateInfo();
         this.updateToPanel = true;
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -182,6 +187,7 @@ class Polygon{
         // update info
         this.updateInfo();
         this.updateToPanel = true;
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -195,7 +201,7 @@ class Polygon{
                     for (let k = 0; k < i; k++) {
                         for (let l = 0; l < k; l++) {
                             if (k != j && l != j) {
-                                if (MathHelper.intersects(vertices[i], vertices[j], vertices[k], vertices[l])) {
+                                if (Geometry.intersects(vertices[i], vertices[j], vertices[k], vertices[l])) {
 
                                 }
                             }
@@ -223,6 +229,7 @@ class Polygon{
         // update info
         this.updateInfo();
         this.updateToPanel = true;
+        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -271,7 +278,7 @@ class Polygon{
                 const ver2 = this.vertices[(i+l)%n];
                 const ver3 = this.vertices[(i-k+2*n)%n];
                 const ver4 = this.vertices[(i-k+l+2*n)%n];
-                const ver = MathHelper.getIntersection(ver1, ver2, ver3, ver4);
+                const ver = Geometry.getIntersection(ver1, ver2, ver3, ver4);
                 circle(ver[0] * this.scale, ver[1] * this.scale, 5);
             }
         }
@@ -345,6 +352,7 @@ class Polygon{
                     }
                     this.updateInfo();
                     this.updateToPanel = true;
+                    this.referenceCoords = Geometry.getCornerCoords(this.vertices);
                 }
             }
         }
@@ -370,17 +378,17 @@ class Polygon{
 
         // first row consists of 1-1 triangles
         for (let i = 0; i < 7; i++) {
-            E[0][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+2)%7]);
+            E[0][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+2)%7]);
         }
 
         // second row consists of 1-2 triangles
         for (let i = 0; i < 7; i++) {
-            E[1][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+3)%7]);
+            E[1][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+3)%7]);
         }
 
         // third row consists of 2-1 triangles
         for (let i = 0; i < 7; i++) {
-            E[2][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+2)%7], this.vertices[(i+3)%7]);
+            E[2][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+2)%7], this.vertices[(i+3)%7]);
         }
 
         // fourth row consists of 2-2 triangles
@@ -390,7 +398,7 @@ class Polygon{
 
         // fifth row consists of 1-3 triangles
         for (let i = 0; i < 7; i++) {
-            E[4][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+4)%7]);
+            E[4][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+4)%7]);
         }
 
         return E;
@@ -422,9 +430,9 @@ class Polygon{
      * The nex embedded/convex/bird power of the polygon
      */
     updateInfo() {
-        this.embedded = MathHelper.isEmbedded(this.vertices);
-        this.convex = MathHelper.isConvex(this.vertices);
-        this.isBird = MathHelper.isBird(this.vertices, this.map.l);
+        this.embedded = Geometry.isEmbedded(this.vertices);
+        this.convex = Geometry.isConvex(this.vertices);
+        this.isBird = Geometry.isBird(this.vertices, this.map.l);
         if (this.showNext) {
             this.nextEmbedded = map.getNextEmbedded(this.vertices);
             this.nextConvex = map.getNextConvex(this.vertices);

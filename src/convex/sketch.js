@@ -37,7 +37,7 @@ function setup() {
     yT = windowHeight/2;
 
     createCanvas(windowWidth, windowHeight);
-    map = new PentagramMap();
+    map = new PentagramMap(l=3);
     polygon = new Polygon(map);
 
     // instantiate panels

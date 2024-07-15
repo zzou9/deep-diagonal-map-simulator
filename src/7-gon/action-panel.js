@@ -110,7 +110,6 @@ class ActionPanel extends Panel {
         try {
             this.polygon.vertices = this.map.act(polygon.cloneVertices());
             this.polygon.updateInfo();
-            console.log(this.polygon.getDistanceToReference());
         }
         catch (err) {
             clearInterval(this.action);

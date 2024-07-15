@@ -8,7 +8,7 @@ class PentagramMap {
      * @param {Number} l diagonal parameter, # vertices skipped
      * @param {Number} k spacing parameter, # vertices skipped
      */
-    constructor(l=3, k=1) {
+    constructor(l=2, k=1) {
         this.l = l; // the diagonal parameter (# vertices skipped)
         this.k = k; // the spacing parameter (# vertices skipped)
         this.prev = new Array(); // keep charge of previous operations (in the form of vertices)
@@ -35,10 +35,10 @@ class PentagramMap {
      */
     applyMap(vertices, l, k, p, normalization, twisted, shifts) {
         // if the polygon has collapsed to a point or a line, stop applying the map
-        if (MathHelper.isPoint(vertices)) {
+        if (Geometry.isPoint(vertices)) {
             throw "The polygon collapsed to a point";
         }
-        if (MathHelper.isLinear(vertices)) {
+        if (Geometry.isLinear(vertices)) {
             throw "The polygon collapsed to a line.";
         }
 
@@ -50,7 +50,7 @@ class PentagramMap {
             const ver2 = vertices[(i+l)%n];
             const ver3 = vertices[(i-k+2*n)%n];
             const ver4 = vertices[(i-k+l+2*n)%n];
-            const vint = MathHelper.getIntersection(ver1, ver2, ver3, ver4);
+            const vint = Geometry.getIntersection(ver1, ver2, ver3, ver4);
             newVertices[i] = vint;
         }
         // apply normalization
@@ -105,7 +105,7 @@ class PentagramMap {
                     return vertices;
                 }
                 count++;
-            } while (!MathHelper.isEmbedded(vTemp)); 
+            } while (!Geometry.isEmbedded(vTemp)); 
             
             if (countIteration) {
                 this.numIterations += this.power * count;
@@ -124,7 +124,7 @@ class PentagramMap {
                     return vertices;
                 }
                 count++;
-            } while (!MathHelper.isConvex(vTemp));
+            } while (!Geometry.isConvex(vTemp));
                 
             if (countIteration) {
                 this.numIterations += this.power * count;
@@ -142,7 +142,7 @@ class PentagramMap {
                     return vertices;
                 }
                 count++;
-            } while (!MathHelper.isBird(vTemp, this.l)); 
+            } while (!Geometry.isBird(vTemp, this.l)); 
 
             if (countIteration) {
                 this.numIterations += this.power * count;
@@ -152,7 +152,7 @@ class PentagramMap {
 
         // record the number of iterations
         if (countIteration) {
-            this.numIterations += this.power * count;
+            this.numIterations += this.power;
         }
         return this.applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted, this.shifts);
     }
@@ -170,7 +170,7 @@ class PentagramMap {
                 return ">1000";
             }
             count++;
-        } while (!MathHelper.isEmbedded(vertices))
+        } while (!Geometry.isEmbedded(vertices))
         return count;
     }
 
@@ -187,7 +187,7 @@ class PentagramMap {
                 return ">100000";
             }
             count++;
-        } while (!MathHelper.isConvex(vertices))
+        } while (!Geometry.isConvex(vertices))
         return count;
     }
 
@@ -204,7 +204,7 @@ class PentagramMap {
                 return ">10000";
             }
             count++;
-        } while (!MathHelper.isBird(vertices, this.l))
+        } while (!Geometry.isBird(vertices, this.l))
         return count;
     }
 
