@@ -358,6 +358,8 @@ class Polygon{
         }
     }
 
+    
+
 
     /**
      * Compute the energy of the map (as in [Sch24])

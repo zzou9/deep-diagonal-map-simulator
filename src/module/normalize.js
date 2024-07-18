@@ -65,7 +65,6 @@ class Normalize {
         const M = getMatrix(v0, v1, v2, v3);
 
         // get the projection map
-        console.log(MathHelper.matrixMult(MathHelper.invert3(E), M));
         const T = MathHelper.matrixMult(MathHelper.invert3(E), M);
 
         // transform all the vertices 
@@ -78,8 +77,8 @@ class Normalize {
                 return null;
             }
             // normalize and round
-            // const x = MathHelper.round(v[0]/v[2], 10); // need to round to 10 digits, otherwise would explode
-            // const y = MathHelper.round(v[1]/v[2], 10);
+            // const x = MathHelper.round(v[0]/v[2], 15); // need to round to 10 digits, otherwise would explode
+            // const y = MathHelper.round(v[1]/v[2], 1);
             newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
         }
         console.log(newVertices);
