@@ -10,11 +10,14 @@ class SevenGon extends Polygon {
     constructor(map) {
         super(map);
         this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
+        this.vertexSize = 8;
         this.canDrag = true;
         this.components = new Map();
         this.componentRecords = new Array();
         this.trajectory = new Array();
-        this.vertexColor = [color.RED, color.ORANGE, color.YELLOW, color.GREEN, color.BLUE, color.VIOLET, color.PURPLE];
+        this.showTrajectory = true; // whether to show the trajectory of the 3rd vertex
+        this.getTrajectory();
+        this.vertexColor = [color.RED, color.ORANGE, color.YELLOW, color.GREEN, color.CYAN, color.VIOLET, color.PURPLE];
     }
 
     /**
@@ -50,7 +53,6 @@ class SevenGon extends Polygon {
         for (let i = 0; i < this.componentRecords.length; i++) {
             data = data + this.componentRecords[i] + "\n";
         }
-        console.log(data);
     }
 
     /**
@@ -178,9 +180,26 @@ class SevenGon extends Polygon {
         this.componentRecords.push(this.components.get(val));
     }
 
-    getTrajectory(numIteration=1000) {
-        
+    /**
+     * Get the trajectories of vertex 1, 3, 5
+     * @param {number} numIteration number of iterations to take the trajectory
+     */
+    getTrajectory(numIteration=Math.pow(2, 13)) {
+        // delete the previously recorded trajectories
+        this.trajectory = new Array(3);
+        for (let i = 0; i < 3; i++) {
+            this.trajectory[i] = new Array(numIteration);
+        }
+        let temp = this.vertices.map(a => a.slice()); // deep copy the vertices
+        for (let j = 0; j < numIteration; j++) {
+            temp = map.act(temp, false, false);
+            this.trajectory[0][j] = temp[1];
+            this.trajectory[1][j] = temp[3];
+            this.trajectory[2][j] = temp[5];
+        }
     }
+
+    
 
     /**
      * Set the vertices back to default (regular n-gon)
@@ -188,8 +207,18 @@ class SevenGon extends Polygon {
      */
     setDefault(numVertex) {
         super.setDefault(numVertex);
+        this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.getTrajectory();
+    }
+
+    /**
+     * Set the vertices to be inscribed
+     */
+    setToInscribed() {
+        super.setToInscribed();
+        this.getTrajectory();
     }
 
     /**
@@ -198,8 +227,10 @@ class SevenGon extends Polygon {
      */
     resetToVertices(verticesToSet) {
         super.resetToVertices(verticesToSet);
+        this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.getTrajectory();
     }
 
     /**
@@ -209,6 +240,7 @@ class SevenGon extends Polygon {
         super.randomInscribed();
         this.components = new Map();
         this.componentRecords = new Array();
+        this.getTrajectory();
     }
 
     /**
@@ -216,8 +248,10 @@ class SevenGon extends Polygon {
      */
     randomConvex() {
         super.randomConvex();
+        this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.getTrajectory();
     }
 
     /**
@@ -225,8 +259,10 @@ class SevenGon extends Polygon {
      */
     randomStarShaped() {
         super.randomStarShaped();
+        this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.getTrajectory();
     }
 
     /**
@@ -234,8 +270,10 @@ class SevenGon extends Polygon {
      */
     randomNonconvex() {
         super.randomNonconvex();
+        this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.getTrajectory();
     }
 
     /**
@@ -310,7 +348,22 @@ class SevenGon extends Polygon {
             stroke(color.BLACK);
             for (let i = 0; i < this.vertices.length; i++) {
                 fill(this.vertexColor[i]);
-                circle(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale, 8);
+                circle(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale, this.vertexSize);
+            }
+        }
+
+        // show the trajectories
+        if (this.showTrajectory) {
+            noStroke();
+            for (let i = 0; i < this.trajectory[0].length; i++) {
+                fill(this.vertexColor[1]);
+                circle(this.trajectory[0][i][0] * this.scale, this.trajectory[0][i][1] * this.scale, 1);
+
+                fill(this.vertexColor[3]);
+                circle(this.trajectory[1][i][0] * this.scale, this.trajectory[1][i][1] * this.scale, 1);
+
+                fill(this.vertexColor[5]);
+                circle(this.trajectory[2][i][0] * this.scale, this.trajectory[2][i][1] * this.scale, 1);
             }
         }
 
@@ -321,7 +374,48 @@ class SevenGon extends Polygon {
      * Drag a vertex 
      */
     dragVertex() {
-        super.dragVertex();
+        if (this.canDrag) {
+            const w = 5 / this.scale;
+            const mX = (mouseX - xT) / this.scale;
+            const mY = (mouseY - yT) / this.scale;
+            let dragging = false;
+            for (let i = 0; i < this.numVertex; i++) {
+                if (mX - w <= this.vertices[i][0] && mX + w >= this.vertices[i][0] 
+                    && mY - w <= this.vertices[i][1] && mY + w >= this.vertices[i][1]
+                    && dragging == false) {
+                    // clear the number of iterations
+                    this.map.numIterations = 0;
+                    dragging = true;
+                    if (this.twisted) {
+                        const k = this.numVertex / 4;
+                        const n = this.numVertex;
+                        if (this.inscribed) {
+                            const r = Math.sqrt(mX * mX + mY * mY);
+                            this.vertices[i] = [mX/r*Math.sqrt(2), mY/r*Math.sqrt(2), 1];
+                            this.vertices[(i+k)%n] = [-mY/r*Math.sqrt(2), mX/r*Math.sqrt(2), 1];
+                            this.vertices[(i+2*k)%n] = [-mX/r*Math.sqrt(2), -mY/r*Math.sqrt(2), 1];
+                            this.vertices[(i+3*k)%n] = [mY/r*Math.sqrt(2), -mX/r*Math.sqrt(2), 1];
+                        } else {
+                            this.vertices[i] = [mX, mY, 1];
+                            this.vertices[(i+k)%n] = [-mY, mX, 1];
+                            this.vertices[(i+2*k)%n] = [-mX, -mY, 1];
+                            this.vertices[(i+3*k)%n] = [mY, -mX, 1];
+                        }
+                    } else {
+                        if (this.inscribed) {
+                            const r = Math.sqrt(mX * mX + mY * mY);
+                            this.vertices[i] = [mX/r*Math.sqrt(2), mY/r*Math.sqrt(2), 1];
+                        } else {
+                            this.vertices[i] = [mX, mY, 1];
+                        }
+                    }
+                    this.updateInfo();
+                    this.getTrajectory();
+                    this.updateToPanel = true;
+                    this.referenceCoords = Geometry.getCornerCoords(this.vertices);
+                }
+            }
+        }
     }
 
     /**

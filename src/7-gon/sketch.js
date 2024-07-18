@@ -19,7 +19,8 @@ const color = {
     CYAN: "#00ffff", 
     CADET_BLUE: "#5f9ea0",
     ROYAL_BLUE: "#4169e1", 
-    KHAKI: "#f0e68c"
+    KHAKI: "#f0e68c",
+    NAVY_BLUE: "#000080"
 }
 
 // panels
@@ -43,6 +44,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     map = new PentagramMap(l=3);
     map.shifts = 1;
+    map.normalization = "Square";
     map.squareVertices = [5, 6, 1, 3];
     polygon = new SevenGon(map);
 
@@ -52,18 +54,18 @@ function setup() {
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
-    modulePanel = new ModulePanel(xT-115, 40, "7-Gon");
+    modulePanel = new ModulePanel(xT-115, 40, "7-Gon", color.BLACK);
 }
 
 function draw() {
-    background(color.CYAN);
+    background(color.BLACK);
     polygon.show();
 
     // title
     noStroke();
     textAlign(CENTER, CENTER);
     textFont("Georgia", 20);
-    fill(color.BLACK);
+    fill(color.WHITE);
     text("Pentagram Map Simulator", xT, 20);
     
     ctrlPanel.show();

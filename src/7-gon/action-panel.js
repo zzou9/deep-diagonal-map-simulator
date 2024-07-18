@@ -14,7 +14,7 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=400) {
+    constructor(x, y, map, polygon, w=200, h=310) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
@@ -76,15 +76,15 @@ class ActionPanel extends Panel {
         this.buttons.push(this.showEllipseButton);
 
         // convex, embed, and bird control
-        this.embedButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
-        this.buttons.push(this.embedButton); 
-        this.convexButton = new Button(this.x+25, this.y+310, 150, 20, [["Skip Nonconvex", color.BLACK]]);
-        this.buttons.push(this.convexButton); 
-        this.birdButton = new Button(this.x+25, this.y+340, 150, 20, [["Skip Non-" + this.map.l + "-Bird", color.BLACK]]);
-        this.buttons.push(this.birdButton); 
+        // this.embedButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
+        // this.buttons.push(this.embedButton); 
+        // this.convexButton = new Button(this.x+25, this.y+310, 150, 20, [["Skip Nonconvex", color.BLACK]]);
+        // this.buttons.push(this.convexButton); 
+        // this.birdButton = new Button(this.x+25, this.y+340, 150, 20, [["Skip Non-" + this.map.l + "-Bird", color.BLACK]]);
+        // this.buttons.push(this.birdButton); 
 
         // show next power
-        this.nextButton = new Button(this.x+25, this.y+370, 150, 20, [["Show Next Power", color.BLACK]]);
+        this.nextButton = new Button(this.x+25, this.y+280, 150, 20, [["Show Next Power", color.BLACK]]);
         this.buttons.push(this.nextButton); 
     }
 
@@ -110,7 +110,7 @@ class ActionPanel extends Panel {
         try {
             this.polygon.vertices = this.map.act(polygon.cloneVertices());
             this.polygon.updateInfo();
-            this.polygon.hashTriangleComponents();
+            // this.polygon.hashTriangleComponents();
         }
         catch (err) {
             clearInterval(this.action);
@@ -212,34 +212,34 @@ class ActionPanel extends Panel {
             }
         }
 
-        // convex and embedded control
-        if (this.embedButton.isHovering()) {
-            if (this.map.onlyEmbedded) {
-                this.map.onlyEmbedded = false;
-                this.embedButton.text = [["Skip Non-Embedded", color.BLACK]];
-            } else {
-                this.map.onlyEmbedded = true;
-                this.embedButton.text = [["Skip Non-Embedded", color.GREEN]];
-            }
-        }
-        if (this.convexButton.isHovering()) {
-            if (this.map.onlyConvex) {
-                this.map.onlyConvex = false;
-                this.convexButton.text = [["Skip Nonconvex", color.BLACK]];
-            } else {
-                this.map.onlyConvex = true;
-                this.convexButton.text = [["Skip Nonconvex", color.GREEN]];
-            }
-        }
-        if (this.birdButton.isHovering()) {
-            if (this.map.onlyBird) {
-                this.map.onlyBird = false;
-                this.birdButton.text = [["Skip Non-" + this.map.l + "-Bird", color.BLACK]];
-            } else {
-                this.map.onlyBird = true;
-                this.birdButton.text = [["Skip Non-" + this.map.l + "-Bird", color.GREEN]];
-            }
-        }
+        // // convex and embedded control
+        // if (this.embedButton.isHovering()) {
+        //     if (this.map.onlyEmbedded) {
+        //         this.map.onlyEmbedded = false;
+        //         this.embedButton.text = [["Skip Non-Embedded", color.BLACK]];
+        //     } else {
+        //         this.map.onlyEmbedded = true;
+        //         this.embedButton.text = [["Skip Non-Embedded", color.GREEN]];
+        //     }
+        // }
+        // if (this.convexButton.isHovering()) {
+        //     if (this.map.onlyConvex) {
+        //         this.map.onlyConvex = false;
+        //         this.convexButton.text = [["Skip Nonconvex", color.BLACK]];
+        //     } else {
+        //         this.map.onlyConvex = true;
+        //         this.convexButton.text = [["Skip Nonconvex", color.GREEN]];
+        //     }
+        // }
+        // if (this.birdButton.isHovering()) {
+        //     if (this.map.onlyBird) {
+        //         this.map.onlyBird = false;
+        //         this.birdButton.text = [["Skip Non-" + this.map.l + "-Bird", color.BLACK]];
+        //     } else {
+        //         this.map.onlyBird = true;
+        //         this.birdButton.text = [["Skip Non-" + this.map.l + "-Bird", color.GREEN]];
+        //     }
+        // }
 
         // show and compute next power
         if (this.nextButton.isHovering()) {

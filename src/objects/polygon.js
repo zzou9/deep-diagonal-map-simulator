@@ -74,6 +74,22 @@ class Polygon{
     }
 
     /**
+     * Set the vertices to be inscribed
+     */
+    setToInscribed() {
+        const r = Math.sqrt(2);
+        for (let i = 0; i < this.numVertex; i++) {
+            const x = this.vertices[i][0];
+            const y = this.vertices[i][1];
+            const mag = Math.sqrt(x * x + y * y);
+            if (mag == 0) {
+                throw new Error("Vertex " + i.toString() + " is at the center");
+            }
+            this.vertices[i] = [x / mag * r, y / mag * r, 1];
+        }
+    }
+
+    /**
      * Reset the polygon to some given vertices
      * @param {Array<Array<Number>>} verticesToSet the vertices of the polygon to set to
      */
@@ -101,13 +117,14 @@ class Polygon{
         angle.sort((a, b) => a - b);
 
         // populate vertices
+        const r = Math.sqrt(2);
         let vertices = new Array(n);
         for (let i = 0; i < n; i++) {
-            vertices[i] = [cos(angle[i]), sin(angle[i]), 1];
+            vertices[i] = [cos(angle[i])*r, sin(angle[i])*r, 1];
         }
 
         // normalize vertices
-        this.vertices = Normalize.ellipseNormalize(vertices);
+        this.vertices = vertices.map(a => a.slice());
 
         // update info
         this.updateInfo();

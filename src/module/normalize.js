@@ -81,7 +81,6 @@ class Normalize {
             // const y = MathHelper.round(v[1]/v[2], 1);
             newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
         }
-        console.log(newVertices);
         return newVertices;
     }
 
