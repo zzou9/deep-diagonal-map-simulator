@@ -8,7 +8,7 @@ numbers = []
 with open(filename, 'r') as file:
     for line in file:
         try:
-            number = math.log(float(line.strip()))
+            number = float(line.strip())
             numbers.append(number)
         except ValueError:
             print(f"Skipping invalid line: {line.strip()}")

@@ -9,9 +9,12 @@ class SevenGon extends Polygon {
      */
     constructor(map) {
         super(map);
+        this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.canDrag = true;
+        this.components = new Map();
+        this.componentRecords = new Array();
+        this.trajectory = new Array();
         this.vertexColor = [color.RED, color.ORANGE, color.YELLOW, color.GREEN, color.BLUE, color.VIOLET, color.PURPLE];
-        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -19,14 +22,9 @@ class SevenGon extends Polygon {
      * @returns the l_2 distance
      */
     getDistanceToReference() {
-        let ref = this.referenceCoords;
-        let curr = Geometry.getCornerCoords(this.vertices);
-        let n = this.numVertex
-        let dist = 0
-        for (let i = 0; i < 2*n; i++) {
-            dist += Math.pow(ref[i] - curr[i], 2);
-        }
-        return Math.sqrt(dist);
+        const ref = this.referenceCoords;
+        const curr = Geometry.getCornerCoords(this.vertices);
+        return MathHelper.l2dist(ref, curr);
     }
 
     /**
@@ -47,13 +45,151 @@ class SevenGon extends Polygon {
         console.log(data);
     }
 
+    recordComponents() {
+        let data = "";
+        for (let i = 0; i < this.componentRecords.length; i++) {
+            data = data + this.componentRecords[i] + "\n";
+        }
+        console.log(data);
+    }
+
+    /**
+     * Computes the corner coordinates of the image polygon under the (3, 1) map
+     * @returns the corner coordinates
+     */
+    getImageCornerCoords31() {
+        const n = this.numVertex;
+        let coords = new Array(2*n);
+        for (let i = 0; i < n; i++) {
+            // positive oriented flag
+
+            // base vector <i-3, i> and <i-2, i+11>
+            const v0 = Geometry.getIntersection(this.vertices[(i-3+n)%n], this.vertices[i], this.vertices[(i-2+n)%n], this.vertices[(i+1)%n]);
+            // intersection of <i, i+3> and <i-3, i>
+            const v1 = this.vertices[i];
+            // intersection of <i, i+3> and <i-2, i+1>
+            const v2 = Geometry.getIntersection(this.vertices[i], this.vertices[(i+3)%n], this.vertices[(i-2+n)%n], this.vertices[(i+1)%n]);
+            // intersection of <i, i+3> and <i-1, i+2>
+            const v3 = Geometry.getIntersection(this.vertices[i], this.vertices[(i+3)%n], this.vertices[(i-1+n)%n], this.vertices[(i+2)%n]);
+            // intersection of <i, i+3> and <i+1, i+4>
+            const v4 = Geometry.getIntersection(this.vertices[i], this.vertices[(i+3)%n], this.vertices[(i+1)%n], this.vertices[(i+4)%n]);
+
+            coords[2*i] = Geometry.inverseCrossRatio(
+                [v1[0] - v0[0], v1[1] - v0[1]],
+                [v2[0] - v0[0], v2[1] - v0[1]],
+                [v3[0] - v0[0], v3[1] - v0[1]],
+                [v4[0] - v0[0], v4[1] - v0[1]]
+            );
+
+            // negative oriented flag
+
+            // base vector <i, i+3> and <i-1, i+2>
+            const u0 = Geometry.getIntersection(this.vertices[i], this.vertices[(i+3)%n], this.vertices[(i-1+n)%n], this.vertices[(i+2)%n]);
+            // intersection of <i-3, i> and <i, i+3>
+            const u1 = this.vertices[i];
+            // intersection of <i-3, i> and <i-1, i+2>
+            const u2 = Geometry.getIntersection(this.vertices[(i-3+n)%n], this.vertices[i], this.vertices[(i-1+n)%n], this.vertices[(i+2)%n]);
+            // intersection of <i-3, i> and <i-2, i+1>
+            const u3 = Geometry.getIntersection(this.vertices[(i-3+n)%n], this.vertices[i], this.vertices[(i-2+n)%n], this.vertices[(i+1)%n]);
+            // intersection of <i-3, i> and <i-4, i-1>
+            const u4 = Geometry.getIntersection(this.vertices[(i-3+n)%n], this.vertices[i], this.vertices[(i-4+n)%n], this.vertices[(i-1+n)%n]);
+            
+            coords[2*i+1] = Geometry.inverseCrossRatio(
+                [u1[0] - u0[0], u1[1] - u0[1]],
+                [u2[0] - u0[0], u2[1] - u0[1]],
+                [u3[0] - u0[0], u3[1] - u0[1]],
+                [u4[0] - u0[0], u4[1] - u0[1]]
+            );
+        }
+
+        return coords;
+    }
+
+    /**
+     * Compute a triangle embedding of a 7-gon (only useful for 7-gons).
+     * The embedding is stored in a 3D array E, where E[i][j][k]
+     * stores the orientation of the triangle spanned by the vertices
+     * i, j, k. 
+     * @returns {Array<Array<Array<Number>>>} the embedding array
+     */
+    triangleEmbedding7() {
+        // setting up the embedding array
+        // The array is in the format of 1-1, 1-2, 2-1, 2-2, 1-3 triangles, each beginning with vertices 0-6
+        let E = new Array(5);
+        for (let i = 0; i < 5; i++) {
+            E[i] = new Array(7);
+        }
+
+        // first row consists of 1-1 triangles
+        for (let i = 0; i < 7; i++) {
+            E[0][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+2)%7]);
+        }
+
+        // second row consists of 1-2 triangles
+        for (let i = 0; i < 7; i++) {
+            E[1][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+3)%7]);
+        }
+
+        // third row consists of 2-1 triangles
+        for (let i = 0; i < 7; i++) {
+            E[2][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+2)%7], this.vertices[(i+3)%7]);
+        }
+
+        // fourth row consists of 2-2 triangles
+        for (let i = 0; i < 7; i++) {
+            E[3][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+2)%7], this.vertices[(i+4)%7]);
+        }
+
+        // fifth row consists of 1-3 triangles
+        for (let i = 0; i < 7; i++) {
+            E[4][i] = Geometry.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+4)%7]);
+        }
+
+        return E;
+    }
+
+    /**
+     * Hash the triangle embedding of the current polygon to the component hashmap.
+     * The embedding is calculated as follows: 
+     * Each embedding is an 5x7 array of {-1, 1}
+     * The hash key is an integer between 0 and 2^35
+     * Loop through the array. 
+     * If the ij-th entry is 1, add 2^(j+7*i) to the hash key.
+     * If the ij-th entry is -1, keep the hash key.
+     * Use the final value for the hash key after looping through the entire array.
+     */
+    hashTriangleComponents() {
+        // first, obtain the hash value
+        const emb = this.triangleEmbedding7();
+        let val = 0;
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 7; j++) {
+                if (emb[i][j] == 1) {
+                    const power = j + 7 * i;
+                    val += Math.pow(2, power);
+                }
+            }
+        }
+        // hash
+        if (!this.components.has(val)) {
+            this.components.set(val, this.components.size);
+        }
+        // record the array
+        this.componentRecords.push(this.components.get(val));
+    }
+
+    getTrajectory(numIteration=1000) {
+        
+    }
+
     /**
      * Set the vertices back to default (regular n-gon)
      * @param {Number} numVertex the number of vertices of the n-gon
      */
     setDefault(numVertex) {
         super.setDefault(numVertex);
-        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
+        this.components = new Map();
+        this.componentRecords = new Array();
     }
 
     /**
@@ -62,7 +198,8 @@ class SevenGon extends Polygon {
      */
     resetToVertices(verticesToSet) {
         super.resetToVertices(verticesToSet);
-        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
+        this.components = new Map();
+        this.componentRecords = new Array();
     }
 
     /**
@@ -70,7 +207,8 @@ class SevenGon extends Polygon {
      */
     randomInscribed() {
         super.randomInscribed();
-        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
+        this.components = new Map();
+        this.componentRecords = new Array();
     }
 
     /**
@@ -78,7 +216,8 @@ class SevenGon extends Polygon {
      */
     randomConvex() {
         super.randomConvex();
-        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
+        this.components = new Map();
+        this.componentRecords = new Array();
     }
 
     /**
@@ -86,7 +225,8 @@ class SevenGon extends Polygon {
      */
     randomStarShaped() {
         super.randomStarShaped();
-        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
+        this.components = new Map();
+        this.componentRecords = new Array();
     }
 
     /**
@@ -94,7 +234,8 @@ class SevenGon extends Polygon {
      */
     randomNonconvex() {
         super.randomNonconvex();
-        this.referenceCoords = Geometry.getCornerCoords(this.vertices);
+        this.components = new Map();
+        this.componentRecords = new Array();
     }
 
     /**
@@ -181,52 +322,6 @@ class SevenGon extends Polygon {
      */
     dragVertex() {
         super.dragVertex();
-    }
-
-    /**
-     * Compute a triangle embedding of a 7-gon (only useful for 7-gons).
-     * The embedding is stored in a 3D array E, where E[i][j][k]
-     * stores the orientation of the triangle spanned by the vertices
-     * i, j, k. 
-     * @returns {Array<Array<Array<Number>>>} the embedding array
-     */
-    triangleEmbedding7() {
-        if (this.numVertex != 7) {
-            throw "This is not a 7-gon";
-        }
-        // setting up the embedding array
-        // The array is in the format of 1-1, 1-2, 2-1, 2-2, 1-3 triangles, each beginning with vertices 0-6
-        let E = new Array(5);
-        for (let i = 0; i < 5; i++) {
-            E[i] = new Array(7);
-        }
-
-        // first row consists of 1-1 triangles
-        for (let i = 0; i < 7; i++) {
-            E[0][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+2)%7]);
-        }
-
-        // second row consists of 1-2 triangles
-        for (let i = 0; i < 7; i++) {
-            E[1][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+3)%7]);
-        }
-
-        // third row consists of 2-1 triangles
-        for (let i = 0; i < 7; i++) {
-            E[2][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+2)%7], this.vertices[(i+3)%7]);
-        }
-
-        // fourth row consists of 2-2 triangles
-        for (let i = 0; i < 7; i++) {
-            E[3][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+2)%7], this.vertices[(i+4)%7]);
-        }
-
-        // fifth row consists of 1-3 triangles
-        for (let i = 0; i < 7; i++) {
-            E[4][i] = MathHelper.triangleOrientation(this.vertices[i], this.vertices[(i+1)%7], this.vertices[(i+4)%7]);
-        }
-
-        return E;
     }
 
     /**

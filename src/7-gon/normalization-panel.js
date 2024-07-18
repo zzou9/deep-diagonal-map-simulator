@@ -44,7 +44,7 @@ class NormalizationPanel extends Panel {
             if (this.map.twisted) {
                 this.polygon.vertices = Normalize.twistedSquareNormalize(this.polygon.vertices);
             } else {
-                this.polygon.vertices = Normalize.squareNormalize(this.polygon.vertices);
+                this.polygon.vertices = Normalize.squareNormalize(this.polygon.vertices, 6, 0, 2, 4);
             }
             this.squareButton.text[0][1] = color.GREEN;
         }

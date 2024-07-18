@@ -12,7 +12,7 @@ class InfoPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=200) {
+    constructor(x, y, polygon, map, w=200, h=240) {
         super(x, y, w, h, "Information", color.KHAKI);
         this.polygon = polygon;
         this.map = map;
@@ -31,6 +31,10 @@ class InfoPanel extends Panel {
         this.buttons.push(this.nextConvexBox);
         this.nextBirdBox = new Button(this.x+25, this.y+160, 150, 20, [["Next Bird: " + this.polygon.nextBird, color.BLACK]], color.KHAKI);
         this.buttons.push(this.nextBirdBox);
+        this.distBox = new Button(this.x+25, this.y+180, 150, 20, [["Dist to Ref: " + MathHelper.round(this.polygon.getDistanceToReference(), 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.distBox);
+        this.componentBox = new Button(this.x+25, this.y+200, 150, 20, [["# Components: " + this.polygon.components.size, color.BLACK]], color.KHAKI);
+        this.buttons.push(this.componentBox);
     }
 
     /**
@@ -45,6 +49,8 @@ class InfoPanel extends Panel {
         this.nextEmbedBox.text = [["Next Embedded: " + this.polygon.nextEmbedded, color.BLACK]];
         this.nextConvexBox.text = [["Next Convex: " + this.polygon.nextConvex, color.BLACK]];
         this.nextBirdBox.text = [["Next Bird: " + this.polygon.nextBird, color.BLACK]];
+        this.distBox.text = [["Dist to Ref: " + MathHelper.round(this.polygon.getDistanceToReference(), 5), color.BLACK]];
+        this.componentBox.text = [["# Components: " + this.polygon.components.size, color.BLACK]];
     }
 
     /**

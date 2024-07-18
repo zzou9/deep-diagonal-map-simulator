@@ -43,6 +43,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     map = new PentagramMap(l=3);
     map.shifts = 1;
+    map.squareVertices = [5, 6, 1, 3];
     polygon = new SevenGon(map);
 
     // instantiate panels
@@ -97,14 +98,7 @@ function keyPressed() {
     if (key === ' ') {
         ctrlPanel.disableInscribe();
         polygon.vertices = map.act(polygon.vertices);
-
-        // // print embedding info
-        // console.log("Embeddings");
-        // console.log(polygon.triangleEmbedding7()[0]);
-        // console.log(polygon.triangleEmbedding7()[1]);
-
-        // print distance to reference
-        console.log(polygon.getDistanceToReference());
+        polygon.hashTriangleComponents();
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
             ctrlPanel.disableInscribe();
@@ -114,7 +108,8 @@ function keyPressed() {
         }
     }
     if (key === 'p') {
-        polygon.recordDistance(500);
+        // polygon.recordDistance(500);
+        polygon.recordComponents();
     }
 
     // changing the diagonals of the map

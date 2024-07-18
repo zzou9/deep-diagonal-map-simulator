@@ -385,5 +385,5 @@ class Geometry extends MathHelper {
         return coords;
     }
 
-    static 
+    
 }

@@ -5,30 +5,68 @@ class Normalize {
 
     /**
      * Normalize the shape so that the first four vertices are on the unit square
+     *  v0 -> [1, 1, 1]
+     *  v1 -> [-1, 1, 1]
+     *  v2 -> [-1, -1, 1]
+     *  v3 -> [1, -1, 1]
      * @param {Array<Array<Number>>} vertices vertices of the polygon
+     * @param {number} [i0=0] index of first vertex
+     * @param {number} [i1=1] index of second vertex
+     * @param {number} [i2=2] index of third vertex
+     * @param {number} [i3=3] index of fourth vertex
      * @returns vertices after normalization
      */
-    static squareNormalize(vertices) {
-        // First, record the homogeneous coords of the points
-        // to project from, which will be the first four vertices
-        // of the polygon
-        const source = [
-            [vertices[0][0], vertices[0][1], 1], 
-            [vertices[1][0], vertices[1][1], 1], 
-            [vertices[2][0], vertices[2][1], 1], 
-            [vertices[3][0], vertices[3][1], 1], 
-        ];
+    static squareNormalize(vertices, i0=0, i1=1, i2=2, i3=3) {
+        /**
+         * our method consists of calculating a map M that maps any
+         * four vertices u0, u1, u2, u3 in the following way:
+         *  u0 -> [1, 0, 0]
+         *  u1 -> [0, 1, 0]
+         *  u2 -> [0, 0, 1]
+         *  u3 -> [1, 1, 1]
+         * we say M is good if it maps the four ui's to scalar multiples of the target 
+         */
 
-        // set up the homogeneous coords of the unit square
-        const unitSquare = [
-            [1, 1, 1],
-            [-1, 1, 1],
-            [-1, -1, 1],
-            [1, -1, 1]
-        ];
+        function getMatrix(v0, v1, v2, v3) {
+            let M = [v0, v1, v2];
+            try {
+                M = MathHelper.transpose(MathHelper.invert3(M));
+            }
+            catch (err) {
+                console.error(err);
+                throw new Error("The points are not in general position");
+            }
+
+            const l = MathHelper.matrixMult(M, MathHelper.vec(v3));
+
+            // check if colinear, throw error
+            if (l[0][0] == 0 || l[0][1] == 0 || l[0][2] == 0) {
+                throw new Error("The points are not in general position");
+            }
+            const D = [
+                [1/l[0][0], 0, 0],
+                [0, 1/l[1][0], 0],
+                [0, 0, 1/l[2][0]]
+            ]
+            return MathHelper.matrixMult(D, M);
+        }
+
+        const e0 = [1, 1, 1];
+        const e1 = [-1, 1, 1];
+        const e2 = [-1, -1, 1];
+        const e3 = [1, -1, 1];
+
+        const v0 = [vertices[i0][0], vertices[i0][1], 1];
+        const v1 = [vertices[i1][0], vertices[i1][1], 1];
+        const v2 = [vertices[i2][0], vertices[i2][1], 1];
+        const v3 = [vertices[i3][0], vertices[i3][1], 1];
+
+        const E = getMatrix(e0, e1, e2, e3);
+        const M = getMatrix(v0, v1, v2, v3);
 
         // get the projection map
-        const T = MathHelper.fourToFourProjection(source, unitSquare);
+        console.log(MathHelper.matrixMult(MathHelper.invert3(E), M));
+        const T = MathHelper.matrixMult(MathHelper.invert3(E), M);
 
         // transform all the vertices 
         let newVertices = new Array(vertices.length);
@@ -40,10 +78,11 @@ class Normalize {
                 return null;
             }
             // normalize and round
-            const x = MathHelper.round(v[0]/v[2],10); // need to round to 10 digits, otherwise would explode
-            const y = MathHelper.round(v[1]/v[2],10);
-            newVertices[i] = [x, y, 1];
+            // const x = MathHelper.round(v[0]/v[2], 10); // need to round to 10 digits, otherwise would explode
+            // const y = MathHelper.round(v[1]/v[2], 10);
+            newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
         }
+        console.log(newVertices);
         return newVertices;
     }
 

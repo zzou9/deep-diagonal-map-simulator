@@ -20,6 +20,7 @@ class PentagramMap {
         this.onlyEmbedded = false; // skip to the nearest embedded power of the map
         this.onlyConvex = false; // skip to the nearest convex power of the map
         this.onlyBird = false; // skip to the nearest power whose image is a bird
+        this.squareVertices = [0, 1, 2, 3]; // vertices to use for square normalization
     }
 
     /**
@@ -58,7 +59,13 @@ class PentagramMap {
             if (twisted) {
                 newVertices = Normalize.twistedSquareNormalize(newVertices);
             } else {
-                newVertices = Normalize.squareNormalize(newVertices);
+                newVertices = Normalize.squareNormalize(
+                    newVertices, 
+                    this.squareVertices[0],
+                    this.squareVertices[1],
+                    this.squareVertices[2],
+                    this.squareVertices[3]
+                );
             }
         }
         if (normalization == "Ellipse") {

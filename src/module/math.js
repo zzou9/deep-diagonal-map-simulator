@@ -163,14 +163,62 @@ class MathHelper {
         const det = mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0];
         // check invertibility
         if (det == 0) {
-            console.error("Matrix is not invertible");
-            return null;
+            throw new Error("Matrix is not invertible");
         }
         let inverse = [
             [mat[1][1] / det, -mat[0][1] / det],
             [-mat[1][0] / det, mat[0][0] / det]
         ];
         return inverse;
+    }
+
+    /**
+     * Compute the cofactor of a 3-by-3 matrix
+     * @param {Array<Array<number>>} matrix the matrix
+     * @param {number} row the row
+     * @param {number} col the column
+     */
+    static cofactor3(matrix, row, col) {
+        const subMatrix = new Array();
+        for (let i = 0; i < 3; i++) {
+            if (i !== row) {
+                const subRow = new Array();
+                for (let j = 0; j < 3; j++) {
+                    if (j !== col) {
+                        subRow.push(matrix[i][j]);
+                    }
+                }
+                subMatrix.push(subRow);
+            }
+        }
+        return ((row + col) % 2 === 0 ? 1 : -1) * (subMatrix[0][0] * subMatrix[1][1] - subMatrix[0][1] * subMatrix[1][0]);
+    }
+
+    /**
+     * Invert a 3-by-3 matrix
+     * @param {Array<Array<Number>>} mat the 3-by-3 matrix to compute the inverse
+     * @returns the inverted matrix
+     */
+    static invert3(mat) {
+        // Check if the input is a 3x3 matrix
+        if (mat.length !== 3 || mat[0].length !== 3 || mat[1].length !== 3 || mat[2].length !== 3) {
+            throw new Error('The input must be a 3x3 matrix.');
+        }
+
+        const det = this.det3(mat);
+        if (det === 0) {
+            throw new Error('The matrix is singular and cannot be inverted.');
+        }
+
+        const inverse = new Array(3);
+        for (let i = 0; i < 3; i++) {
+            inverse[i] = new Array(3);
+            for (let j = 0; j < 3; j++) {
+                inverse[i][j] = this.cofactor3(mat, i, j) / det;
+            }
+        }
+
+        return this.transpose(inverse);
     }
     
     /**
