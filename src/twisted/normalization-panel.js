@@ -38,9 +38,9 @@ class NormalizationPanel extends Panel {
             this.map.normalization = "None";
             this.noneButton.text[0][1] = color.GREEN;
         }
-        if (this.squareButton.isHovering() && this.map.normalization != "Square") {
+        if (this.squareButton.isHovering() && this.map.normalization != "SquareT") {
             this.setDefaultButtonColor();
-            this.map.normalization = "Square";
+            this.map.normalization = "SquareT";
             if (this.map.twisted) {
                 this.polygon.vertices = Normalize.twistedSquareNormalize(this.polygon.cloneVertices());
             } else {
@@ -61,7 +61,7 @@ class NormalizationPanel extends Panel {
             case "None":
                 this.noneButton.text[0][1] = color.BLACK;
                 break;
-            case "Square":
+            case "SquareT":
                 this.squareButton.text[0][1] = color.BLACK;
                 break;
             case "Ellipse":

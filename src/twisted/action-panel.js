@@ -14,11 +14,11 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=340) {
+    constructor(x, y, map, polygon, w=200, h=280) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
-        this.speed = 1;
+        this.speed = 10;
         this.action = null;
         this.isRunning = false;
 
@@ -75,11 +75,11 @@ class ActionPanel extends Panel {
         this.showEllipseButton = new Button(this.x+25, this.y+250, 150, 20, [["Show Ellipse of Inertia", color.GREEN]]);
         this.buttons.push(this.showEllipseButton);
 
-        // convex and embed control
-        this.embedButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
-        this.buttons.push(this.embedButton); 
-        this.convexButton = new Button(this.x+25, this.y+310, 150, 20, [["Skip Nonconvex", color.BLACK]]);
-        this.buttons.push(this.convexButton); 
+        // // convex and embed control
+        // this.embedButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
+        // this.buttons.push(this.embedButton); 
+        // this.convexButton = new Button(this.x+25, this.y+310, 150, 20, [["Skip Nonconvex", color.BLACK]]);
+        // this.buttons.push(this.convexButton); 
     }
 
     /**
@@ -202,24 +202,24 @@ class ActionPanel extends Panel {
             }
         }
 
-        // convex and embedded control
-        if (this.embedButton.isHovering()) {
-            if (this.map.onlyEmbedded) {
-                this.map.onlyEmbedded = false;
-                this.embedButton.text = [["Skip Non-Embedded", color.BLACK]];
-            } else {
-                this.map.onlyEmbedded = true;
-                this.embedButton.text = [["Skip Non-Embedded", color.GREEN]];
-            }
-        }
-        if (this.convexButton.isHovering()) {
-            if (this.map.onlyConvex) {
-                this.map.onlyConvex = false;
-                this.convexButton.text = [["Skip Nonconvex", color.BLACK]];
-            } else {
-                this.map.onlyConvex = true;
-                this.convexButton.text = [["Skip Nonconvex", color.GREEN]];
-            }
-        }
+        // // convex and embedded control
+        // if (this.embedButton.isHovering()) {
+        //     if (this.map.onlyEmbedded) {
+        //         this.map.onlyEmbedded = false;
+        //         this.embedButton.text = [["Skip Non-Embedded", color.BLACK]];
+        //     } else {
+        //         this.map.onlyEmbedded = true;
+        //         this.embedButton.text = [["Skip Non-Embedded", color.GREEN]];
+        //     }
+        // }
+        // if (this.convexButton.isHovering()) {
+        //     if (this.map.onlyConvex) {
+        //         this.map.onlyConvex = false;
+        //         this.convexButton.text = [["Skip Nonconvex", color.BLACK]];
+        //     } else {
+        //         this.map.onlyConvex = true;
+        //         this.convexButton.text = [["Skip Nonconvex", color.GREEN]];
+        //     }
+        // }
     }
 }

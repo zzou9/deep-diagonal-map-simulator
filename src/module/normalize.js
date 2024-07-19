@@ -2,6 +2,38 @@
  * Helper class for normalization
  */
 class Normalize {
+    /**
+     * Calculates a map M that maps any four vertices 
+     * u0, u1, u2, u3 in the following way:
+     *  u0 -> [1, 0, 0]
+     *  u1 -> [0, 1, 0]
+     *  u2 -> [0, 0, 1]
+     *  u3 -> [1, 1, 1]
+     * we say M is good if it maps the four ui's to scalar multiples of the target 
+     */
+    static getMatrix(v0, v1, v2, v3) {
+        let M = [v0, v1, v2];
+        try {
+            M = MathHelper.transpose(MathHelper.invert3(M));
+        }
+        catch (err) {
+            console.error(err);
+            throw new Error("The points are not in general position");
+        }
+
+        const l = MathHelper.matrixMult(M, MathHelper.vec(v3));
+
+        // check if colinear, throw error
+        if (l[0][0] == 0 || l[0][1] == 0 || l[0][2] == 0) {
+            throw new Error("The points are not in general position");
+        }
+        const D = [
+            [1/l[0][0], 0, 0],
+            [0, 1/l[1][0], 0],
+            [0, 0, 1/l[2][0]]
+        ]
+        return MathHelper.matrixMult(D, M);
+    }
 
     /**
      * Normalize the shape so that the first four vertices are on the unit square
@@ -17,40 +49,6 @@ class Normalize {
      * @returns vertices after normalization
      */
     static squareNormalize(vertices, i0=0, i1=1, i2=2, i3=3) {
-        /**
-         * our method consists of calculating a map M that maps any
-         * four vertices u0, u1, u2, u3 in the following way:
-         *  u0 -> [1, 0, 0]
-         *  u1 -> [0, 1, 0]
-         *  u2 -> [0, 0, 1]
-         *  u3 -> [1, 1, 1]
-         * we say M is good if it maps the four ui's to scalar multiples of the target 
-         */
-
-        function getMatrix(v0, v1, v2, v3) {
-            let M = [v0, v1, v2];
-            try {
-                M = MathHelper.transpose(MathHelper.invert3(M));
-            }
-            catch (err) {
-                console.error(err);
-                throw new Error("The points are not in general position");
-            }
-
-            const l = MathHelper.matrixMult(M, MathHelper.vec(v3));
-
-            // check if colinear, throw error
-            if (l[0][0] == 0 || l[0][1] == 0 || l[0][2] == 0) {
-                throw new Error("The points are not in general position");
-            }
-            const D = [
-                [1/l[0][0], 0, 0],
-                [0, 1/l[1][0], 0],
-                [0, 0, 1/l[2][0]]
-            ]
-            return MathHelper.matrixMult(D, M);
-        }
-
         const e0 = [1, 1, 1];
         const e1 = [-1, 1, 1];
         const e2 = [-1, -1, 1];
@@ -61,8 +59,8 @@ class Normalize {
         const v2 = [vertices[i2][0], vertices[i2][1], 1];
         const v3 = [vertices[i3][0], vertices[i3][1], 1];
 
-        const E = getMatrix(e0, e1, e2, e3);
-        const M = getMatrix(v0, v1, v2, v3);
+        const E = this.getMatrix(e0, e1, e2, e3);
+        const M = this.getMatrix(v0, v1, v2, v3);
 
         // get the projection map
         const T = MathHelper.matrixMult(MathHelper.invert3(E), M);
@@ -91,27 +89,36 @@ class Normalize {
      * @returns vertices after normalization
      */
     static twistedSquareNormalize(vertices) {
-        const k = Math.floor(vertices.length / 4);
+        const n = vertices.length;
+        const k = n / 2;
+        const s = n / k
+        const theta = 2 * Math.PI / k; // the angle
+        const r = Math.sqrt(2);
 
-        const source = [
-            [vertices[0][0], vertices[0][1], 1], 
-            [vertices[k][0], vertices[k][1], 1], 
-            [vertices[2*k][0], vertices[2*k][1], 1], 
-            [vertices[3*k][0], vertices[3*k][1], 1], 
-        ];
+        const e0 = [r, 0, 1];
+        const e1 = [MathHelper.round(Math.cos(theta)*r), MathHelper.round(Math.sin(theta)*r), 1];
+        const e2 = [MathHelper.round(Math.cos(2*theta)*r), MathHelper.round(Math.sin(2*theta)*r), 1];
+        const e3 = [MathHelper.round(Math.cos(3*theta)*r), MathHelper.round(Math.sin(3*theta)*r), 1];
 
-        const unitSquare = [
-            [1, 1, 1],
-            [-1, 1, 1],
-            [-1, -1, 1],
-            [1, -1, 1]
-        ];
+        console.log(e0, e1, e2, e3);
+
+        const v0 = [vertices[0][0], vertices[0][1], 1];
+        const v1 = [vertices[s][0], vertices[s][1], 1];
+        const v2 = [vertices[2*s][0], vertices[2*s][1], 1];
+        const v3 = [vertices[3*s][0], vertices[3*s][1], 1];
+
+        const M = this.getMatrix(v0, v1, v2, v3);
+        console.log(M);
+
+        const E = this.getMatrix(e0, e1, e2, e3);
+        console.log(E);
+        
 
         // get the projection map
-        const T = MathHelper.fourToFourProjection(source, unitSquare);
+        const T = MathHelper.matrixMult(MathHelper.invert3(E), M);
 
         // transform all the vertices 
-        let newVertices = new Array(vertices.length);
+        let newVertices = new Array(n);
         for (let i = 0; i < vertices.length; i++) {
             const v = MathHelper.affineTransform(T, vertices[i]);
             // error if v is not on the affine plane
@@ -119,20 +126,10 @@ class Normalize {
                 console.error("v is on the line at infinity!");
                 return null;
             }
-            // normalize and round
-            const x = MathHelper.round(v[0]/v[2],10); // need to round to 10 digits, otherwise would explode
-            const y = MathHelper.round(v[1]/v[2],10);
-            newVertices[i] = [x, y, 1];
+            newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
         }
         return newVertices;
     }
-
-
-    // normalization using the moment of inertia matrix 
-
-
-
-    // physical quantities
 
     /**
      * Get the center of mass of the polygon. The polygon is assumed to have point mass evenly

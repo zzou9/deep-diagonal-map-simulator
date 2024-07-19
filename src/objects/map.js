@@ -94,17 +94,17 @@ class PentagramMap {
         }
         // apply normalization
         if (normalization == "Square") {
-            if (twisted) {
-                newVertices = Normalize.twistedSquareNormalize(newVertices);
-            } else {
-                newVertices = Normalize.squareNormalize(
-                    newVertices, 
-                    this.squareVertices[0],
-                    this.squareVertices[1],
-                    this.squareVertices[2],
-                    this.squareVertices[3]
-                );
-            }
+            newVertices = Normalize.squareNormalize(
+                newVertices, 
+                this.squareVertices[0],
+                this.squareVertices[1],
+                this.squareVertices[2],
+                this.squareVertices[3]
+            );
+        }
+        // for twisted bigons
+        if (normalization == "SquareT") {
+            newVertices = Normalize.twistedSquareNormalize(newVertices);
         }
         if (normalization == "Ellipse") {
             newVertices = Normalize.ellipseNormalize(newVertices);

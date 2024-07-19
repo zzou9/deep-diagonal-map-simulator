@@ -37,7 +37,8 @@ function setup() {
 
     createCanvas(windowWidth, windowHeight);
     map = new PentagramMap(l=2);
-    polygon = new Polygon(map, numVertex=8);
+    map.normalization = normalization = "SquareT";
+    polygon = new TwistedBigon(map, numVertex=8);
     polygon.twisted = true;
     map.twisted = true;
 
@@ -47,18 +48,18 @@ function setup() {
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
-    modulePanel = new ModulePanel(xT-115, 40, "Twisted");
+    modulePanel = new ModulePanel(xT-115, 40, "Twisted", color.BLACK);
 }
 
 function draw() {
-    background(color.CYAN);
+    background(color.BLACK);
     polygon.show();
 
     // title
     noStroke();
     textAlign(CENTER, CENTER);
     textFont("Georgia", 20);
-    fill(color.BLACK);
+    fill(color.WHITE);
     text("Pentagram Map Simulator", xT, 20);
     
     ctrlPanel.show();
