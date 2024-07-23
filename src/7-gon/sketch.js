@@ -45,7 +45,8 @@ function setup() {
     map = new PentagramMap(l=3);
     map.shifts = 1;
     map.normalization = "Square";
-    map.squareVertices = [5, 6, 1, 3];
+    map.squareVertices = [5, 6, 1, 3]; // [6, 0, 2, 4] config
+    // map.squareVertices = [4, 0, 1, 3]; // [5, 1, 2, 4] config
     polygon = new SevenGon(map);
 
     // instantiate panels
@@ -111,7 +112,9 @@ function keyPressed() {
     }
     if (key === 'p') {
         // polygon.recordDistance(500);
-        polygon.recordComponents();
+        // polygon.recordComponents();
+        console.log(polygon.print());
+        console.log(Geometry.getCornerCoords(polygon.vertices));
     }
 
     // changing the diagonals of the map

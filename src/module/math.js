@@ -260,6 +260,39 @@ class MathHelper {
     }
 
     /**
+     * Compute the dot product of two row vectors
+     * @param {Array<Number>} v1 the first vector
+     * @param {Array<Number>} v2 the secondt vector
+     * @returns the dot product as a row vector
+     */
+    static dot(v1, v2) {
+        if (v1.length != v2.length) {
+            throw new Error("The lengths of the two vectors don't match up");
+        }
+        let prod = 0;
+        for (let i = 0; i < v1.length; i++) {
+            prod += v1[i] * v2[i];
+        }
+        return prod;
+    }
+
+    /**
+     * Compute the cross product of two row vectors
+     * @param {Array<Number>} v1 the first vector
+     * @param {Array<Number>} v2 the secondt vector
+     * @returns the cross product as a row vector
+     */
+    static cross(v1, v2) {
+        if (v1.length != 3 || v2.length != 3) {
+            throw new Error("The vectors are not 3-dimensional");
+        }
+        const x = v1[1] * v2[2] - v1[2] * v2[1];
+        const y = -v1[0] * v2[2] + v1[2] * v2[0];
+        const z = v1[0] * v2[1] - v1[1] * v2[0];
+        return [x, y, z];
+    }
+
+    /**
      * Compute the determinant of a 3x3 matrix
      * @param {Array<Array<Number>>} mat the matrix to compute
      * @returns {Number} the determinant of the matrix

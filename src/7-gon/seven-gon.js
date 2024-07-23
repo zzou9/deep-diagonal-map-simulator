@@ -15,8 +15,9 @@ class SevenGon extends Polygon {
         this.components = new Map();
         this.componentRecords = new Array();
         this.trajectory = new Array();
-        this.showTrajectory = true; // whether to show the trajectory of the 3rd vertex
+        this.showTrajectory = false; // whether to show the trajectory of the 3rd vertex
         this.getTrajectory();
+        this.opacity = 0.5; // the opacity of the polygon
         this.vertexColor = [color.RED, color.ORANGE, color.YELLOW, color.GREEN, color.CYAN, color.VIOLET, color.PURPLE];
     }
 
@@ -28,6 +29,17 @@ class SevenGon extends Polygon {
         const ref = this.referenceCoords;
         const curr = Geometry.getCornerCoords(this.vertices);
         return MathHelper.l2dist(ref, curr);
+    }
+
+    getPentagramInvariants() {
+        const coords = Geometry.getCornerCoords(this.vertices);
+        let O = 1;
+        let E = 1;
+        for (let i = 0; i < this.numVertex; i++) {
+            O *= coords[2*i];
+            E *= coords[2*i+1];
+        }
+        return [O, E];
     }
 
     /**
@@ -65,7 +77,7 @@ class SevenGon extends Polygon {
         for (let i = 0; i < n; i++) {
             // positive oriented flag
 
-            // base vector <i-3, i> and <i-2, i+11>
+            // base vector <i-3, i> and <i-2, i+1>
             const v0 = Geometry.getIntersection(this.vertices[(i-3+n)%n], this.vertices[i], this.vertices[(i-2+n)%n], this.vertices[(i+1)%n]);
             // intersection of <i, i+3> and <i-3, i>
             const v1 = this.vertices[i];
@@ -199,8 +211,6 @@ class SevenGon extends Polygon {
         }
     }
 
-    
-
     /**
      * Set the vertices back to default (regular n-gon)
      * @param {Number} numVertex the number of vertices of the n-gon
@@ -291,11 +301,17 @@ class SevenGon extends Polygon {
         }
 
         // draw edges
-        fill(color.WHITE);
+        const alpha = Math.floor(this.opacity * 256 - 1);
+        fill(255, 255, 255, alpha);
         stroke(color.BLACK);
         beginShape();
-        for (let i in this.vertices) {
-            vertex(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale);
+        for (let i = 0; i < this.numVertex; i++) {
+            if (MathHelper.round(this.vertices[i][2]) == 0) {
+                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
+            }
+            const x = this.vertices[i][0] / this.vertices[i][2];
+            const y = this.vertices[i][1] / this.vertices[i][2];
+            vertex(x * this.scale, y * this.scale);
         }
         endShape(CLOSE);
 
@@ -308,22 +324,26 @@ class SevenGon extends Polygon {
             // draw diagonals
             stroke(color.GREEN);
             for (let i = 0; i < n; i++) {
-                line(this.vertices[i%n][0] * this.scale, this.vertices[i%n][1] * this.scale,
-                    this.vertices[(i+l)%n][0] * this.scale, this.vertices[(i+l)%n][1] * this.scale
+                line(this.vertices[i%n][0]/this.vertices[i%n][2] * this.scale, 
+                    this.vertices[i%n][1]/this.vertices[i%n][2] * this.scale,
+                    this.vertices[(i+l)%n][0]/this.vertices[(i+l)%n][2] * this.scale, 
+                    this.vertices[(i+l)%n][1]/this.vertices[(i+l)%n][2] * this.scale
                 );
-
             }
 
             // draw vertices
             noStroke();
             for (let i = 0; i < n; i++) {
-                const ver1 = this.vertices[i%n];
-                const ver2 = this.vertices[(i+l)%n];
-                const ver3 = this.vertices[(i-k+2*n)%n];
-                const ver4 = this.vertices[(i-k+l+2*n)%n];
-                const ver = Geometry.getIntersection(ver1, ver2, ver3, ver4);
+                const v1 = this.vertices[i%n];
+                const v2 = this.vertices[(i+l)%n];
+                const v3 = this.vertices[(i-k+2*n)%n];
+                const v4 = this.vertices[(i-k+l+2*n)%n];
+                const vInt = Geometry.getIntersection(v1, v2, v3, v4);
+                if (MathHelper.round(vInt[2]) == 0) {
+                    throw new Error("The intersection is not on the affine patch");
+                }
                 fill(this.vertexColor[(i+this.map.shifts)%n]);
-                circle(ver[0] * this.scale, ver[1] * this.scale, 5);
+                circle(vInt[0]/vInt[2] * this.scale, vInt[1]/vInt[2] * this.scale, 5);
             }
         }
 
@@ -343,27 +363,44 @@ class SevenGon extends Polygon {
             rotate(theta);
         }
 
-        // draw vertices with color red
-        if (this.canDrag) {
-            stroke(color.BLACK);
-            for (let i = 0; i < this.vertices.length; i++) {
-                fill(this.vertexColor[i]);
-                circle(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale, this.vertexSize);
-            }
-        }
-
         // show the trajectories
         if (this.showTrajectory) {
             noStroke();
             for (let i = 0; i < this.trajectory[0].length; i++) {
+                if (MathHelper.round(this.trajectory[0][i][2]) == 0) {
+                    throw new Error("Vertex 1 is on the line at infinity");
+                }
                 fill(this.vertexColor[1]);
-                circle(this.trajectory[0][i][0] * this.scale, this.trajectory[0][i][1] * this.scale, 1);
+                circle(this.trajectory[0][i][0] / this.trajectory[0][i][2] * this.scale, 
+                    this.trajectory[0][i][1] / this.trajectory[0][i][2] * this.scale, 1
+                );
 
+                if (MathHelper.round(this.trajectory[1][i][2]) == 0) {
+                    throw new Error("Vertex 3 is on the line at infinity");
+                }
                 fill(this.vertexColor[3]);
-                circle(this.trajectory[1][i][0] * this.scale, this.trajectory[1][i][1] * this.scale, 1);
+                circle(this.trajectory[1][i][0] / this.trajectory[1][i][2] * this.scale, 
+                    this.trajectory[1][i][1] / this.trajectory[1][i][2] * this.scale, 1
+                );
 
+                if (MathHelper.round(this.trajectory[2][i][2]) == 0) {
+                    throw new Error("Vertex 5 is on the line at infinity");
+                }
                 fill(this.vertexColor[5]);
-                circle(this.trajectory[2][i][0] * this.scale, this.trajectory[2][i][1] * this.scale, 1);
+                circle(this.trajectory[2][i][0] / this.trajectory[2][i][2] * this.scale, 
+                    this.trajectory[2][i][1] / this.trajectory[2][i][2] * this.scale, 1
+                );
+            }
+        }
+
+        // draw vertices with color
+        if (this.canDrag) {
+            stroke(color.BLACK);
+            for (let i = 0; i < this.numVertex; i++) {
+                const x = this.vertices[i][0] / this.vertices[i][2];
+                const y = this.vertices[i][1] / this.vertices[i][2];
+                fill(this.vertexColor[i]);
+                circle(x * this.scale, y * this.scale, 5);
             }
         }
 
@@ -380,8 +417,8 @@ class SevenGon extends Polygon {
             const mY = (mouseY - yT) / this.scale;
             let dragging = false;
             for (let i = 0; i < this.numVertex; i++) {
-                if (mX - w <= this.vertices[i][0] && mX + w >= this.vertices[i][0] 
-                    && mY - w <= this.vertices[i][1] && mY + w >= this.vertices[i][1]
+                if (mX - w <= this.vertices[i][0]/this.vertices[i][2] && mX + w >= this.vertices[i][0]/this.vertices[i][2] 
+                    && mY - w <= this.vertices[i][1]/this.vertices[i][2] && mY + w >= this.vertices[i][1]/this.vertices[i][2]
                     && dragging == false) {
                     // clear the number of iterations
                     this.map.numIterations = 0;

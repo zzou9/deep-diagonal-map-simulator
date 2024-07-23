@@ -39,6 +39,7 @@ function setup() {
     map = new PentagramMap(l=2);
     map.normalization = normalization = "SquareT";
     polygon = new TwistedBigon(map, numVertex=8);
+    polygon.canDrag = true;
     polygon.twisted = true;
     map.twisted = true;
 
@@ -102,17 +103,11 @@ function keyPressed() {
 
     // changing the number of vertices of a polygon
     if (keyCode === UP_ARROW) { 
-        if (polygon.twisted) {
-            polygon.setDefault(polygon.numVertex+4);
-        } else {
-            polygon.setDefault(polygon.numVertex+1);
-        }
+        polygon.setDefault(polygon.numVertex+2);
     } else if (keyCode === DOWN_ARROW){ 
-        if (polygon.twisted && polygon.numVertex > 3*map.k+4) {
-            polygon.setDefault(Math.max(polygon.numVertex-4, 8));
-        } else if (polygon.numVertex > 3*map.k+1) {
-            polygon.setDefault(Math.max(polygon.numVertex-1, 5));
-        }
+        if (polygon.numVertex > 3*map.l) {
+            polygon.setDefault(Math.max(polygon.numVertex-2, 8));
+        } 
     }
 
     // changing the diagonals of the map

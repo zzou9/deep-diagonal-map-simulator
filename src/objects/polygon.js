@@ -267,8 +267,13 @@ class Polygon{
         fill(color.WHITE);
         stroke(color.BLACK);
         beginShape();
-        for (let i in this.vertices) {
-            vertex(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale);
+        for (let i = 0; i < this.numVertex; i++) {
+            if (MathHelper.round(this.vertices[i][2]) == 0) {
+                throw new Error("Vertex" + i.toString() + "is not on the affine patch");
+            }
+            const x = this.vertices[i][0] / this.vertices[i][2];
+            const y = this.vertices[i][1] / this.vertices[i][2];
+            vertex(x * this.scale, y * this.scale);
         }
         endShape(CLOSE);
 
@@ -281,22 +286,26 @@ class Polygon{
             // draw diagonals
             stroke(color.GREEN);
             for (let i = 0; i < n; i++) {
-                line(this.vertices[i%n][0] * this.scale, this.vertices[i%n][1] * this.scale,
-                    this.vertices[(i+l)%n][0] * this.scale, this.vertices[(i+l)%n][1] * this.scale
+                line(this.vertices[i%n][0]/this.vertices[i%n][2] * this.scale, 
+                    this.vertices[i%n][1]/this.vertices[i%n][2] * this.scale,
+                    this.vertices[(i+l)%n][0]/this.vertices[(i+l)%n][2] * this.scale, 
+                    this.vertices[(i+l)%n][1]/this.vertices[(i+l)%n][2] * this.scale
                 );
-
             }
 
             // draw vertices
             fill(color.RED);
             noStroke();
             for (let i = 0; i < n; i++) {
-                const ver1 = this.vertices[i%n];
-                const ver2 = this.vertices[(i+l)%n];
-                const ver3 = this.vertices[(i-k+2*n)%n];
-                const ver4 = this.vertices[(i-k+l+2*n)%n];
-                const ver = Geometry.getIntersection(ver1, ver2, ver3, ver4);
-                circle(ver[0] * this.scale, ver[1] * this.scale, 5);
+                const v1 = this.vertices[i%n];
+                const v2 = this.vertices[(i+l)%n];
+                const v3 = this.vertices[(i-k+2*n)%n];
+                const v4 = this.vertices[(i-k+l+2*n)%n];
+                const vInt = Geometry.getIntersection(v1, v2, v3, v4);
+                if (MathHelper.round(vInt[2]) == 0) {
+                    throw new Error("The intersection is not on the affine patch");
+                }
+                circle(vInt[0]/vInt[2] * this.scale, vInt[1]/vInt[2] * this.scale, 5);
             }
         }
 
@@ -320,10 +329,16 @@ class Polygon{
         if (this.canDrag) {
             fill(color.RED);
             noStroke();
-            for (let i = 0; i < this.vertices.length; i++) {
-                circle(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale, 5);
+            for (let i = 0; i < this.numVertex; i++) {
+                if (MathHelper.round(this.vertices[i][2]) == 0) {
+                    throw new Error("Vertex" + i.toString() + "is not on the affine patch");
+                }
+                const x = this.vertices[i][0] / this.vertices[i][2];
+                const y = this.vertices[i][1] / this.vertices[i][2];
+                circle(x * this.scale, y * this.scale, 5);
             }
         }
+        
 
         translate(-xT, -yT);
     }
@@ -338,8 +353,8 @@ class Polygon{
             const mY = (mouseY - yT) / this.scale;
             let dragging = false;
             for (let i = 0; i < this.numVertex; i++) {
-                if (mX - w <= this.vertices[i][0] && mX + w >= this.vertices[i][0] 
-                    && mY - w <= this.vertices[i][1] && mY + w >= this.vertices[i][1]
+                if (mX - w <= this.vertices[i][0]/this.vertices[i][2] && mX + w >= this.vertices[i][0]/this.vertices[i][2] 
+                    && mY - w <= this.vertices[i][1]/this.vertices[i][2] && mY + w >= this.vertices[i][1]/this.vertices[i][2]
                     && dragging == false) {
                     // clear the number of iterations
                     this.map.numIterations = 0;
@@ -424,7 +439,7 @@ class Polygon{
         console.log("This is a polygon with", this.numVertex, "vertices:");
         for (let i = 0; i < this.numVertex; i++) {
             // I don't know how to deal with rounding ups
-            console.log("vertex", v, "is at", this.vertices[i][0], this.vertices[i][1]);
+            console.log("vertex", i, "is at", this.vertices[i][0], this.vertices[i][1], this.vertices[i][2]);
         }
     }
 

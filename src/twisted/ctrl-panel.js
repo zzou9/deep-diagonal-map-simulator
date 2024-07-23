@@ -17,13 +17,13 @@ class CtrlPanel extends Panel {
         this.polygon = polygon;
         this.map = map;
         // populate the buttons
-        this.numVertexBox = new Button(this.x+25, this.y+40, 100, 20, [["# Vertices: " + this.polygon.numVertex, color.BLACK]]);
-        this.buttons.push(this.numVertexBox);
-        this.decNumVertex = new TriangleButton(this.x+135, this.y+45, 10, 10, "left");
-        this.buttons.push(this.decNumVertex);
-        this.incNumVertex = new TriangleButton(this.x+155, this.y+45, 10, 10, "right");
-        this.buttons.push(this.incNumVertex);
-        this.dragButton = new Button(this.x+25, this.numVertexBox.y+this.numVertexBox.h+10, 150, 20, [["Drag: ", color.BLACK], ["Off", color.RED]]);
+        this.symmetryBox = new Button(this.x+25, this.y+40, 100, 20, [["Symmetries: " + this.polygon.symmetry, color.BLACK]]);
+        this.buttons.push(this.symmetryBox);
+        this.decSymmetryBox = new TriangleButton(this.x+135, this.y+45, 10, 10, "left");
+        this.buttons.push(this.decSymmetryBox);
+        this.incSymmetryBox = new TriangleButton(this.x+155, this.y+45, 10, 10, "right");
+        this.buttons.push(this.incSymmetryBox);
+        this.dragButton = new Button(this.x+25, this.symmetryBox.y+this.symmetryBox.h+10, 150, 20, [["Drag: ", color.BLACK], ["On", color.GREEN]]);
         this.buttons.push(this.dragButton);
         this.inscribeButton = new Button(this.x+25, this.dragButton.y+this.dragButton.h+10, 150, 20, [["Inscribed: ", color.BLACK], ["Off", color.RED]]);
         this.buttons.push(this.inscribeButton);
@@ -34,18 +34,14 @@ class CtrlPanel extends Panel {
      */
     show() {
         super.show();
-        this.updateNumVertices();
+        this.updateSymmetry();
     }
 
     /**
-     * Update the text in the numVertex box
+     * Update the text in the symmetry box
      */
-    updateNumVertices() {
-        if (this.polygon.twisted) {
-            this.numVertexBox.text[0][0] = "# Vertices: " + Math.floor(this.polygon.numVertex/4);
-        } else {
-            this.numVertexBox.text[0][0] = "# Vertices: " + this.polygon.numVertex;
-        }
+    updateSymmetry() {
+        this.symmetryBox.text[0][0] = "Symmetries: " + this.polygon.symmetry;
     }
 
     /**
@@ -60,26 +56,12 @@ class CtrlPanel extends Panel {
      * Mouse Action
      */
     buttonMouseAction() {
-        // changing number of vertices for normal polygons
-        if (!this.polygon.twisted) {
-            if (this.decNumVertex.isHovering() && this.polygon.numVertex > 5 && this.polygon.numVertex > 3*this.map.k+1) {
-                this.polygon.setDefault(this.polygon.numVertex - 1);
-            }
-            if (this.incNumVertex.isHovering()) {
-                this.polygon.setDefault(this.polygon.numVertex + 1);
-            }
+        if (this.decSymmetryBox.isHovering() && this.polygon.numVertex > 8 && this.polygon.numVertex > 3*this.map.l) {
+            this.polygon.setDefault(this.polygon.numVertex - 2);
         }
-        
-        // changing number of vertices for twisted polygons
-        if (this.polygon.twisted) {
-            if (this.decNumVertex.isHovering() && this.polygon.numVertex > 11 && this.polygon.numVertex > 3*this.map.k+1) {
-                this.polygon.setDefault(this.polygon.numVertex - 4);
-            }
-            if (this.incNumVertex.isHovering()) {
-                this.polygon.setDefault(this.polygon.numVertex + 4);
-            }
+        if (this.incSymmetryBox.isHovering()) {
+            this.polygon.setDefault(this.polygon.numVertex + 2);
         }
-
         if (this.dragButton.isHovering()) {
             if (this.polygon.canDrag) {
                 this.polygon.canDrag = false;

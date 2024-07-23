@@ -37,51 +37,14 @@ class PentagramMap {
     applyMap(vertices, l, k, p, normalization, twisted, shifts) {
         // if the polygon has collapsed to a point or a line, stop applying the map
         if (Geometry.isPoint(vertices)) {
-            throw "The polygon collapsed to a point";
+            throw new Error("The polygon collapsed to a point");
         }
         if (Geometry.isLinear(vertices)) {
-            throw "The polygon collapsed to a line.";
+            throw new Error("The polygon collapsed to a line.");
         }
 
         const n = vertices.length;
         let newVertices = vertices.map(a => a.slice()); // deep copying the vertices
-
-        // // factorize the (l, k) map into (k+1, k) * (k+2, k+1) * ... * (l, l-1)
-        // // this helps guarantee the accuracy of the normalization
-        // for (let j = l; j > k; j--) {
-        //     // apply the (j, j-1) map
-        //     const temp = newVertices.map(a => a.slice()); // temporarily record the vertices of the previous iteration
-        //     for (let i = 0; i < n; i++) {
-        //         // the numbering of the vertices follows from Schwartz's bird paper
-        //         const ver1 = temp[i];
-        //         const ver2 = temp[(i+j)%n];
-        //         const ver3 = temp[(i-(j-1)+2*n)%n];
-        //         const ver4 = temp[(i+1+2*n)%n];
-        //         const vint = Geometry.getIntersection(ver1, ver2, ver3, ver4);
-        //         newVertices[i] = vint;
-        //         console.log("Vertex", i);
-        //         console.log(i, (i+j)%n, (i-(j-1)+2*n)%n, (i+1+2*n)%n);
-        //         console.log(Geometry.getIntersection(temp[0], temp[2], temp[6], temp[1]));
-        //     }
-        //     console.log(newVertices);
-        //     // apply normalization
-        //     if (normalization == "Square") {
-        //         if (twisted) {
-        //             newVertices = Normalize.twistedSquareNormalize(newVertices);
-        //         } else {
-        //             newVertices = Normalize.squareNormalize(
-        //                 newVertices, 
-        //                 this.squareVertices[0],
-        //                 this.squareVertices[1],
-        //                 this.squareVertices[2],
-        //                 this.squareVertices[3]
-        //             );
-        //         }
-        //     }
-        //     if (normalization == "Ellipse") {
-        //         newVertices = Normalize.ellipseNormalize(newVertices);
-        //     }
-        // }
 
         for (let i = 0; i < n; i++) {
             // the numbering of the vertices follows from Schwartz's bird paper

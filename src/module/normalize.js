@@ -54,13 +54,8 @@ class Normalize {
         const e2 = [-1, -1, 1];
         const e3 = [1, -1, 1];
 
-        const v0 = [vertices[i0][0], vertices[i0][1], 1];
-        const v1 = [vertices[i1][0], vertices[i1][1], 1];
-        const v2 = [vertices[i2][0], vertices[i2][1], 1];
-        const v3 = [vertices[i3][0], vertices[i3][1], 1];
-
         const E = this.getMatrix(e0, e1, e2, e3);
-        const M = this.getMatrix(v0, v1, v2, v3);
+        const M = this.getMatrix(vertices[i0], vertices[i1], vertices[i2], vertices[i3]);
 
         // get the projection map
         const T = MathHelper.matrixMult(MathHelper.invert3(E), M);
@@ -69,15 +64,20 @@ class Normalize {
         let newVertices = new Array(vertices.length);
         for (let i = 0; i < vertices.length; i++) {
             const v = MathHelper.affineTransform(T, vertices[i]);
-            // error if v is not on the affine plane
-            if (v[2] == 0) {
-                console.error("v is on the line at infinity!");
-                return null;
-            }
+            // // error if v is not on the affine plane
+            // if (v[2] == 0) {
+            //     throw new Error("v is on the line at infinity!");
+            // }
             // normalize and round
             // const x = MathHelper.round(v[0]/v[2], 15); // need to round to 10 digits, otherwise would explode
             // const y = MathHelper.round(v[1]/v[2], 1);
-            newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
+            // newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
+
+            if (MathHelper.round(Math.abs(v[2])) != 0) {
+                newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
+            } else {
+                newVertices[i] = v;
+            }
         }
         return newVertices;
     }
@@ -86,12 +86,13 @@ class Normalize {
      * Square normalize for twisted polygons. 
      * Fixes the first vertex of the first four iterations.
      * @param {Array<Array<Number>>} vertices vertices of the polygon
+     * @param {boolean} [broadcast=true] whether to broadcast the vertices via the monodromy (rotation case)
      * @returns vertices after normalization
      */
-    static twistedSquareNormalize(vertices) {
+    static twistedSquareNormalize(vertices, broadcast=true) {
         const n = vertices.length;
-        const k = n / 2;
-        const s = n / k
+        const k = n / 2; // k-fold rotational symmetry
+        const s = n / k;
         const theta = 2 * Math.PI / k; // the angle
         const r = Math.sqrt(2);
 
@@ -100,19 +101,8 @@ class Normalize {
         const e2 = [MathHelper.round(Math.cos(2*theta)*r), MathHelper.round(Math.sin(2*theta)*r), 1];
         const e3 = [MathHelper.round(Math.cos(3*theta)*r), MathHelper.round(Math.sin(3*theta)*r), 1];
 
-        console.log(e0, e1, e2, e3);
-
-        const v0 = [vertices[0][0], vertices[0][1], 1];
-        const v1 = [vertices[s][0], vertices[s][1], 1];
-        const v2 = [vertices[2*s][0], vertices[2*s][1], 1];
-        const v3 = [vertices[3*s][0], vertices[3*s][1], 1];
-
-        const M = this.getMatrix(v0, v1, v2, v3);
-        console.log(M);
-
+        const M = this.getMatrix(vertices[0], vertices[2], vertices[4], vertices[6]);
         const E = this.getMatrix(e0, e1, e2, e3);
-        console.log(E);
-        
 
         // get the projection map
         const T = MathHelper.matrixMult(MathHelper.invert3(E), M);
@@ -128,7 +118,38 @@ class Normalize {
             }
             newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
         }
+
+        if (broadcast) {
+            newVertices = this.broadcastVertices(newVertices.map(a => a.slice()));
+        }
+
         return newVertices;
+    }
+
+    /**
+     * Broadcast the first 2 vertices to the others via the monodromy
+     */
+    static broadcastVertices(vertices) {
+        if (vertices.length % 2 != 0) {
+            throw new Error("This is not a twisted bigon");
+        }
+        const s = vertices.length / 2;
+        const theta = Math.PI * 2 / s;
+        const A0 = vertices[0];
+        const A1 = vertices[1];
+        for (let i = 1; i < s; i++) {
+            vertices[2*i] = [
+                Math.cos(i*theta) * A0[0] - Math.sin(i*theta) * A0[1],
+                Math.sin(i*theta) * A0[0] + Math.cos(i*theta) * A0[1], 
+                1
+            ];
+            vertices[2*i+1] = [
+                Math.cos(i*theta) * A1[0] - Math.sin(i*theta) * A1[1],
+                Math.sin(i*theta) * A1[0] + Math.cos(i*theta) * A1[1], 
+                1
+            ];
+        }
+        return vertices;
     }
 
     /**

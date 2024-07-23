@@ -72,14 +72,8 @@ class ActionPanel extends Panel {
         this.buttons.push(this.actionButton);
         this.showDiagonalButton = new Button(this.x+25, this.y+220, 150, 20, [["Show Diagonals", color.GREEN]]);
         this.buttons.push(this.showDiagonalButton);
-        this.showEllipseButton = new Button(this.x+25, this.y+250, 150, 20, [["Show Ellipse of Inertia", color.GREEN]]);
-        this.buttons.push(this.showEllipseButton);
-
-        // // convex and embed control
-        // this.embedButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
-        // this.buttons.push(this.embedButton); 
-        // this.convexButton = new Button(this.x+25, this.y+310, 150, 20, [["Skip Nonconvex", color.BLACK]]);
-        // this.buttons.push(this.convexButton); 
+        this.showTrajectorybutton = new Button(this.x+25, this.y+250, 150, 20, [["Hide Trajectory", color.RED]]);
+        this.buttons.push(this.showTrajectorybutton);
     }
 
     /**
@@ -100,6 +94,7 @@ class ActionPanel extends Panel {
     mapAction() {
         try {
             this.polygon.vertices = this.map.act(polygon.cloneVertices());
+            this.polygon.broadcastVertices();
             this.polygon.updateInfo;
         }
         catch (err) {
@@ -118,26 +113,31 @@ class ActionPanel extends Panel {
         if (this.decDiagonal.isHovering() && this.map.l-1 > this.map.k) {
             this.map.l--;
             this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
+            this.polygon.getTrajectory();
         }
         if (this.incDiagonal.isHovering() && this.polygon.numVertex > 3*this.map.l) {
             this.map.l++;
             this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
+            this.polygon.getTrajectory();
         }
 
         // spacing control
         if (this.decSpacing.isHovering() && this.map.k > 1) {
             this.map.k--;
             this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
+            this.polygon.getTrajectory();
         }
         if (this.incSpacing.isHovering() && this.map.k < this.map.l-1 && this.polygon.numVertex > 3*this.map.k+1) {
             this.map.k++;
             this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
+            this.polygon.getTrajectory();
         }
 
         // shifting control
         if (this.decShifts.isHovering() && this.map.shifts > 0) {
             this.map.shifts--;
             this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
+            this.polygon.getTrajectory();
         }
         if (this.incShifts.isHovering()) {
             if (this.map.twisted) {
@@ -149,6 +149,7 @@ class ActionPanel extends Panel {
                 this.map.shifts++;
                 this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
             }
+            this.polygon.getTrajectory();
         }
 
         // speed control
@@ -165,10 +166,12 @@ class ActionPanel extends Panel {
         if (this.decPower.isHovering() && this.map.power > 1) {
             this.map.power--;
             this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
+            this.polygon.getTrajectory();
         }
         if (this.incPower.isHovering()) {
             this.map.power++;
             this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
+            this.polygon.getTrajectory();
         }
 
         // display control
@@ -192,34 +195,14 @@ class ActionPanel extends Panel {
                 this.showDiagonalButton.text = [["Show Diagonals", color.GREEN]];
             }
         }
-        if (this.showEllipseButton.isHovering()) {
-            if (!this.polygon.showEllipse) {
-                this.polygon.showEllipse = true;
-                this.showEllipseButton.text = [["Hide Ellipse of Inertia", color.RED]];
+        if (this.showTrajectorybutton.isHovering()) {
+            if (!this.polygon.showTrajectory) {
+                this.polygon.showTrajectory = true;
+                this.showTrajectorybutton.text = [["Hide Trajectory", color.RED]];
             } else {
-                this.polygon.showEllipse = false;
-                this.showEllipseButton.text = [["Show Ellipse of Inertia", color.GREEN]];
+                this.polygon.showTrajectory = false;
+                this.showTrajectorybutton.text = [["Show Trajectory", color.GREEN]];
             }
         }
-
-        // // convex and embedded control
-        // if (this.embedButton.isHovering()) {
-        //     if (this.map.onlyEmbedded) {
-        //         this.map.onlyEmbedded = false;
-        //         this.embedButton.text = [["Skip Non-Embedded", color.BLACK]];
-        //     } else {
-        //         this.map.onlyEmbedded = true;
-        //         this.embedButton.text = [["Skip Non-Embedded", color.GREEN]];
-        //     }
-        // }
-        // if (this.convexButton.isHovering()) {
-        //     if (this.map.onlyConvex) {
-        //         this.map.onlyConvex = false;
-        //         this.convexButton.text = [["Skip Nonconvex", color.BLACK]];
-        //     } else {
-        //         this.map.onlyConvex = true;
-        //         this.convexButton.text = [["Skip Nonconvex", color.GREEN]];
-        //     }
-        // }
     }
 }

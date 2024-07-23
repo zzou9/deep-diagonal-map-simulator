@@ -3,35 +3,22 @@
  */
 class Geometry extends MathHelper {
     /**
-     * This method calculates the intersection of two lines by solving a linear system.
-     * The method takes in four vertices v_1, v_2, v_3, v_4. It construct two lines using:
-     *  l_1(s) = v_1 + s * (v_2 - v_1)
-     *  l_2(t) = v_3 + s * (v_4 - v_3)
-     * It then solves for s and t by solving a linear system
-     * @param {Array<Number>} ver1 line 1 vertex 1
-     * @param {Array<Number>} ver2 line 1 vertex 2
-     * @param {Array<Number>} ver3 line 2 vertex 1
-     * @param {Array<Number>} ver4 line 2 vertex 2
+     * This method calculates the intersection of two lines by calculating the cross product
+     * @param {Array<Number>} v1 line 1 vertex 1
+     * @param {Array<Number>} v2 line 1 vertex 2
+     * @param {Array<Number>} v3 line 2 vertex 1
+     * @param {Array<Number>} v4 line 2 vertex 2
      * @returns {Array<Number>} the vertex of the intersection
      */
-    static getIntersection(ver1, ver2, ver3, ver4) {
+    static getIntersection(v1, v2, v3, v4) {
         // setting up the linear system
-        const mat = [
-            [ver2[0] - ver1[0], ver3[0] - ver4[0]], 
-            [ver2[1] - ver1[1], ver3[1] - ver4[1]]
-        ];
-        const b = [
-            [ver3[0] - ver1[0]], 
-            [ver3[1] - ver1[1]]
-        ];
-        const matInverse = this.invert2(mat);
-        const param = this.matrixMult(matInverse, b);
-
-        // finding the intersection point
-        const s = param[0][0];
-        const interX = ver1[0] + s * (ver2[0] - ver1[0]);
-        const interY = ver1[1] + s * (ver2[1] - ver1[1]);
-        return [interX, interY, 1];
+        const l1 = this.cross(v1, v2);
+        const l2 = this.cross(v3, v4);
+        const vInt = this.cross(l1, l2);
+        if (MathHelper.round(Math.abs(vInt[2])) != 0) {
+            return [vInt[0]/vInt[2], vInt[1]/vInt[2], 1];
+        }
+        return vInt;
     }
 
     /**
@@ -309,32 +296,30 @@ class Geometry extends MathHelper {
     }
 
     /**
-     * Compute the inverse cross ratio of four lines (see https://en.wikipedia.org/wiki/Pentagram_map)
-     * @param {Array<Number>} l1 l1 coords
-     * @param {Array<Number>} l2 l2 coords
-     * @param {Array<Number>} l3 l3 coords
-     * @param {Array<Number>} l4 l4 coords
+     * Compute the inverse cross ratio of four colinear points (see https://en.wikipedia.org/wiki/Pentagram_map)
+     * 
+     * The inverse cross ratio is given by 
+     *  (A - B)(C - D)/(A - C)(B - D)
+     * 
+     * It is a rational function of the homogeneous coordinates of A, B, C, D
+     * 
+     * Suppose we have a point O that does not lie on the line, we can get the inverse cross ratio by 
+     *  (sin(AOB) * sin(COD)) / (sin(AOC) * sin(BOD))
+     * This is then obtained by 
+     *  ((A x B) . (C x D)) / ((A x C) . (B x D))
+     * 
+     * @param {Array<Number>} A homogeneous coordinates of point A
+     * @param {Array<Number>} B homogeneous coordinates of point B
+     * @param {Array<Number>} C homogeneous coordinates of point C
+     * @param {Array<Number>} D homogeneous coordinates of point D
      * @returns the cross ratio
      */
-    static inverseCrossRatio(l1, l2, l3, l4) {
-        // check if parallel to y-axis
-        if (this.round(l1[0]) == 0) {
-            return (l4[1]/l4[0] - l3[1]/l3[0]) / (l4[1]/l4[0] - l2[1]/l2[0]);
-        }
-        if (this.round(l2[0]) == 0) {
-            return -(l4[1]/l4[0] - l3[1]/l3[0]) / (l3[1]/l3[0] - l1[1]/l1[0]);
-        }
-        if (this.round(l3[0]) == 0) {
-            return -(l2[1]/l2[0] - l1[1]/l1[0]) / (l4[1]/l4[0] - l2[1]/l2[0]);
-        }
-        if (this.round(l4[0]) == 0) {
-            return (l2[1]/l2[0] - l1[1]/l1[0]) / (l3[1]/l3[0] - l1[1]/l1[0]);
-        }
-
-        // if not, take the inverse cross ratio
-        const num = (l2[1]/l2[0] - l1[1]/l1[0]) * (l4[1]/l4[0] - l3[1]/l3[0]);
-        const denom = (l3[1]/l3[0] - l1[1]/l1[0]) * (l4[1]/l4[0] - l2[1]/l2[0]);
-        return num / denom;
+    static inverseCrossRatio(A, B, C, D) {
+        const AB = this.cross(A, B);
+        const CD = this.cross(C, D);
+        const AC = this.cross(A, C);
+        const BD = this.cross(B, D);
+        return this.dot(AB, CD) / this.dot(AC, BD);
     }
 
     /**
@@ -346,41 +331,23 @@ class Geometry extends MathHelper {
         const n = vertices.length;
         let coords = new Array(2*n);
         for (let i = 0; i < n; i++) {
-            const t1 = [
-                vertices[(i-2+n)%n][0] - vertices[(i-1+n)%n][0], 
-                vertices[(i-2+n)%n][1] - vertices[(i-1+n)%n][1]
-            ];
-            const t2 = [
-                vertices[i][0] - vertices[(i-1+n)%n][0], 
-                vertices[i][1] - vertices[(i-1+n)%n][1]
-            ];
-            const t3 = [
-                vertices[(i+1)%n][0] - vertices[(i-1+n)%n][0], 
-                vertices[(i+1)%n][1] - vertices[(i-1+n)%n][1]
-            ];
-            const t4 = [
-                vertices[(i+2)%n][0] - vertices[(i-1+n)%n][0], 
-                vertices[(i+2)%n][1] - vertices[(i-1+n)%n][1]
-            ];
-            coords[2*i] = this.inverseCrossRatio(t1, t2, t3, t4);
+            const t0 = this.cross(vertices[(i+1)%n], vertices[(i+2)%n]); // the line on which the four points are colinear
+            const t1 = this.cross(vertices[(i-2+n)%n], vertices[(i-1+n)%n]); 
+            const t2 = this.cross(vertices[i], vertices[(i-1+n)%n]); 
+            const v1 = this.cross(t0, t1);
+            const v2 = this.cross(t0, t2);
+            const v3 = vertices[(i+1)%n];
+            const v4 = vertices[(i+2)%n];
+            coords[2*i] = this.inverseCrossRatio(v1, v2, v3, v4);
 
-            const s1 = [
-                vertices[(i+2)%n][0] - vertices[(i+1)%n][0], 
-                vertices[(i+2)%n][1] - vertices[(i+1)%n][1]
-            ];
-            const s2 = [
-                vertices[i][0] - vertices[(i+1)%n][0], 
-                vertices[i][1] - vertices[(i+1)%n][1]
-            ];
-            const s3 = [
-                vertices[(i-1+n)%n][0] - vertices[(i+1)%n][0], 
-                vertices[(i-1+n)%n][1] - vertices[(i+1)%n][1]
-            ];
-            const s4 = [
-                vertices[(i-2+n)%n][0] - vertices[(i+1)%n][0], 
-                vertices[(i-2+n)%n][1] - vertices[(i+1)%n][1]
-            ];
-            coords[2*i+1] = this.inverseCrossRatio(s1, s2, s3, s4);
+            const s0 = this.cross(vertices[(i-1+n)%n], vertices[(i-2+n)%n]); // the line on which the four points are colinear
+            const s1 = this.cross(vertices[(i+2)%n], vertices[(i+1)%n]); 
+            const s2 = this.cross(vertices[i], vertices[(i+1)%n]); 
+            const u1 = this.cross(s0, s1);
+            const u2 = this.cross(s0, s2);
+            const u3 = vertices[(i-1+n)%n];
+            const u4 = vertices[(i-2+n)%n];
+            coords[2*i+1] = this.inverseCrossRatio(u1, u2, u3, u4);
         }
         return coords;
     }

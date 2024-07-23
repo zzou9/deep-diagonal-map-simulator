@@ -14,7 +14,7 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=310) {
+    constructor(x, y, map, polygon, w=200, h=280) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
@@ -72,20 +72,14 @@ class ActionPanel extends Panel {
         this.buttons.push(this.actionButton);
         this.showDiagonalButton = new Button(this.x+25, this.y+220, 150, 20, [["Show Diagonals", color.GREEN]]);
         this.buttons.push(this.showDiagonalButton);
-        this.showEllipseButton = new Button(this.x+25, this.y+250, 150, 20, [["Show Ellipse of Inertia", color.GREEN]]);
-        this.buttons.push(this.showEllipseButton);
 
-        // convex, embed, and bird control
-        // this.embedButton = new Button(this.x+25, this.y+280, 150, 20, [["Skip Non-Embedded", color.BLACK]]);
-        // this.buttons.push(this.embedButton); 
-        // this.convexButton = new Button(this.x+25, this.y+310, 150, 20, [["Skip Nonconvex", color.BLACK]]);
-        // this.buttons.push(this.convexButton); 
-        // this.birdButton = new Button(this.x+25, this.y+340, 150, 20, [["Skip Non-" + this.map.l + "-Bird", color.BLACK]]);
-        // this.buttons.push(this.birdButton); 
+        // // show next power
+        // this.nextButton = new Button(this.x+25, this.y+250, 150, 20, [["Show Next Power", color.BLACK]]);
+        // this.buttons.push(this.nextButton); 
 
-        // show next power
-        this.nextButton = new Button(this.x+25, this.y+280, 150, 20, [["Show Next Power", color.BLACK]]);
-        this.buttons.push(this.nextButton); 
+        // show trajectory of the polygon
+        this.showTrajectorybutton = new Button(this.x+25, this.y+250, 150, 20, [["Show Trajectory", color.GREEN]]);
+        this.buttons.push(this.showTrajectorybutton);
     }
 
     /**
@@ -202,53 +196,24 @@ class ActionPanel extends Panel {
                 this.showDiagonalButton.text = [["Show Diagonals", color.GREEN]];
             }
         }
-        if (this.showEllipseButton.isHovering()) {
-            if (!this.polygon.showEllipse) {
-                this.polygon.showEllipse = true;
-                this.showEllipseButton.text = [["Hide Ellipse of Inertia", color.RED]];
-            } else {
-                this.polygon.showEllipse = false;
-                this.showEllipseButton.text = [["Show Ellipse of Inertia", color.GREEN]];
-            }
-        }
 
-        // // convex and embedded control
-        // if (this.embedButton.isHovering()) {
-        //     if (this.map.onlyEmbedded) {
-        //         this.map.onlyEmbedded = false;
-        //         this.embedButton.text = [["Skip Non-Embedded", color.BLACK]];
+        // // show and compute next power
+        // if (this.nextButton.isHovering()) {
+        //     if (this.polygon.showNext) {
+        //         this.polygon.showNext = false;
+        //         this.nextButton.text = [["Show Next Power", color.BLACK]];
         //     } else {
-        //         this.map.onlyEmbedded = true;
-        //         this.embedButton.text = [["Skip Non-Embedded", color.GREEN]];
+        //         this.polygon.showNext = true;
+        //         this.nextButton.text = [["Show Next Power", color.GREEN]];
         //     }
         // }
-        // if (this.convexButton.isHovering()) {
-        //     if (this.map.onlyConvex) {
-        //         this.map.onlyConvex = false;
-        //         this.convexButton.text = [["Skip Nonconvex", color.BLACK]];
-        //     } else {
-        //         this.map.onlyConvex = true;
-        //         this.convexButton.text = [["Skip Nonconvex", color.GREEN]];
-        //     }
-        // }
-        // if (this.birdButton.isHovering()) {
-        //     if (this.map.onlyBird) {
-        //         this.map.onlyBird = false;
-        //         this.birdButton.text = [["Skip Non-" + this.map.l + "-Bird", color.BLACK]];
-        //     } else {
-        //         this.map.onlyBird = true;
-        //         this.birdButton.text = [["Skip Non-" + this.map.l + "-Bird", color.GREEN]];
-        //     }
-        // }
-
-        // show and compute next power
-        if (this.nextButton.isHovering()) {
-            if (this.polygon.showNext) {
-                this.polygon.showNext = false;
-                this.nextButton.text = [["Show Next Power", color.BLACK]];
+        if (this.showTrajectorybutton.isHovering()) {
+            if (!this.polygon.showTrajectory) {
+                this.polygon.showTrajectory = true;
+                this.showTrajectorybutton.text = [["Hide Trajectory", color.RED]];
             } else {
-                this.polygon.showNext = true;
-                this.nextButton.text = [["Show Next Power", color.GREEN]];
+                this.polygon.showTrajectory = false;
+                this.showTrajectorybutton.text = [["Show Trajectory", color.GREEN]];
             }
         }
     }

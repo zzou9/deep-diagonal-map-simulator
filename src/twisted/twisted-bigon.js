@@ -20,7 +20,23 @@ class TwistedBigon extends Polygon{
                 canDrag=false) {
         super(map, numVertex, vertices, inscribed, scale, canDrag);
         this.twisted = true; // whether it is a twisted n-gon
-        this.symmetry = 4; // #-fold rotational symmetry
+        this.symmetry = this.numVertex / 2; // #-fold rotational symmetry
+        this.showTrajectory = true;
+        this.getTrajectory();
+    }
+
+    /**
+     * Get the trajectories of vertex 1
+     * @param {number} numIteration number of iterations to take the trajectory
+     */
+    getTrajectory(numIteration=Math.pow(2, 13)) {
+        // delete the previously recorded trajectories
+        this.trajectory = new Array(numIteration);
+        let temp = this.vertices.map(a => a.slice()); // deep copy the vertices
+        for (let j = 0; j < numIteration; j++) {
+            temp = map.act(temp, false, false);
+            this.trajectory[j] = temp[1];
+        }
     }
 
     /**
@@ -57,12 +73,12 @@ class TwistedBigon extends Polygon{
         // draw the inscribed circle if the polygon is inscribed
         if (this.inscribed) {
             noFill();
-            stroke(color.RED);
+            stroke(color.GREEN);
             circle(0, 0, this.scale*2*Math.sqrt(2));
         }
 
         // draw edges
-        fill(color.WHITE);
+        fill(255, 255, 255, 127);
         stroke(color.BLACK);
         beginShape();
         for (let i in this.vertices) {
@@ -79,22 +95,26 @@ class TwistedBigon extends Polygon{
             // draw diagonals
             stroke(color.GREEN);
             for (let i = 0; i < n; i++) {
-                line(this.vertices[i%n][0] * this.scale, this.vertices[i%n][1] * this.scale,
-                    this.vertices[(i+l)%n][0] * this.scale, this.vertices[(i+l)%n][1] * this.scale
+                line(this.vertices[i%n][0]/this.vertices[i%n][2] * this.scale, 
+                    this.vertices[i%n][1]/this.vertices[i%n][2] * this.scale,
+                    this.vertices[(i+l)%n][0]/this.vertices[(i+l)%n][2] * this.scale, 
+                    this.vertices[(i+l)%n][1]/this.vertices[(i+l)%n][2] * this.scale
                 );
-
             }
 
             // draw vertices
             fill(color.RED);
             noStroke();
             for (let i = 0; i < n; i++) {
-                const ver1 = this.vertices[i%n];
-                const ver2 = this.vertices[(i+l)%n];
-                const ver3 = this.vertices[(i-k+2*n)%n];
-                const ver4 = this.vertices[(i-k+l+2*n)%n];
-                const ver = Geometry.getIntersection(ver1, ver2, ver3, ver4);
-                circle(ver[0] * this.scale, ver[1] * this.scale, 5);
+                const v1 = this.vertices[i%n];
+                const v2 = this.vertices[(i+l)%n];
+                const v3 = this.vertices[(i-k+2*n)%n];
+                const v4 = this.vertices[(i-k+l+2*n)%n];
+                const vInt = Geometry.getIntersection(v1, v2, v3, v4);
+                if (MathHelper.round(vInt[2]) == 0) {
+                    throw new Error("The intersection is not on the affine patch");
+                }
+                circle(vInt[0]/vInt[2] * this.scale, vInt[1]/vInt[2] * this.scale, 5);
             }
         }
 
@@ -114,12 +134,32 @@ class TwistedBigon extends Polygon{
             rotate(theta);
         }
 
+        // show the trajectory of the second vertex
+        if (this.showTrajectory) {
+            noStroke();
+            for (let i = 0; i < this.trajectory.length; i++) {
+                if (MathHelper.round(this.trajectory[i][2] == 0)) {
+                    throw new Error("The trajectory is on the line at infinity");
+                }
+                fill(color.RED);
+                circle(this.trajectory[i][0]  / this.trajectory[i][2] * this.scale, 
+                    this.trajectory[i][1] / this.trajectory[i][2] * this.scale, 
+                    1
+                );
+            }
+        }
+
         // draw vertices with color red
         if (this.canDrag) {
             fill(color.RED);
             noStroke();
-            for (let i = 0; i < this.vertices.length; i++) {
-                circle(this.vertices[i][0] * this.scale, this.vertices[i][1] * this.scale, 5);
+            for (let i = 0; i < this.numVertex; i++) {
+                if (MathHelper.round(this.vertices[i][2]) == 0) {
+                    throw new Error("Vertex" + i.toString() + "is not on the affine patch");
+                }
+                const x = this.vertices[i][0] / this.vertices[i][2];
+                const y = this.vertices[i][1] / this.vertices[i][2];
+                circle(x * this.scale, y * this.scale, 5);
             }
         }
 
@@ -136,8 +176,8 @@ class TwistedBigon extends Polygon{
             const mY = (mouseY - yT) / this.scale;
             let dragging = false;
             for (let i = 0; i < this.numVertex; i++) {
-                if (mX - w <= this.vertices[i][0] && mX + w >= this.vertices[i][0] 
-                    && mY - w <= this.vertices[i][1] && mY + w >= this.vertices[i][1]
+                if (mX - w <= this.vertices[i][0]/this.vertices[i][2] && mX + w >= this.vertices[i][0]/this.vertices[i][2] 
+                    && mY - w <= this.vertices[i][1]/this.vertices[i][2] && mY + w >= this.vertices[i][1]/this.vertices[i][2]
                     && dragging == false) {
                     // clear the number of iterations
                     this.map.numIterations = 0;
@@ -172,8 +212,26 @@ class TwistedBigon extends Polygon{
         }
     }
 
-    
-
+    /**
+     * Broadcast the first 2 vertices to the others via the monodromy
+     */
+    broadcastVertices() {
+        const theta = Math.PI * 2 / this.symmetry;
+        const A0 = this.vertices[0];
+        const A1 = this.vertices[1];
+        for (let i = 1; i < this.symmetry; i++) {
+            this.vertices[2*i] = [
+                Math.cos(i*theta) * A0[0] - Math.sin(i*theta) * A0[1],
+                Math.sin(i*theta) * A0[0] + Math.cos(i*theta) * A0[1], 
+                1
+            ];
+            this.vertices[2*i+1] = [
+                Math.cos(i*theta) * A1[0] - Math.sin(i*theta) * A1[1],
+                Math.sin(i*theta) * A1[0] + Math.cos(i*theta) * A1[1], 
+                1
+            ];
+        }
+    }
 
     /**
      * Compute the energy of the map (as in [Sch24])
@@ -190,6 +248,7 @@ class TwistedBigon extends Polygon{
      */
     updateInfo() {
         super.updateInfo();
+        this.getTrajectory();
     }
 
     /**
