@@ -338,7 +338,7 @@ class Geometry extends MathHelper {
             const v2 = this.cross(t0, t2);
             const v3 = vertices[(i+1)%n];
             const v4 = vertices[(i+2)%n];
-            coords[2*i] = this.inverseCrossRatio(v1, v2, v3, v4);
+            coords[2*i+1] = this.inverseCrossRatio(v1, v2, v3, v4); // the indices match up with the notation in [Sch07]
 
             const s0 = this.cross(vertices[(i-1+n)%n], vertices[(i-2+n)%n]); // the line on which the four points are colinear
             const s1 = this.cross(vertices[(i+2)%n], vertices[(i+1)%n]); 
@@ -347,7 +347,7 @@ class Geometry extends MathHelper {
             const u2 = this.cross(s0, s2);
             const u3 = vertices[(i-1+n)%n];
             const u4 = vertices[(i-2+n)%n];
-            coords[2*i+1] = this.inverseCrossRatio(u1, u2, u3, u4);
+            coords[2*i] = this.inverseCrossRatio(u1, u2, u3, u4);
         }
         return coords;
     }

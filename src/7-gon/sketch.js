@@ -113,8 +113,9 @@ function keyPressed() {
     if (key === 'p') {
         // polygon.recordDistance(500);
         // polygon.recordComponents();
-        console.log(polygon.print());
-        console.log(Geometry.getCornerCoords(polygon.vertices));
+        // console.log(polygon.print());
+        // console.log(Geometry.getCornerCoords(polygon.vertices));
+        console.log(Reconstruct.reconstruct(Geometry.getCornerCoords(polygon.vertices)));
     }
 
     // changing the diagonals of the map

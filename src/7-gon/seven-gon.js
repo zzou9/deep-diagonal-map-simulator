@@ -16,6 +16,7 @@ class SevenGon extends Polygon {
         this.componentRecords = new Array();
         this.trajectory = new Array();
         this.showTrajectory = false; // whether to show the trajectory of the 3rd vertex
+        this.corner = Geometry.getCornerCoords(this.vertices); // the corner invariants of this polygon
         this.getTrajectory();
         this.opacity = 0.5; // the opacity of the polygon
         this.vertexColor = [color.RED, color.ORANGE, color.YELLOW, color.GREEN, color.CYAN, color.VIOLET, color.PURPLE];
@@ -88,12 +89,7 @@ class SevenGon extends Polygon {
             // intersection of <i, i+3> and <i+1, i+4>
             const v4 = Geometry.getIntersection(this.vertices[i], this.vertices[(i+3)%n], this.vertices[(i+1)%n], this.vertices[(i+4)%n]);
 
-            coords[2*i] = Geometry.inverseCrossRatio(
-                [v1[0] - v0[0], v1[1] - v0[1]],
-                [v2[0] - v0[0], v2[1] - v0[1]],
-                [v3[0] - v0[0], v3[1] - v0[1]],
-                [v4[0] - v0[0], v4[1] - v0[1]]
-            );
+            coords[2*i+1] = Geometry.inverseCrossRatio(v1, v2, v3, v4);
 
             // negative oriented flag
 
@@ -108,12 +104,7 @@ class SevenGon extends Polygon {
             // intersection of <i-3, i> and <i-4, i-1>
             const u4 = Geometry.getIntersection(this.vertices[(i-3+n)%n], this.vertices[i], this.vertices[(i-4+n)%n], this.vertices[(i-1+n)%n]);
             
-            coords[2*i+1] = Geometry.inverseCrossRatio(
-                [u1[0] - u0[0], u1[1] - u0[1]],
-                [u2[0] - u0[0], u2[1] - u0[1]],
-                [u3[0] - u0[0], u3[1] - u0[1]],
-                [u4[0] - u0[0], u4[1] - u0[1]]
-            );
+            coords[2*i] = Geometry.inverseCrossRatio(u1, u2, u3, u4);
         }
 
         return coords;
@@ -220,6 +211,7 @@ class SevenGon extends Polygon {
         this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.corner = Geometry.getCornerCoords(this.vertices);
         this.getTrajectory();
     }
 
@@ -229,6 +221,7 @@ class SevenGon extends Polygon {
     setToInscribed() {
         super.setToInscribed();
         this.getTrajectory();
+        this.corner = Geometry.getCornerCoords(this.vertices);
     }
 
     /**
@@ -240,6 +233,7 @@ class SevenGon extends Polygon {
         this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.corner = Geometry.getCornerCoords(this.vertices);
         this.getTrajectory();
     }
 
@@ -250,6 +244,7 @@ class SevenGon extends Polygon {
         super.randomInscribed();
         this.components = new Map();
         this.componentRecords = new Array();
+        this.corner = Geometry.getCornerCoords(this.vertices);
         this.getTrajectory();
     }
 
@@ -261,6 +256,7 @@ class SevenGon extends Polygon {
         this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.corner = Geometry.getCornerCoords(this.vertices);
         this.getTrajectory();
     }
 
@@ -272,6 +268,7 @@ class SevenGon extends Polygon {
         this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.corner = Geometry.getCornerCoords(this.vertices);
         this.getTrajectory();
     }
 
@@ -283,6 +280,7 @@ class SevenGon extends Polygon {
         this.vertices = Normalize.squareNormalize(this.vertices, 6, 0, 2, 4);
         this.components = new Map();
         this.componentRecords = new Array();
+        this.corner = Geometry.getCornerCoords(this.vertices);
         this.getTrajectory();
     }
 
@@ -447,9 +445,12 @@ class SevenGon extends Polygon {
                         }
                     }
                     this.updateInfo();
-                    this.getTrajectory();
+                    if (this.showTrajectory) {
+                        this.getTrajectory();
+                    }
                     this.updateToPanel = true;
                     this.referenceCoords = Geometry.getCornerCoords(this.vertices);
+                    this.corner = Geometry.getCornerCoords(this.vertices);
                 }
             }
         }
