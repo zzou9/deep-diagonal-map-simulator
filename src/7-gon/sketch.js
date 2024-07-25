@@ -101,7 +101,7 @@ function keyPressed() {
     if (key === ' ') {
         ctrlPanel.disableInscribe();
         polygon.vertices = map.act(polygon.vertices);
-        polygon.hashTriangleComponents();
+        // polygon.vertices = Reconstruct.reconstruct(polygon.getImageCornerCoords31());
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
             ctrlPanel.disableInscribe();
@@ -115,7 +115,8 @@ function keyPressed() {
         // polygon.recordComponents();
         // console.log(polygon.print());
         // console.log(Geometry.getCornerCoords(polygon.vertices));
-        console.log(Reconstruct.reconstruct(Geometry.getCornerCoords(polygon.vertices)));
+        // Reconstruct.reconstruct3(Geometry.getCornerCoords(polygon.vertices));
+        console.log(polygon.getPentagramInvariants());
     }
 
     // changing the diagonals of the map

@@ -135,6 +135,12 @@ class Reconstruct extends Geometry {
 
     }
 
+    /**
+     * Reconstruct the homogeneous coordinates of a polygon given its corner invariants
+     * The formula comes from a mathematica file Schwartz sent to me
+     * @param {Array<number>} x the corner invariants
+     * @returns the homogeneous coordinates of the polygon
+     */
     static reconstruct3(x) {
         let coords = new Array();
         const n = x.length/2;
@@ -154,6 +160,6 @@ class Reconstruct extends Geometry {
             const r = this.matrixMult(M, v);
             coords[i] = [r[0][0], r[1][0], r[2][0]];
         }
-        return coords;
+        return Normalize.squareNormalize(coords.map(a => a.slice()), 6, 0, 2, 4);;
     }
 }

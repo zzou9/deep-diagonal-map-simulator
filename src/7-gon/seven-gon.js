@@ -467,11 +467,10 @@ class SevenGon extends Polygon {
         const v = this.vertices;
         let energy = 1;
         for (let i = 0; i < n; i++) {
-            const l1 = [v[i][0] - v[(i-k+n)%n][0], v[i][1] - v[(i-k+n)%n][1]];
-            const l2 = [v[i][0] - v[(i-l+n)%n][0], v[i][1] - v[(i-l+n)%n][1]];
-            const l3 = [v[i][0] - v[(i+l)%n][0], v[i][1] - v[(i+l)%n][1]];
-            const l4 = [v[i][0] - v[(i+k+n)%n][0], v[i][1] - v[(i+k+n)%n][1]];
-            energy *= MathHelper.crossRatio(l1, l2, l3, l4);
+            const l1 = MathHelper.cross(v[i], v[(i-l+n)%n]);
+            const l2 = MathHelper.cross(v[i], v[(i-k+n)%n]);
+
+            energy *= Geometry.inverseCrossRatio(l1, l2, l3, l4);
         }
         return energy;
     }

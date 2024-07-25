@@ -207,9 +207,12 @@ class ActionPanel extends Panel {
         //         this.nextButton.text = [["Show Next Power", color.GREEN]];
         //     }
         // }
+
+        // show next trajectory
         if (this.showTrajectorybutton.isHovering()) {
             if (!this.polygon.showTrajectory) {
                 this.polygon.showTrajectory = true;
+                this.polygon.getTrajectory();
                 this.showTrajectorybutton.text = [["Hide Trajectory", color.RED]];
             } else {
                 this.polygon.showTrajectory = false;
