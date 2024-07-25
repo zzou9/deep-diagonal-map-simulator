@@ -114,9 +114,9 @@ function keyPressed() {
         // polygon.recordDistance(500);
         // polygon.recordComponents();
         // console.log(polygon.print());
-        // console.log(Geometry.getCornerCoords(polygon.vertices));
+        console.log(Geometry.getCornerCoords(polygon.vertices));
         // Reconstruct.reconstruct3(Geometry.getCornerCoords(polygon.vertices));
-        console.log(polygon.getPentagramInvariants());
+        // console.log(polygon.getPentagramInvariants());
     }
 
     // changing the diagonals of the map

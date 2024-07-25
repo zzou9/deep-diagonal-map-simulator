@@ -21,6 +21,7 @@ class TwistedBigon extends Polygon{
         super(map, numVertex, vertices, inscribed, scale, canDrag);
         this.twisted = true; // whether it is a twisted n-gon
         this.symmetry = this.numVertex / 2; // #-fold rotational symmetry
+        this.corner = 
         this.showTrajectory = true;
         this.getTrajectory();
     }

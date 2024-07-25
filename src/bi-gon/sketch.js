@@ -38,7 +38,7 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
     map = new PentagramMap(l=2);
     map.normalization = normalization = "SquareT";
-    polygon = new RotationBigon(map, numVertex=8);
+    polygon = new TwistedBigon(map, numVertex=8);
     polygon.canDrag = true;
     polygon.twisted = true;
     map.twisted = true;
@@ -49,7 +49,7 @@ function setup() {
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
-    modulePanel = new ModulePanel(xT-145, 40, "Rotation", color.BLACK);
+    modulePanel = new ModulePanel(xT-145, 40, "Bi-gon", color.BLACK);
 }
 
 function draw() {

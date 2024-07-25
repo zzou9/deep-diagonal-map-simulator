@@ -41,6 +41,9 @@ class ModulePanel extends Panel {
                 break;
             case "7-Gon":
                 this.sevengonButton.fill = color.KHAKI;
+                break;
+            case "Bi-gon":
+                this.bigonButton.fill = color.KHAKI;
         }
     }
 
@@ -63,6 +66,9 @@ class ModulePanel extends Panel {
         }
         if (this.sevengonButton.isHovering() && this.current != "7-Gon") {
             window.location.href = '7-gon.html';
+        }
+        if (this.bigonButton.isHovering() && this.current != "Bi-gon") {
+            window.location.href = 'bi-gon.html';
         }
     }
 }
