@@ -19,12 +19,14 @@ class ModulePanel extends Panel {
         // populate the buttons
         this.homeButton = new Button(x, y, 50, 20, [["Home", color.BLACK]], color.WHITE);
         this.convexButton = new Button(this.homeButton.x+this.homeButton.w+10, y, 50, 20, [["Convex", color.BLACK]], color.WHITE);
-        this.twistedButton = new Button(this.convexButton.x+this.convexButton.w+10, y, 50, 20, [["Twisted", color.BLACK]], color.WHITE);
-        this.sevengonButton = new Button(this.twistedButton.x+this.twistedButton.w+10, y, 50, 20, [["7-Gon", color.BLACK]], color.WHITE);
+        this.rotationButton = new Button(this.convexButton.x+this.convexButton.w+10, y, 50, 20, [["Rotation", color.BLACK]], color.WHITE);
+        this.sevengonButton = new Button(this.rotationButton.x+this.rotationButton.w+10, y, 50, 20, [["7-Gon", color.BLACK]], color.WHITE);
+        this.bigonButton = new Button(this.sevengonButton.x+this.sevengonButton.w+10, y, 50, 20, [["Bi-gon", color.BLACK]], color.WHITE);
         this.buttons.push(this.homeButton);
         this.buttons.push(this.convexButton);
-        this.buttons.push(this.twistedButton);
+        this.buttons.push(this.rotationButton);
         this.buttons.push(this.sevengonButton);
+        this.buttons.push(this.bigonButton);
 
         // highlight the current module
         switch (this.current) {
@@ -34,8 +36,8 @@ class ModulePanel extends Panel {
             case "Convex":
                 this.convexButton.fill = color.KHAKI;
                 break;
-            case "Twisted":
-                this.twistedButton.fill = color.KHAKI;
+            case "Rotation":
+                this.rotationButton.fill = color.KHAKI;
                 break;
             case "7-Gon":
                 this.sevengonButton.fill = color.KHAKI;
@@ -56,8 +58,8 @@ class ModulePanel extends Panel {
         if (this.convexButton.isHovering() && this.current != "Convex") {
             window.location.href = 'convex.html';
         }
-        if (this.twistedButton.isHovering() && this.current != "Twisted") {
-            window.location.href = 'twisted.html';
+        if (this.rotationButton.isHovering() && this.current != "Rotation") {
+            window.location.href = 'rotation.html';
         }
         if (this.sevengonButton.isHovering() && this.current != "7-Gon") {
             window.location.href = '7-gon.html';
