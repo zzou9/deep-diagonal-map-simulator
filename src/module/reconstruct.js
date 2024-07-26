@@ -139,27 +139,30 @@ class Reconstruct extends Geometry {
      * Reconstruct the homogeneous coordinates of a polygon given its corner invariants
      * The formula comes from a mathematica file Schwartz sent to me
      * @param {Array<number>} x the corner invariants
+     * @param {number} [numVertices=5] number of vertices to reconstruct
      * @returns the homogeneous coordinates of the polygon
      */
-    static reconstruct3(x) {
+    static reconstruct3(x, numVertices=8) {
         let coords = new Array();
-        const n = x.length/2;
+        const n = x.length;
         const M = [
             [1, -1, x[0]*x[1]],
             [1, 0, 0],
             [1, 0, x[0]*x[1]]
         ];
-        coords[0] = [1, 1, 1];
-        coords[1] = [0, 1, 1];
-        for (let i = 2; i < n; i++) {
+        coords[0] = [0, 0, 1];
+        coords[1] = [1, 0, 1];
+        coords[2] = [1, 1, 1];
+        coords[3] = [0, 1, 1];
+        for (let i = 4; i < numVertices; i++) {
             const v = [
-                [this.O(2*i-1, -1, x)], 
-                [this.O(2*i-1, 1, x)], 
-                [this.O(2*i-1, 3, x)]
+                [this.O((2*i-5), -1, x)], 
+                [this.O((2*i-5), 1, x)], 
+                [this.O((2*i-5), 3, x)]
             ];
             const r = this.matrixMult(M, v);
             coords[i] = [r[0][0], r[1][0], r[2][0]];
         }
-        return Normalize.squareNormalize(coords.map(a => a.slice()), 6, 0, 2, 4);;
+        return coords;
     }
 }

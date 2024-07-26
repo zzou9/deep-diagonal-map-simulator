@@ -8,13 +8,13 @@ class ActionPanel extends Panel {
      * Constructor
      * @param {Number} x x coordinate
      * @param {Number} y y coordinate
-     * @param {PentagramMap} map the map
-     * @param {Polygon} polygon the polygon
+     * @param {TwistedMap} map the map
+     * @param {TwistedBigon} polygon the polygon
      * @param {InfoPanel} infoPanel information panel
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=280) {
+    constructor(x, y, map, polygon, w=200, h=250) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
@@ -72,8 +72,6 @@ class ActionPanel extends Panel {
         this.buttons.push(this.actionButton);
         this.showDiagonalButton = new Button(this.x+25, this.y+220, 150, 20, [["Show Diagonals", color.GREEN]]);
         this.buttons.push(this.showDiagonalButton);
-        this.showTrajectorybutton = new Button(this.x+25, this.y+250, 150, 20, [["Hide Trajectory", color.RED]]);
-        this.buttons.push(this.showTrajectorybutton);
     }
 
     /**
@@ -93,9 +91,8 @@ class ActionPanel extends Panel {
 
     mapAction() {
         try {
-            this.polygon.vertices = this.map.act(polygon.cloneVertices());
-            this.polygon.broadcastVertices();
-            this.polygon.updateInfo;
+            polygon.cornerCoords = map.act(polygon.cornerCoords.slice());
+            polygon.updateVertices();
         }
         catch (err) {
             clearInterval(this.action);
@@ -115,7 +112,7 @@ class ActionPanel extends Panel {
             this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
             this.polygon.getTrajectory();
         }
-        if (this.incDiagonal.isHovering() && this.polygon.numVertex > 3*this.map.l) {
+        if (this.incDiagonal.isHovering()) {
             this.map.l++;
             this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
             this.polygon.getTrajectory();
@@ -127,7 +124,7 @@ class ActionPanel extends Panel {
             this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
             this.polygon.getTrajectory();
         }
-        if (this.incSpacing.isHovering() && this.map.k < this.map.l-1 && this.polygon.numVertex > 3*this.map.k+1) {
+        if (this.incSpacing.isHovering() && this.map.k < this.map.l-1) {
             this.map.k++;
             this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
             this.polygon.getTrajectory();
@@ -195,14 +192,6 @@ class ActionPanel extends Panel {
                 this.showDiagonalButton.text = [["Show Diagonals", color.GREEN]];
             }
         }
-        if (this.showTrajectorybutton.isHovering()) {
-            if (!this.polygon.showTrajectory) {
-                this.polygon.showTrajectory = true;
-                this.showTrajectorybutton.text = [["Hide Trajectory", color.RED]];
-            } else {
-                this.polygon.showTrajectory = false;
-                this.showTrajectorybutton.text = [["Show Trajectory", color.GREEN]];
-            }
-        }
+        
     }
 }

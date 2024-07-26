@@ -19,16 +19,11 @@ const color = {
 }
 
 // panels
-let normPanel;
 let ctrlPanel;
 let actionPanel;
+let trajPanel;
 let infoPanel;
 let shapePanel;
-
-// buttons to redirect to modules
-let homeButton;
-let convexButton;
-let twistedButton;
 let modulePanel;
 
 function setup() {
@@ -36,17 +31,14 @@ function setup() {
     yT = windowHeight/2;
 
     createCanvas(windowWidth, windowHeight);
-    map = new PentagramMap(l=2);
-    map.normalization = normalization = "SquareT";
-    polygon = new TwistedBigon(map, numVertex=8);
+    map = new TwistedMap(l=2);
+    polygon = new TwistedBigon(map);
     polygon.canDrag = true;
-    polygon.twisted = true;
-    map.twisted = true;
 
     // instantiate panels
     ctrlPanel = new CtrlPanel(10, 10, polygon, map);
-    normPanel = new NormalizationPanel(10, ctrlPanel.y+ctrlPanel.h+10, map, polygon);
-    actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
+    actionPanel = new ActionPanel(10, ctrlPanel.y+ctrlPanel.h+10, map, polygon);
+    trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
     modulePanel = new ModulePanel(xT-145, 40, "Bi-gon", color.BLACK);
@@ -64,8 +56,8 @@ function draw() {
     text("Pentagram Map Simulator", xT, 20);
     
     ctrlPanel.show();
-    normPanel.show();
     actionPanel.show();
+    trajPanel.show();
     infoPanel.show();
     shapePanel.show();
     modulePanel.show();
@@ -73,11 +65,11 @@ function draw() {
 
 function mouseClicked() {
     ctrlPanel.buttonMouseAction();
-    normPanel.buttonMouseAction();
     actionPanel.buttonMouseAction();
     if (actionPanel.isRunning) {
         ctrlPanel.disableInscribe();
     }
+    trajPanel.buttonMouseAction();
     shapePanel.buttonMouseAction();
     modulePanel.buttonMouseAction();
 }
@@ -91,24 +83,25 @@ function keyPressed() {
     // applying the map
     if (key === ' ') {
         ctrlPanel.disableInscribe();
-        polygon.vertices = map.act(polygon.cloneVertices());
+        polygon.cornerCoords = map.act(polygon.cornerCoords.slice());
+        polygon.updateVertices();
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
             ctrlPanel.disableInscribe();
             const prev = map.revert();
-            polygon.vertices = prev[0];
+            polygon.cornerCoords = prev[0];
             map.numIterations = prev[1];
         }
     }
 
-    // changing the number of vertices of a polygon
-    if (keyCode === UP_ARROW) { 
-        polygon.setDefault(polygon.numVertex+2);
-    } else if (keyCode === DOWN_ARROW){ 
-        if (polygon.numVertex > 3*map.l) {
-            polygon.setDefault(Math.max(polygon.numVertex-2, 8));
-        } 
-    }
+    // // changing the number of vertices of a polygon
+    // if (keyCode === UP_ARROW) { 
+    //     polygon.setDefault(polygon.numVertex+2);
+    // } else if (keyCode === DOWN_ARROW){ 
+    //     if (polygon.numVertex > 3*map.l) {
+    //         polygon.setDefault(Math.max(polygon.numVertex-2, 8));
+    //     } 
+    // }
 
     // changing the diagonals of the map
     if (keyCode === LEFT_ARROW && map.l > 2) {
@@ -116,7 +109,7 @@ function keyPressed() {
         map.k = map.l - 1;
         map.numIterations = 0;
         actionPanel.updateDiagonalAndSpacing();
-    } else if (keyCode === RIGHT_ARROW && polygon.numVertex > 3 * map.l) {
+    } else if (keyCode === RIGHT_ARROW) {
         map.l++;
         map.k = map.l - 1;
         map.numIterations = 0;

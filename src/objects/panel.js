@@ -40,7 +40,7 @@ class Panel {
         text(this.title, this.x+this.w/2, this.y+20);
 
         // buttons
-        for (let i in this.buttons) {
+        for (let i = 0; i < this.buttons.length; i++) {
             this.buttons[i].show();
         }  
     }
