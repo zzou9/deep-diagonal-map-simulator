@@ -11,7 +11,7 @@ class Normalize {
      *  u3 -> [1, 1, 1]
      * we say M is good if it maps the four ui's to scalar multiples of the target 
      */
-    static getMatrix(v0, v1, v2, v3) {
+    static getProjectiveLift(v0, v1, v2, v3) {
         let M = [v0, v1, v2];
         try {
             M = MathHelper.transpose(MathHelper.invert3(M));
@@ -54,8 +54,8 @@ class Normalize {
         const e2 = [-1, -1, 1];
         const e3 = [1, -1, 1];
 
-        const E = this.getMatrix(e0, e1, e2, e3);
-        const M = this.getMatrix(vertices[i0], vertices[i1], vertices[i2], vertices[i3]);
+        const E = this.getProjectiveLift(e0, e1, e2, e3);
+        const M = this.getProjectiveLift(vertices[i0], vertices[i1], vertices[i2], vertices[i3]);
 
         // get the projection map
         const T = MathHelper.matrixMult(MathHelper.invert3(E), M);
@@ -64,15 +64,6 @@ class Normalize {
         let newVertices = new Array(vertices.length);
         for (let i = 0; i < vertices.length; i++) {
             const v = MathHelper.affineTransform(T, vertices[i]);
-            // // error if v is not on the affine plane
-            // if (v[2] == 0) {
-            //     throw new Error("v is on the line at infinity!");
-            // }
-            // normalize and round
-            // const x = MathHelper.round(v[0]/v[2], 15); // need to round to 10 digits, otherwise would explode
-            // const y = MathHelper.round(v[1]/v[2], 1);
-            // newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
-
             if (MathHelper.round(Math.abs(v[2])) != 0) {
                 newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
             } else {

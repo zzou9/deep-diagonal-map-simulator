@@ -12,7 +12,7 @@ class InfoPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=170) {
+    constructor(x, y, polygon, map, w=200, h=210) {
         super(x, y, w, h, "Information", color.KHAKI);
         this.polygon = polygon;
         this.map = map;
@@ -29,6 +29,10 @@ class InfoPanel extends Panel {
         this.buttons.push(this.x3Box);
         this.distBox = new Button(this.x+25, this.y+140, 150, 20, [["Dist to Ref: " + MathHelper.round(this.polygon.getDistanceToReference(), 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.distBox);
+        this.invariant1Box = new Button(this.x+25, this.y+160, 150, 20, [["Invariant 1: " + MathHelper.round(this.polygon.omega1, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.invariant1Box);
+        this.invariant2Box = new Button(this.x+25, this.y+180, 150, 20, [["Invariant 2: " + MathHelper.round(this.polygon.omega2, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.invariant2Box);
     }
 
     /**
@@ -36,11 +40,13 @@ class InfoPanel extends Panel {
      */
     show() {
         super.show();
-        this.iterateBox.text = [["Iteration: " + this.map.numIterations, color.BLACK]];
-        this.x0Box.text = [["x0: " + MathHelper.round(this.polygon.cornerCoords[0], 8), color.BLACK]];
-        this.x1Box.text = [["x1: " + MathHelper.round(this.polygon.cornerCoords[1], 8), color.BLACK]];
-        this.x2Box.text = [["x2: " + MathHelper.round(this.polygon.cornerCoords[2], 8), color.BLACK]];
-        this.x3Box.text = [["x3: " + MathHelper.round(this.polygon.cornerCoords[3], 8), color.BLACK]];
+        this.iterateBox.text[0][0] = "Iteration: " + this.map.numIterations;
+        this.x0Box.text[0][0] = "x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5);
+        this.x1Box.text[0][0] = "x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5);
+        this.x2Box.text[0][0] = "x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5);
+        this.x3Box.text[0][0] = "x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5);
+        this.invariant1Box.text[0][0] = "Invariant 1: " + MathHelper.round(this.polygon.omega1, 5);
+        this.invariant2Box.text[0][0] = "Invariant 2: " + MathHelper.round(this.polygon.omega2, 5);
     }
 
     /**

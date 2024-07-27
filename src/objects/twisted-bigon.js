@@ -29,13 +29,31 @@ class TwistedBigon{
          */
         this.showTrajectory1 = false;
         this.showTrajectory2 = false;
-        this.iteration1 = 6; // number of iterations to show (exponential 2)
-        this.iteration2 = 6;
-        this.traj1Size = 1;
-        this.traj2Size = 1;
+        this.iteration1 = 10; // number of iterations to show (exponential 2)
+        this.iteration2 = 10;
+        this.traj1Size = 2;
+        this.traj2Size = 2;
         this.trajectory1 = new Array();
         this.trajectory2 = new Array();
+
+        // Monodromy of the twisted bigon
+        this.monodromy = new Array();
+        this.omega1 = 0;
+        this.omega2 = 0;
+
         this.setDefault();
+    }
+
+    /**
+    * Update the information of the polygon: 
+    * Whether the polygon is embedded/convex/bird
+    * The nex embedded/convex/bird power of the polygon
+    */
+    updateInfo() {
+        this.updateVertices();
+        this.getTrajectory();
+        this.updateMonodromy();
+        this.updateInvariants();
     }
 
     /**
@@ -45,6 +63,38 @@ class TwistedBigon{
         this.verticesToShow = Reconstruct.reconstruct3(this.cornerCoords, this.numVertexToShow);
     }
 
+    /**
+     * Compute a lift of the monodromy of the twisted bigon
+     * The twisted bigon has a canonical representation of its first six vertices 
+     * where the first four vertices are on the unit square
+     * The monodromy is calculated by finding a lift T such that 
+     * T maps vertices 3, 4, 5, 6 back to the vertices of the unit square
+     */
+    updateMonodromy() {
+        const v = this.verticesToShow;
+        const M1 = Normalize.getProjectiveLift(v[0], v[1], v[2], v[3]);
+        const M2 = Normalize.getProjectiveLift(v[2], v[3], v[4], v[5]);
+        const M2Inv = MathHelper.invert3(M2);
+        this.monodromy = MathHelper.matrixMult(M2Inv, M1);
+    }
+
+    /**
+     * Compute the two invariants of the monodromy given in Sch92
+     */
+    updateInvariants() {
+        const coeffs = MathHelper.characteristicPoly3(this.monodromy);
+        const s1 = coeffs[0];
+        const s2 = coeffs[1];
+        const s3 = coeffs[2];
+        this.omega1 = Math.pow(s1, 3) / s3;
+        this.omega2 = s1 * s2 / s3;
+    }
+
+    /**
+     * Compute the l2 distance from the corner coordinates of the 
+     * current itertaion to the corner coordinates of itertaion 0
+     * @returns The l2 distance of the corner coordinates
+     */
     getDistanceToReference() {
         return MathHelper.l2dist(this.cornerCoords, this.referenceCoords);
     }
@@ -65,14 +115,10 @@ class TwistedBigon{
         }
 
         // compute the coords of the vertices to show
-        this.updateVertices();
+        this.updateInfo();
 
         // reset the number of iterations of the map
         this.map.numIterations = 0;
-
-        // update embedded and convexity information
-        this.updateInfo();
-        this.getTrajectory();
 
         this.updateToPanel = true;
         this.referenceCoords = this.cornerCoords.slice(); // deep cloning the corner coordinates
@@ -91,10 +137,8 @@ class TwistedBigon{
     resetToCoords(coords) {
         this.cornerCoords = coords;
         this.referenceCoords = this.cornerCoords.slice();
-        this.updateVertices();
         this.map.numIterations = 0;
         this.updateInfo();
-        this.getTrajectory();
         this.updateToPanel = true;
     }
 
@@ -233,9 +277,7 @@ class TwistedBigon{
                     for (let j = 0; j < 4; j++) {
                         this.cornerCoords[j] = tempCoords[j+4];
                     }
-                    this.updateVertices()
                     this.updateInfo();
-                    this.getTrajectory();
                     this.updateToPanel = true;
                     this.referenceCoords = this.cornerCoords.slice();
                 }
@@ -243,14 +285,6 @@ class TwistedBigon{
         }
     }
 
-
-    /**
-    * Update the information of the polygon: 
-    * Whether the polygon is embedded/convex/bird
-    * The nex embedded/convex/bird power of the polygon
-    */
-    updateInfo() {
-    }
 
     /**
     * Print the information of the polygon

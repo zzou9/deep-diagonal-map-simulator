@@ -84,6 +84,32 @@ class MathHelper {
     }
 
     /**
+     * Compute the coefficients of the characteristic polynomial of a 3x3 matrix
+     * The coefficients are s1, s2, s3, where the char. poly is given by 
+     *  - x^3 + s1 * x^2 - s2 * x + s3
+     * @param {Array<Array<number>>} M the 3x3 matrix to compute
+     * @param {boolean} [print=false] print the resulting polynomial
+     * @returns [s1, s2, s3]
+     */
+    static characteristicPoly3(M, print=false) {
+        // the first symmetric funtion is just the trace
+        const s1 = M[0][0] + M[1][1] + M[2][2]; 
+        // the second symmetric function calculated by 1/2 * (tr(M)^2 - tr(M^2))
+        const M2 = this.matrixMult(M, M);
+        const tr2 = M2[0][0] + M2[1][1] + M2[2][2];
+        const s2 = (s1 * s1 - tr2) / 2;
+        // the third symmetric function is the determinant
+        const s3 = this.det3(M);
+
+        // log the result
+        if (print) {
+            const disp = "- x^3 + " + s1.toString() + " x^2 - " + s2.toString() + " x + " + s3.toString();
+            console.log(disp);
+        }
+        return [s1, s2, s3];
+    }
+
+    /**
      * Take the spectral decomposition of a 2-by-2 real symmetric matrix.
      * @param {Array<Array<Number>>} mat the symmetric matrix to take the spectral decomposition
      * @returns {Array<Array<Number>>} Q, the eigenbasis; Lambda, the diagonal matrix

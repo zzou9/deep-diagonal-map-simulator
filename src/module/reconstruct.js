@@ -165,4 +165,35 @@ class Reconstruct extends Geometry {
         }
         return coords;
     }
+
+    /**
+     * Get the monodromy of a twisted polygon
+     * @param {Array<number>} x the corner invariants of the twisted polygon
+     * @returns a lift of the monodromy
+     */
+    static monodromy(x) {
+        const n = x.length / 2;
+        const A = this.reconstruct3(x, n + 4);
+        
+        // compute the lift
+        const v00 = x[1] * A[n+3][0] - x[1] * A[n+2][0];
+        const v10 = x[1] * A[n+3][1] - x[1] * A[n+2][1];
+        const v20 = x[1] * A[n+3][2] - x[1] * A[n+2][2];
+
+        const v01 = x[2*n-1] * x[0] * x[1] * A[n+1][0];
+        const v11 = x[2*n-1] * x[0] * x[1] * A[n+1][1];
+        const v21 = x[2*n-1] * x[0] * x[1] * A[n+1][2];
+
+        const v02 = x[1] * A[n+2][0] - x[2*n-1] * x[0] * x[1] * A[n+1][0];
+        const v12 = x[1] * A[n+2][1] - x[2*n-1] * x[0] * x[1] * A[n+1][1];
+        const v22 = x[1] * A[n+2][2] - x[2*n-1] * x[0] * x[1] * A[n+1][2];
+
+        const T = [
+            [v00, v01, v02],
+            [v10, v11, v12],
+            [v20, v21, v22]
+        ];
+
+        return T;
+    }
 }

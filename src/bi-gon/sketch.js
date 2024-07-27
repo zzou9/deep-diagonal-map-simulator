@@ -94,14 +94,21 @@ function keyPressed() {
         }
     }
 
-    // // changing the number of vertices of a polygon
-    // if (keyCode === UP_ARROW) { 
-    //     polygon.setDefault(polygon.numVertex+2);
-    // } else if (keyCode === DOWN_ARROW){ 
-    //     if (polygon.numVertex > 3*map.l) {
-    //         polygon.setDefault(Math.max(polygon.numVertex-2, 8));
-    //     } 
-    // }
+    if (key === 'p') {
+        const S = polygon.getMonodromy()
+        console.log(S);
+        console.log(polygon.getInvariants());
+        console.log(MathHelper.characteristicPoly3(S));
+    }
+
+    // changing the number of vertices to show
+    if (keyCode === UP_ARROW && polygon.numVertexToShow < 20) { 
+        polygon.numVertexToShow += 1;
+        polygon.updateVertices();
+    } else if (keyCode === DOWN_ARROW && polygon.numVertexToShow > 6){ 
+        polygon.numVertexToShow -= 1;
+        polygon.updateVertices();
+    }
 
     // changing the diagonals of the map
     if (keyCode === LEFT_ARROW && map.l > 2) {
