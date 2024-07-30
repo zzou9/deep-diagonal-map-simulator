@@ -92,8 +92,8 @@ class Normalize {
         const e2 = [MathHelper.round(Math.cos(2*theta)*r), MathHelper.round(Math.sin(2*theta)*r), 1];
         const e3 = [MathHelper.round(Math.cos(3*theta)*r), MathHelper.round(Math.sin(3*theta)*r), 1];
 
-        const M = this.getMatrix(vertices[0], vertices[2], vertices[4], vertices[6]);
-        const E = this.getMatrix(e0, e1, e2, e3);
+        const M = this.getProjectiveLift(vertices[0], vertices[2], vertices[4], vertices[6]);
+        const E = this.getProjectiveLift(e0, e1, e2, e3);
 
         // get the projection map
         const T = MathHelper.matrixMult(MathHelper.invert3(E), M);

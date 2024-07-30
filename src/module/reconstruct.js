@@ -142,9 +142,8 @@ class Reconstruct extends Geometry {
      * @param {number} [numVertices=5] number of vertices to reconstruct
      * @returns the homogeneous coordinates of the polygon
      */
-    static reconstruct3(x, numVertices=8) {
-        let coords = new Array();
-        const n = x.length;
+    static reconstruct3(x, numVertices=6) {
+        let coords = new Array(numVertices);
         const M = [
             [1, -1, x[0]*x[1]],
             [1, 0, 0],
@@ -162,6 +161,31 @@ class Reconstruct extends Geometry {
             ];
             const r = this.matrixMult(M, v);
             coords[i] = [r[0][0], r[1][0], r[2][0]];
+        }
+        return coords;
+    }
+
+    /**
+     * Reconstruct the homogeneous coordinates of a twisted bigon given its monodromy.
+     * The first four coordinates are given as 
+     *  [0, 0, 1]
+     *  [1, 0, 1]
+     *  [1, 1, 1]
+     *  [0, 1, 1]
+     * The method then applies the monodromy repeatedly to get the coordinates
+     * @param {Array<Array<number>>} T a lift of the monodromy of the bigon
+     * @param {number} [numVertices=6] number of vertices to construct
+     * @returns 
+     */
+    static reconstructBigon(T, numVertices=6) {
+        let coords = new Array(numVertices);
+        coords[0] = [0, 0, 1];
+        coords[1] = [1, 0, 1];
+        coords[2] = [1, 1, 1];
+        coords[3] = [0, 1, 1];
+        for (let i = 4; i < numVertices; i++) {
+            const v = this.matrixMult(T, this.vec(coords[i-2]));
+            coords[i] = [v[0][0], v[1][0], v[2][0]];
         }
         return coords;
     }

@@ -8,7 +8,7 @@ class TwistedMap {
      * @param {number} l diagonal parameter, # vertices skipped
      * @param {number} k spacing parameter, # vertices skipped
      */
-    constructor(l=2, k=1) {
+    constructor(l=3, k=1) {
         this.l = l; // the diagonal parameter (# vertices skipped)
         this.k = k; // the spacing parameter (# vertices skipped)
         this.prev = new Array(); // keep charge of previous operations (in the form of vertices)
@@ -18,16 +18,29 @@ class TwistedMap {
     }
 
     /**
-     * A helper method that applies the map
+     * A helper method that applies the map for a twisted bigon
      * @param {Array<number>} coords corner coords of the twisted bigon
-     * @param {Number} l diagonal parameter
-     * @param {Number} k spacing parameter
+     * @param {Array<Array<number>>} T a lift of the monodromy
      * @param {Number} p number of times to apply the map 
      * @returns {Array<Array<Number>>} the resulting homogeneous coordinates of the vertices
      */
-    applyMap(coords, l, k, p) {
+    applyMap(coords, p) {
+        const k = this.k;
+        const l = this.l;
         // draw the old vertices
-        let vertices = Reconstruct.reconstruct3(coords, k+l+6);
+        let vertices;
+        if (l > 3) {
+            // use monodromy to draw vertices
+            const v = Reconstruct.reconstruct3(coords);
+            const M1 = Normalize.getProjectiveLift(v[0], v[1], v[2], v[3]);
+            const M2 = Normalize.getProjectiveLift(v[2], v[3], v[4], v[5]);
+            const M2Inv = MathHelper.invert3(M2);
+            const T = MathHelper.matrixMult(M2Inv, M1);
+            vertices = Reconstruct.reconstructBigon(T, k+l+6);
+        } else {
+            // use formula to draw vertices (slow when number of vertices is large)
+            vertices = Reconstruct.reconstruct3(coords, k+l+6);
+        }
         // populate the new vertices
         let imgVertices = new Array(6);
         for (let i = 0; i < 6; i++) {
@@ -52,12 +65,19 @@ class TwistedMap {
             imgCoords[2] = tempCoords[4];
             imgCoords[3] = tempCoords[5];
         }
+
+        // check for errors 
+        for (let i = 0; i < 4; i++) {
+            if (!Number.isFinite(imgCoords[i]) || Number.isNaN(imgCoords[i]) || imgCoords[i] == 0) {
+                throw new Error("The image is at a singularity");
+            } 
+        }
         
         if (p == 1) {
             return imgCoords;
         }
 
-        return this.applyMap(imgCoords, l, k, p-1);
+        return this.applyMap(imgCoords, p-1);
     }
 
     /**
@@ -68,6 +88,7 @@ class TwistedMap {
      * @returns the vertices of the image polygon of the pentagram map
      */
     act(coords, store=true, countIteration=true) {
+        const newCoords = this.applyMap(coords, this.power);
         // record the previous vertices for undo purposes
         if (store) {
             this.store(coords);
@@ -77,7 +98,7 @@ class TwistedMap {
         if (countIteration) {
             this.numIterations += this.power;
         }
-        return this.applyMap(coords, this.l, this.k, this.power);
+        return newCoords;
     }
 
     /**

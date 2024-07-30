@@ -40,6 +40,7 @@ class InfoPanel extends Panel {
      */
     show() {
         super.show();
+        this.distBox.text[0][0] = "Dist to Ref: " + MathHelper.round(this.polygon.getDistanceToReference(), 5);
         this.iterateBox.text[0][0] = "Iteration: " + this.map.numIterations;
         this.x0Box.text[0][0] = "x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5);
         this.x1Box.text[0][0] = "x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5);

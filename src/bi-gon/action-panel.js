@@ -92,11 +92,11 @@ class ActionPanel extends Panel {
     mapAction() {
         try {
             polygon.cornerCoords = map.act(polygon.cornerCoords.slice());
-            polygon.updateVertices();
+            polygon.updateInfo();
         }
         catch (err) {
             clearInterval(this.action);
-            console.log(err);
+            console.error(err);
             this.actionButton.text = [["Start Action", color.GREEN]];
             this.isRunning = false;
         }

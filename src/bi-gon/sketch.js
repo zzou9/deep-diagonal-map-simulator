@@ -31,7 +31,7 @@ function setup() {
     yT = windowHeight/2;
 
     createCanvas(windowWidth, windowHeight);
-    map = new TwistedMap(l=2);
+    map = new TwistedMap();
     polygon = new TwistedBigon(map);
     polygon.canDrag = true;
 
@@ -82,9 +82,14 @@ function mouseDragged() {
 function keyPressed() {
     // applying the map
     if (key === ' ') {
-        ctrlPanel.disableInscribe();
-        polygon.cornerCoords = map.act(polygon.cornerCoords.slice());
-        polygon.updateVertices();
+        try {
+            ctrlPanel.disableInscribe();
+            polygon.cornerCoords = map.act(polygon.cornerCoords.slice());
+            polygon.updateInfo();
+        }
+        catch (err) {
+            console.error(err);
+        }
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
             ctrlPanel.disableInscribe();
@@ -95,10 +100,16 @@ function keyPressed() {
     }
 
     if (key === 'p') {
-        const S = polygon.getMonodromy()
-        console.log(S);
-        console.log(polygon.getInvariants());
-        console.log(MathHelper.characteristicPoly3(S));
+        const x = polygon.cornerCoords;
+        // console.log(x[0]*x[1]*x[2]*x[3]);
+        console.log("(x0 * x2) / (x1 * x3):", x[0]*x[2] / (x[1]*x[3]));
+        console.log("x1 * x3:", x[1]*x[3]);
+        console.log("x0 * x2:", x[0]*x[2]);
+
+        // const i = 7;
+        // Reconstruct.O(2*i-1, -1, x, true);
+        // Reconstruct.O(2*i-1, 1, x, true);
+        // Reconstruct.O(2*i-1, 3, x, true);
     }
 
     // changing the number of vertices to show
