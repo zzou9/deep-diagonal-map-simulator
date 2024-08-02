@@ -32,7 +32,7 @@ function setup() {
 
     createCanvas(windowWidth, windowHeight);
     map = new TwistedMap();
-    polygon = new TwistedBigon(map);
+    polygon = new TwistedBigon(map, (xT + yT)/30);
     polygon.canDrag = true;
 
     // multiple polygons
@@ -44,7 +44,7 @@ function setup() {
     trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, polygon);
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map);
     shapePanel = new ShapePanel(2*xT - 210, infoPanel.y+infoPanel.h+10, polygon, map);
-    modulePanel = new ModulePanel(xT-175, 40, "Bi-gon", color.BLACK);
+    modulePanel = new ModulePanel(xT-175, 40, "Multi", color.BLACK);
 }
 
 function draw() {

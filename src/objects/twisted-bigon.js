@@ -246,42 +246,12 @@ class TwistedBigon{
     }
 
     /**
-    * Set the vertices to be inscribed
-    */
-    setToInscribed() {
-    }
-
-    /**
     * Reset the polygon to some given corner coordinates
     * @param {Array<Array<Number>>} coords the coords of the polygon to set to
     */
     resetToCoords(coords) {
         this.cornerCoords = coords;
         this.updateInfo(true, true, true);
-    }
-
-    /**
-    * Generates a random inscribed polygon with the same number of vertices
-    */
-    randomInscribed() {
-    }
-
-    /**
-    * Generates a random convex polygon with the same number of vertices
-    */
-    randomConvex() {
-    }
-
-    /**
-    * Get a random star-shaped polygon
-    */
-    randomStarShaped() {
-    }
-
-    /**
-    * Get a random nonconvex polygon
-    */
-    randomNonconvex() {
     }
 
     /**
@@ -450,5 +420,47 @@ class TwistedBigon{
                 }
             }
         } 
+    }
+
+    /**
+     * Check whether a polygon has a degenerate orbit under the map
+     * @returns true if has degenerate orbit, false if the orbit is compact
+     */
+    hasDegenerateOrbit() {
+        this.getTrajectory();
+        if (this.trajectory1.length == 0) {
+            return true;
+        }
+        const vCheck = [
+            [0, 0], 
+            [1, 0], 
+            [1, 1], 
+            [0, 1]
+        ];
+        for (let i = 0; i < this.iteration1; i++) {
+            const v = this.trajectory1[i];
+            if (v[2] == 0) {
+                return true;
+            }
+            const vl = [v[0]/v[2], v[1]/v[2]];
+            for (let j = 0; j < 4; j++) {
+                if (MathHelper.l2dist(vl, vCheck[j]) < Math.pow(10, -2)) {
+                    return true;
+                }
+            }
+        }
+        for (let i = 0; i < this.iteration2; i++) {
+            const v = this.trajectory2[i];
+            if (v[2] == 0) {
+                return true;
+            }
+            const vl = [v[0]/v[2], v[1]/v[2]];
+            for (let j = 0; j < 4; j++) {
+                if (MathHelper.l2dist(vl, vCheck[j]) < Math.pow(10, -2)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
