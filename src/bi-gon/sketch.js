@@ -61,6 +61,16 @@ function draw() {
     infoPanel.show();
     shapePanel.show();
     modulePanel.show();
+
+    if (mouseIsPressed) {
+        try {
+            ctrlPanel.mousePressedAction();
+        }
+        catch (err) {
+            console.log(err);
+        }
+    }
+        
 }
 
 function mouseClicked() {
@@ -70,8 +80,17 @@ function mouseClicked() {
         ctrlPanel.disableInscribe();
     }
     trajPanel.buttonMouseAction();
+    infoPanel.buttonMouseAction();
     shapePanel.buttonMouseAction();
     modulePanel.buttonMouseAction();
+
+    // update alignment of panels
+    actionPanel.y = ctrlPanel.y+ctrlPanel.h+10;
+    trajPanel.y = actionPanel.y+actionPanel.h+10;
+    shapePanel.y = infoPanel.y+infoPanel.h+10;
+    actionPanel.updateButtonPositions();
+    trajPanel.updateButtonPositions();
+    shapePanel.updateButtonPositions();
 }
 
 function mouseDragged() {
@@ -102,14 +121,12 @@ function keyPressed() {
     if (key === 'p') {
         const x = polygon.cornerCoords;
         // console.log(x[0]*x[1]*x[2]*x[3]);
-        console.log("(x0 * x2) / (x1 * x3):", x[0]*x[2] / (x[1]*x[3]));
-        console.log("x1 * x3:", x[1]*x[3]);
-        console.log("x0 * x2:", x[0]*x[2]);
+        // console.log("(x0 * x2) / (x1 * x3):", x[0]*x[2] / (x[1]*x[3]));
+        // console.log("x1 * x3:", x[1]*x[3]);
+        // console.log("x0 * x2:", x[0]*x[2]);
 
-        // const i = 7;
-        // Reconstruct.O(2*i-1, -1, x, true);
-        // Reconstruct.O(2*i-1, 1, x, true);
-        // Reconstruct.O(2*i-1, 3, x, true);
+        const T = polygon.monodromy;
+        console.log(MathHelper.eigenvalue3(T));
     }
 
     // changing the number of vertices to show

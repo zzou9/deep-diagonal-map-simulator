@@ -39,7 +39,7 @@ class ShapePanel extends Panel {
     showPolygon() {
         // check iteration
         if (this.polygon.updateToPanel) {
-            this.vertices = Normalize.ellipseNormalize(polygon.cloneVertices());
+            this.vertices = polygon.cloneVertices();
             this.polygon.updateToPanel = false;
         }
 

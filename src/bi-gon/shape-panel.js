@@ -31,7 +31,9 @@ class ShapePanel extends Panel {
      */
     show() {
         super.show();
-        this.showPolygon();
+        if (this.showPanel) {
+            // this.showPolygon();
+        }
     }
 
     /**
@@ -69,8 +71,35 @@ class ShapePanel extends Panel {
      * Mouse Action
      */
     buttonMouseAction() {
-        if (this.resetButton.isHovering()) {
-            this.polygon.resetToCoords(this.coords);
+        this.showingControl();
+        if (this.showPanel) {
+            if (this.resetButton.isHovering()) {
+                this.polygon.resetToCoords(this.coords);
+            }
+        }   
+    }
+
+    /**
+     * Control whether to show or hide the panel
+     */
+    showingControl() {
+        if (mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.w && mouseY <= this.y + 30) {
+            if (this.showPanel) {
+                this.showPanel = false;
+                this.h = 40;
+            } else {
+                this.showPanel = true;
+                this.h = 200;
+            }
         }
     }
+
+    /**
+     * Update the y positions of the buttons
+     */
+    updateButtonPositions() {
+        this.resetButton.y = this.y+this.h-30;
+        this.center = [this.x+this.w/2, this.y+this.h/2];
+    }
+
 }

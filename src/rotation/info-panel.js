@@ -23,13 +23,13 @@ class InfoPanel extends Panel {
         this.buttons.push(this.embedBox);
         this.convexBox = new Button(this.x+25, this.y+80, 150, 20, [["Convex: " + this.polygon.embedded, color.BLACK]], color.KHAKI);
         this.buttons.push(this.convexBox);
-        this.x0Box = new Button(this.x+25, this.y+100, 150, 20, [["x0: " + this.polygon.embedded, color.BLACK]], color.KHAKI);
+        this.x0Box = new Button(this.x+25, this.y+100, 150, 20, [["x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x0Box);
-        this.x1Box = new Button(this.x+25, this.y+120, 150, 20, [["x1: " + this.polygon.embedded, color.BLACK]], color.KHAKI);
+        this.x1Box = new Button(this.x+25, this.y+120, 150, 20, [["x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x1Box);
-        this.x2Box = new Button(this.x+25, this.y+140, 150, 20, [["x2: " + this.polygon.embedded, color.BLACK]], color.KHAKI);
+        this.x2Box = new Button(this.x+25, this.y+140, 150, 20, [["x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x2Box);
-        this.x3Box = new Button(this.x+25, this.y+160, 150, 20, [["x3: " + this.polygon.embedded, color.BLACK]], color.KHAKI);
+        this.x3Box = new Button(this.x+25, this.y+160, 150, 20, [["x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x3Box);
     }
 
@@ -41,6 +41,10 @@ class InfoPanel extends Panel {
         this.iterateBox.text = [["Iteration: " + this.map.numIterations, color.BLACK]];
         this.embedBox.text = [["Embedded: " + this.polygon.embedded, color.BLACK]];
         this.convexBox.text = [["Convex: " + this.polygon.convex, color.BLACK]];
+        this.x0Box.text[0][0] = "x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5);
+        this.x1Box.text[0][0] = "x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5);
+        this.x2Box.text[0][0] = "x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5);
+        this.x3Box.text[0][0] = "x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5);
     }
 
     /**

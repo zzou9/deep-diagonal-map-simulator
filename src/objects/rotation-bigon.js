@@ -21,9 +21,9 @@ class RotationBigon extends Polygon{
         super(map, numVertex, vertices, inscribed, scale, canDrag);
         this.twisted = true; // whether it is a twisted n-gon
         this.symmetry = this.numVertex / 2; // #-fold rotational symmetry
-        this.corner = 
+        this.cornerCoords = new Array(4);
         this.showTrajectory = true;
-        this.getTrajectory();
+        this.updateInfo();
     }
 
     /**
@@ -247,9 +247,16 @@ class RotationBigon extends Polygon{
      * Whether the polygon is embedded/convex/bird
      * The nex embedded/convex/bird power of the polygon
      */
-    updateInfo() {
+    updateInfo(trajectory=true) {
         super.updateInfo();
-        this.getTrajectory();
+        if (trajectory && this.showTrajectory) {
+            this.getTrajectory();
+        }
+        // get the corner coordinate of the polygon
+        const coords = Geometry.getCornerCoords(this.vertices);
+        for (let i = 0; i < 4; i++) {
+            this.cornerCoords[i] = coords[i];
+        }
     }
 
     /**

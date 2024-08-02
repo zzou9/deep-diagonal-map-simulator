@@ -38,6 +38,7 @@ class TwistedBigon{
 
         // Monodromy of the twisted bigon
         this.monodromy = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+        this.eigenvalues = new Array(3);
         this.dualMonodromy = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
         this.omega1 = 0;
         this.omega2 = 0;
@@ -52,13 +53,23 @@ class TwistedBigon{
     * - Monodromy lift
     * - Invariants from the monodromy
     * @param {boolean} [updateTrajectory=false] whether to update the trajectory
+    * @param {boolean} [updateToPanel=false] whether to update to panel
+    * @param {boolean} [resetReference=false] whether to reset the reference coordinates
     */
-    updateInfo(updateTrajectory=false) {
+    updateInfo(updateTrajectory=false, updateToPanel=false, resetReference=false) {
         this.updateVertices();
         this.updateMonodromy();
+        this.updateEigenvalues();
         this.updateInvariantsFromPoly();
         if (updateTrajectory) {
             this.getTrajectory();
+        }
+        if (updateToPanel) {
+            this.updateToPanel = true;
+        }
+        if (resetReference) {
+            this.referenceCoords = this.cornerCoords.slice();
+            this.map.numIterations = 0;
         }
     }
 
@@ -99,6 +110,33 @@ class TwistedBigon{
     }
 
     /**
+     * Update the eigenvalues of the monodromy
+     */
+    updateEigenvalues() {
+        const T = this.monodromy;
+        const det = MathHelper.det3(T);
+        const Tnormal = [
+            [T[0][0]/det, T[0][1]/det, T[0][2]/det],
+            [T[1][0]/det, T[1][1]/det, T[1][2]/det],
+            [T[2][0]/det, T[2][1]/det, T[2][2]/det]
+        ];
+        const evals = MathHelper.eigenvalue3(Tnormal);
+        if (evals[3] == 1) {
+            this.eigenvalues = [
+                MathHelper.round(evals[0], 5).toString(),
+                MathHelper.round(evals[1], 5).toString(),
+                MathHelper.round(evals[2], 5).toString()
+            ];
+        } else {
+            this.eigenvalues = [
+                MathHelper.round(evals[0], 5).toString(),
+                evals[1].toString(),
+                evals[2].toString()
+            ];
+        }
+    }
+
+    /**
      * Compute the two invariants of the monodromy given in Sch07
      * Omega_1 = tr(T)^3 / det(T)
      * Omega_2 = tr(T^*)^3 / det(T^*)
@@ -117,6 +155,58 @@ class TwistedBigon{
      */
     getDistanceToReference() {
         return MathHelper.l2dist(this.cornerCoords, this.referenceCoords);
+    }
+
+    /**
+     * Compute the l2 distance of the visualization of P1 and P2
+     * @returns the l2 distance between P1 and P2
+     */
+    getP1P2Dist() {
+        const v1 = this.verticesToShow[3];
+        const v2 = this.verticesToShow[4];
+        const p1 = [v1[0]/v1[2], v1[1]/v1[2]];
+        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
+        return MathHelper.l2dist(p1, p2);
+    }
+
+    /**
+     * Compute the angle between the two vectors: p1p2 and p0p1
+     * @returns the signed angle in radians
+     */
+    getTheta1Angle() {
+        const v = this.verticesToShow[4];
+        const p2 = [v[0]/v[2], v[1]/v[2]];
+        const p0p1 = [-1, 0];
+        const p1p2 = [p2[0], p2[1]-1];
+        // compute the angle of two vectors
+        return MathHelper.angle2D(p1p2, p0p1);
+    }
+
+    /**
+     * Compute the l2 distance of the visualization of P2 and P3
+     * @returns the l2 distance between P2 and P3
+     */
+    getP2P3Dist() {
+        const v2 = this.verticesToShow[4];
+        const v3 = this.verticesToShow[5];
+        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
+        const p3 = [v3[0]/v3[2], v3[1]/v3[2]];
+        return MathHelper.l2dist(p2, p3);
+    }
+
+    /**
+     * Compute the angle between the two vectors: p2p3 and p1p2
+     * @returns the signed angle in radians
+     */
+    getTheta2Angle() {
+        const v2 = this.verticesToShow[4];
+        const v3 = this.verticesToShow[5];
+        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
+        const p3 = [v3[0]/v3[2], v3[1]/v3[2]];
+        const p1p2 = [p2[0], p2[1]-1];
+        const p2p3 = [p3[0]-p2[0], p3[1]-p2[1]];
+        // compute the angle of two vectors
+        return MathHelper.angle2D(p2p3, p1p2);
     }
 
     /**
@@ -152,13 +242,7 @@ class TwistedBigon{
         }
 
         // compute the coords of the vertices to show
-        this.updateInfo(true);
-
-        // reset the number of iterations of the map
-        this.map.numIterations = 0;
-
-        this.updateToPanel = true;
-        this.referenceCoords = this.cornerCoords.slice(); // deep cloning the corner coordinates
+        this.updateInfo(true, true, true);
     }
 
     /**
@@ -173,10 +257,7 @@ class TwistedBigon{
     */
     resetToCoords(coords) {
         this.cornerCoords = coords;
-        this.referenceCoords = this.cornerCoords.slice();
-        this.map.numIterations = 0;
-        this.updateInfo(true);
-        this.updateToPanel = true;
+        this.updateInfo(true, true, true);
     }
 
     /**
@@ -212,7 +293,7 @@ class TwistedBigon{
 
         // draw edges
         fill(255, 255, 255, 127);
-        stroke(127, 127, 127);
+        stroke(255, 255, 255);
         beginShape();
         for (let i = 0; i < this.numVertexToShow; i++) {
             if (MathHelper.round(this.verticesToShow[i][2]) == 0) {
@@ -266,6 +347,7 @@ class TwistedBigon{
             noStroke();
             for (let i = 0; i < this.trajectory1.length; i++) {
                 if (MathHelper.round(this.trajectory1[i][2] == 0)) {
+                    continue;
                     throw new Error("The trajectory is on the line at infinity");
                 }
                 const x = this.trajectory1[i][0]  / this.trajectory1[i][2];
@@ -318,11 +400,7 @@ class TwistedBigon{
                             this.cornerCoords[j] = tempCoords[j+4];
                         }
                         // clear the number of iterations
-                        this.map.numIterations = 0;
-                        // change the corner coordinates accordingly, also change the rest of the vertices
-                        this.updateInfo(true);
-                        this.updateToPanel = true;
-                        this.referenceCoords = this.cornerCoords.slice();
+                        this.updateInfo(true, true, true);
                     }
                     catch (err) {
                         console.log(err);

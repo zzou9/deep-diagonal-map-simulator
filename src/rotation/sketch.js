@@ -92,6 +92,7 @@ function keyPressed() {
     if (key === ' ') {
         ctrlPanel.disableInscribe();
         polygon.vertices = map.act(polygon.cloneVertices());
+        polygon.updateInfo(false);
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
             ctrlPanel.disableInscribe();
@@ -99,6 +100,11 @@ function keyPressed() {
             polygon.vertices = prev[0];
             map.numIterations = prev[1];
         }
+    }
+
+    if (key === 'p') {
+        const x = polygon.cornerCoords;
+        console.log(x[0] * x[2] / (x[1] * x[3]));
     }
 
     // changing the number of vertices of a polygon

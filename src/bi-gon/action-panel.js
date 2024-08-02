@@ -14,7 +14,7 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=250) {
+    constructor(x, y, map, polygon, w=200, h=220) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
@@ -50,7 +50,6 @@ class ActionPanel extends Panel {
         this.incShifts = new TriangleButton(this.x+155, this.y+105, 10, 10, "right");
         this.buttons.push(this.incShifts);
 
-
         // control the speed the map acts
         this.speedBox = new Button(this.x+25, this.y+130, 100, 20, [["Speed: " + this.speed, color.BLACK]]);
         this.buttons.push(this.speedBox);
@@ -70,8 +69,6 @@ class ActionPanel extends Panel {
         // display control
         this.actionButton = new Button(this.x+25, this.y+190, 150, 20, [["Start Action", color.GREEN]]);
         this.buttons.push(this.actionButton);
-        this.showDiagonalButton = new Button(this.x+25, this.y+220, 150, 20, [["Show Diagonals", color.GREEN]]);
-        this.buttons.push(this.showDiagonalButton);
     }
 
     /**
@@ -106,92 +103,133 @@ class ActionPanel extends Panel {
      * Call methods when the buttons are clicked
      */
     buttonMouseAction() {
-        // diagonal control
-        if (this.decDiagonal.isHovering() && this.map.l-1 > this.map.k) {
-            this.map.l--;
-            this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
-            this.polygon.getTrajectory();
-        }
-        if (this.incDiagonal.isHovering()) {
-            this.map.l++;
-            this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
-            this.polygon.getTrajectory();
-        }
+        this.showingControl();
+        if (this.showPanel) {
+            // diagonal control
+            if (this.decDiagonal.isHovering() && this.map.l-1 > this.map.k) {
+                this.map.l--;
+                this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
+                this.polygon.getTrajectory();
+            }
+            if (this.incDiagonal.isHovering()) {
+                this.map.l++;
+                this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
+                this.polygon.getTrajectory();
+            }
 
-        // spacing control
-        if (this.decSpacing.isHovering() && this.map.k > 1) {
-            this.map.k--;
-            this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
-            this.polygon.getTrajectory();
-        }
-        if (this.incSpacing.isHovering() && this.map.k < this.map.l-1) {
-            this.map.k++;
-            this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
-            this.polygon.getTrajectory();
-        }
+            // spacing control
+            if (this.decSpacing.isHovering() && this.map.k > 1) {
+                this.map.k--;
+                this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
+                this.polygon.getTrajectory();
+            }
+            if (this.incSpacing.isHovering() && this.map.k < this.map.l-1) {
+                this.map.k++;
+                this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
+                this.polygon.getTrajectory();
+            }
 
-        // shifting control
-        if (this.decShifts.isHovering() && this.map.shifts > 0) {
-            this.map.shifts--;
-            this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
-            this.polygon.getTrajectory();
-        }
-        if (this.incShifts.isHovering()) {
-            if (this.map.twisted) {
-                if (this.map.shifts < this.polygon.numVertex/4-1) {
+            // shifting control
+            if (this.decShifts.isHovering() && this.map.shifts > 0) {
+                this.map.shifts--;
+                this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
+                this.polygon.getTrajectory();
+            }
+            if (this.incShifts.isHovering()) {
+                if (this.map.twisted) {
+                    if (this.map.shifts < this.polygon.numVertex/4-1) {
+                        this.map.shifts++;
+                        this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
+                    }
+                } else if (this.map.shifts < this.polygon.numVertex-1) {
                     this.map.shifts++;
                     this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
                 }
-            } else if (this.map.shifts < this.polygon.numVertex-1) {
-                this.map.shifts++;
-                this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
+                this.polygon.getTrajectory();
             }
-            this.polygon.getTrajectory();
-        }
 
-        // speed control
-        if (this.decSpeed.isHovering() && this.speed > 1) {
-            this.speed--;
-            this.speedBox.text = [["Speed: " + this.speed, color.BLACK]];
-        }
-        if (this.incSpeed.isHovering()) {
-            this.speed++;
-            this.speedBox.text = [["Speed: " + this.speed, color.BLACK]];
-        }
+            // speed control
+            if (this.decSpeed.isHovering() && this.speed > 1) {
+                this.speed--;
+                this.speedBox.text = [["Speed: " + this.speed, color.BLACK]];
+            }
+            if (this.incSpeed.isHovering()) {
+                this.speed++;
+                this.speedBox.text = [["Speed: " + this.speed, color.BLACK]];
+            }
 
-        // power control
-        if (this.decPower.isHovering() && this.map.power > 1) {
-            this.map.power--;
-            this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
-            this.polygon.getTrajectory();
+            // power control
+            if (this.decPower.isHovering() && this.map.power > 1) {
+                this.map.power--;
+                this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
+                this.polygon.getTrajectory();
+            }
+            if (this.incPower.isHovering()) {
+                this.map.power++;
+                this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
+                this.polygon.getTrajectory();
+            }
+
+            // display control
+            if (this.actionButton.isHovering()) {
+                if (!this.isRunning) {
+                    this.actionButton.text = [["Pause Action", color.RED]];
+                    this.action = setInterval(() => this.mapAction(), 1000/this.speed);
+                    this.isRunning = true;
+                } else {
+                    this.actionButton.text = [["Start Action", color.GREEN]];
+                    clearInterval(this.action);
+                    this.isRunning = false;
+                }
+            }
         }
-        if (this.incPower.isHovering()) {
-            this.map.power++;
-            this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
-            this.polygon.getTrajectory();
+    }
+
+    /**
+     * Control whether to show or hide the panel
+     */
+    showingControl() {
+        if (mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.w && mouseY <= this.y + 30) {
+            if (this.showPanel) {
+                this.showPanel = false;
+                this.h = 40
+            } else {
+                this.showPanel = true;
+                this.h = 220;
+            }
         }
+    }
+
+    /**
+     * Update the y positions of the buttons
+     */
+    updateButtonPositions() {
+        // control k
+        this.diagonalBox.y = this.y+40;
+        this.decDiagonal.y = this.y+45;
+        this.incDiagonal.y = this.y+45;
+
+        // control l
+        this.spacingBox.y = this.y+70;
+        this.decSpacing.y = this.y+75;
+        this.incSpacing.y = this.y+75;
+
+        // control shifting (numbering of vertices)
+        this.shiftsBox.y = this.y+100;
+        this.decShifts.y = this.y+105;
+        this.incShifts.y = this.y+105;
+
+        // control the speed the map acts
+        this.speedBox.y = this.y+130;
+        this.decSpeed.y = this.y+135;
+        this.incSpeed.y = this.y+135;
+
+        // control the number of times the map acts
+        this.powerBox.y = this.y+160;
+        this.decPower.y = this.y+165;
+        this.incPower.y = this.y+165;
 
         // display control
-        if (this.actionButton.isHovering()) {
-            if (!this.isRunning) {
-                this.actionButton.text = [["Pause Action", color.RED]];
-                this.action = setInterval(() => this.mapAction(), 1000/this.speed);
-                this.isRunning = true;
-            } else {
-                this.actionButton.text = [["Start Action", color.GREEN]];
-                clearInterval(this.action);
-                this.isRunning = false;
-            }
-        }
-        if (this.showDiagonalButton.isHovering()) {
-            if (!this.polygon.showDiagonal) {
-                this.polygon.showDiagonal = true;
-                this.showDiagonalButton.text = [["Hide Diagonals", color.RED]];
-            } else {
-                this.polygon.showDiagonal = false;
-                this.showDiagonalButton.text = [["Show Diagonals", color.GREEN]];
-            }
-        }
-        
+        this.actionButton.y = this.y+190;
     }
 }

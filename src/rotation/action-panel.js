@@ -95,7 +95,7 @@ class ActionPanel extends Panel {
         try {
             this.polygon.vertices = this.map.act(polygon.cloneVertices());
             this.polygon.broadcastVertices();
-            this.polygon.updateInfo;
+            this.polygon.updateInfo(false);
         }
         catch (err) {
             clearInterval(this.action);

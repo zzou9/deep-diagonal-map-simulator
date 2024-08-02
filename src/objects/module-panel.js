@@ -54,21 +54,23 @@ class ModulePanel extends Panel {
         super.show();
     }
 
-    buttonMouseAction() {  
-        if (this.homeButton.isHovering() && this.current != "Home") {
-            window.location.href = 'index.html';
-        }
-        if (this.convexButton.isHovering() && this.current != "Convex") {
-            window.location.href = 'convex.html';
-        }
-        if (this.rotationButton.isHovering() && this.current != "Rotation") {
-            window.location.href = 'rotation.html';
-        }
-        if (this.sevengonButton.isHovering() && this.current != "7-Gon") {
-            window.location.href = '7-gon.html';
-        }
-        if (this.bigonButton.isHovering() && this.current != "Bi-gon") {
-            window.location.href = 'bi-gon.html';
-        }
+    buttonMouseAction() { 
+        if (this.showPanel) {
+            if (this.homeButton.isHovering() && this.current != "Home") {
+                window.location.href = 'index.html';
+            }
+            if (this.convexButton.isHovering() && this.current != "Convex") {
+                window.location.href = 'convex.html';
+            }
+            if (this.rotationButton.isHovering() && this.current != "Rotation") {
+                window.location.href = 'rotation.html';
+            }
+            if (this.sevengonButton.isHovering() && this.current != "7-Gon") {
+                window.location.href = '7-gon.html';
+            }
+            if (this.bigonButton.isHovering() && this.current != "Bi-gon") {
+                window.location.href = 'bi-gon.html';
+            }
+        } 
     }
 }

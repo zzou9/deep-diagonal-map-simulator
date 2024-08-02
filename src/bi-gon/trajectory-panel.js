@@ -69,58 +69,97 @@ class TrajectoryPanel extends Panel {
      * Mouse Action
      */
     buttonMouseAction() {
-        // show trajectory
-        if (this.showTrajectory1Button.isHovering()) {
-            if (!this.polygon.showTrajectory1) {
-                this.polygon.showTrajectory1 = true;
+        this.showingControl();
+        if (this.showPanel) {
+            // show trajectory
+            if (this.showTrajectory1Button.isHovering()) {
+                if (!this.polygon.showTrajectory1) {
+                    this.polygon.showTrajectory1 = true;
+                    this.polygon.getTrajectory();
+                    this.showTrajectory1Button.text = [["Hide Trajectory 1", color.RED]];
+                } else {
+                    this.polygon.showTrajectory1 = false;
+                    this.showTrajectory1Button.text = [["Show Trajectory 1", color.GREEN]];
+                }
+            }
+            if (this.showTrajectory2Button.isHovering()) {
+                if (!this.polygon.showTrajectory2) {
+                    this.polygon.showTrajectory2 = true;
+                    this.polygon.getTrajectory();
+                    this.showTrajectory2Button.text = [["Hide Trajectory 2", color.RED]];
+                } else {
+                    this.polygon.showTrajectory2 = false;
+                    this.showTrajectory2Button.text = [["Show Trajectory 2", color.GREEN]];
+                }
+            }
+    
+            // number of iterations to show
+            if (this.decIteration1.isHovering() && this.polygon.iteration1 > 0) {
+                this.polygon.iteration1 -= 1;
                 this.polygon.getTrajectory();
-                this.showTrajectory1Button.text = [["Hide Trajectory 1", color.RED]];
-            } else {
-                this.polygon.showTrajectory1 = false;
-                this.showTrajectory1Button.text = [["Show Trajectory 1", color.GREEN]];
+            }
+            if (this.incIteration1.isHovering()) {
+                this.polygon.iteration1 += 1;
+                this.polygon.getTrajectory();
+            }
+            if (this.decIteration2.isHovering() && this.polygon.iteration2 > 0) {
+                this.polygon.iteration2 -= 1;
+                this.polygon.getTrajectory();
+            }
+            if (this.incIteration2.isHovering()) {
+                this.polygon.iteration2 += 1;
+                this.polygon.getTrajectory();
+            }
+            
+            // changing the point size of the trajectories
+            if (this.decTraj1Size.isHovering() && this.polygon.traj1Size > 1) {
+                this.polygon.traj1Size -= 1;
+            }
+            if (this.incTraj1Size.isHovering() && this.polygon.traj1Size < this.polygon.vertexSize) {
+                this.polygon.traj1Size += 1;
+            }
+            if (this.decTraj2Size.isHovering() && this.polygon.traj2Size > 1) {
+                this.polygon.traj2Size -= 1;
+            }
+            if (this.incTraj2Size.isHovering() && this.polygon.traj2Size < this.polygon.vertexSize) {
+                this.polygon.traj2Size += 1;
             }
         }
-        if (this.showTrajectory2Button.isHovering()) {
-            if (!this.polygon.showTrajectory2) {
-                this.polygon.showTrajectory2 = true;
-                this.polygon.getTrajectory();
-                this.showTrajectory2Button.text = [["Hide Trajectory 2", color.RED]];
-            } else {
-                this.polygon.showTrajectory2 = false;
-                this.showTrajectory2Button.text = [["Show Trajectory 2", color.GREEN]];
-            }
-        }
+    }
 
-        // number of iterations to show
-        if (this.decIteration1.isHovering() && this.polygon.iteration1 > 0) {
-            this.polygon.iteration1 -= 1;
-            this.polygon.getTrajectory();
+    /**
+     * Control whether to show or hide the panel
+     */
+    showingControl() {
+        if (mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.w && mouseY <= this.y + 30) {
+            if (this.showPanel) {
+                this.showPanel = false;
+                this.h = 40
+            } else {
+                this.showPanel = true;
+                this.h = 220;
+            }
         }
-        if (this.incIteration1.isHovering()) {
-            this.polygon.iteration1 += 1;
-            this.polygon.getTrajectory();
-        }
-        if (this.decIteration2.isHovering() && this.polygon.iteration2 > 0) {
-            this.polygon.iteration2 -= 1;
-            this.polygon.getTrajectory();
-        }
-        if (this.incIteration2.isHovering()) {
-            this.polygon.iteration2 += 1;
-            this.polygon.getTrajectory();
-        }
-        
-        // changing the point size of the trajectories
-        if (this.decTraj1Size.isHovering() && this.polygon.traj1Size > 1) {
-            this.polygon.traj1Size -= 1;
-        }
-        if (this.incTraj1Size.isHovering() && this.polygon.traj1Size < this.polygon.vertexSize) {
-            this.polygon.traj1Size += 1;
-        }
-        if (this.decTraj2Size.isHovering() && this.polygon.traj2Size > 1) {
-            this.polygon.traj2Size -= 1;
-        }
-        if (this.incTraj2Size.isHovering() && this.polygon.traj2Size < this.polygon.vertexSize) {
-            this.polygon.traj2Size += 1;
-        }
+    }
+
+    /**
+     * Update the y positions of the buttons
+     */
+    updateButtonPositions() {
+        this.showTrajectory1Button.y = this.y+40;
+        this.iteration1Box.y = this.y+70;
+        this.decIteration1.y = this.y+75;
+        this.incIteration1.y = this.y+75;
+        this.traj1SizeBox.y = this.y+100;
+        this.decTraj1Size.y = this.y+105;
+        this.incTraj1Size.y = this.y+105;
+
+        this.showTrajectory2Button.y = this.y+130;
+        this.iteration2Box.y = this.y+160;
+        this.decIteration2.y = this.y+165;
+        this.incIteration2.y = this.y+165;
+        this.traj2SizeBox.y = this.y+190;
+        this.decTraj2Size.y = this.y+195;
+        this.incTraj2Size.y = this.y+195;
     }
 }

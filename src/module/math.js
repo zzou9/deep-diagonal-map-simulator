@@ -39,6 +39,76 @@ class MathHelper {
     }
 
     /**
+     * Compute the roots of a monic cubic polynomial in the following form:
+     *  x^3 + a * x^2 + b * x + c = 0
+     * Return [0, 0, 0] for complex roots
+     * @param {number} a coefficient
+     * @param {number} b coefficient
+     * @param {number} c coefficient
+     * @returns [l1, l2, l3, ind] where ind=1 if all real evals and ind=0 if has complex evals
+     */
+    static solveMonicCubic(a, b, c) {
+        // Coefficients of the depressed cubic
+        const p = b - (a * a) / 3;
+        const q = (2 * a * a * a) / 27 - (a * b) / 3 + c;
+    
+        // Discriminant
+        const delta = Math.pow(q / 2, 2) + Math.pow(p / 3, 3);
+    
+        let roots = new Array();
+    
+        if (delta > 0) {
+            // One real root and two complex conjugate roots
+            let u = Math.cbrt(-q / 2 + Math.sqrt(delta));
+            let v = Math.cbrt(-q / 2 - Math.sqrt(delta));
+            roots.push(u + v - a / 3);
+            const x2 = -0.5 * (u + v) - a / 3;
+            const iy2 = 0.5 * Math.sqrt(3) * (u - v);
+            const x3 = -0.5 * (u + v) - a / 3;
+            const iy3 = -0.5 * Math.sqrt(3) * (u - v);
+            roots.push(new Complex(x2, iy2));
+            roots.push(new Complex(x3, iy3));
+            roots.push(0);
+        } else if (delta === 0) {
+            // Three real roots, at least two equal
+            const u = Math.cbrt(-q / 2);
+            roots.push(2 * u - a / 3, rounding);
+            roots.push(-u - a / 3, rounding);
+            roots.push(-u - a / 3, rounding);
+            roots.push(1);
+        } else {
+            // Three distinct real roots
+            const r = Math.sqrt(Math.pow(-p / 3, 3));
+            const theta = Math.acos(q / (2 * r));
+            roots.push(2 * Math.cbrt(r) * Math.cos(theta / 3) - a / 3);
+            roots.push(2 * Math.cbrt(r) * Math.cos((theta + 2 * Math.PI) / 3) - a / 3);
+            roots.push(2 * Math.cbrt(r) * Math.cos((theta + 4 * Math.PI) / 3) - a / 3);
+            roots.sort((a, b) => b - a);
+            roots.push(1);
+        }
+    
+        return roots;
+    }
+
+    /**
+     * Get the signed angle between two 2D vectors
+     * @param {Array<number>} v1 vector 1
+     * @param {Array<number>} v2 vector 2
+     * @returns the signed angle between v1 and v2
+     */
+    static angle2D(v1, v2) {
+        // check if the two vectors are 2D
+        if (v1.length != 2 || v2.length != 2) {
+            throw new Error("The input vector is not in R2");
+        }
+        // compute the angle
+        const theta1 = Math.atan2(v1[1], v1[0]);
+        const Q = this.angleToMatrix(-theta1);
+        const u2 = this.matrixMult(Q, [[v2[0]], [v2[1]]]);
+        return -Math.atan2(u2[1][0], u2[0][0]);
+    }
+
+    /**
      * Convert an angle to a 2d rotation matrix
      * @param {Number} theta the angle to rotate
      * @returns {Array<Array<Number>>} the 2-by-2 rotation matrix
@@ -61,7 +131,7 @@ class MathHelper {
             console.error("The input is not an orthogonal matrix.");
             return null;
         }
-        return Math.atan(Q[1][0] / Q[0][0]);
+        return Math.atan2(Q[1][0], Q[0][0]);
     }
 
     /**
@@ -81,6 +151,19 @@ class MathHelper {
             console.log("Rounded");
             return this.solveQuadratic(a, b, c, 10);
         }
+    }
+
+    /**
+     * Compute the eigenvalues of a 3x3 matrix
+     * @param {Array<Array<number>>} M the matrix to compute
+     * @returns [l1, l2, l3, ind] where ind=1 if all real and ind=0 if has complex
+     */
+    static eigenvalue3(M) {
+        const char = this.characteristicPoly3(M);
+        const a = -char[0];
+        const b = char[1];
+        const c = -char[2];
+        return this.solveMonicCubic(a, b, c);
     }
 
     /**
