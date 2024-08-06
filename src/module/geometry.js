@@ -15,10 +15,10 @@ class Geometry extends MathHelper {
         const l1 = this.cross(v1, v2);
         const l2 = this.cross(v3, v4);
         const vInt = this.cross(l1, l2);
-        if (MathHelper.round(Math.abs(vInt[2])) != 0) {
-            return [vInt[0]/vInt[2], vInt[1]/vInt[2], 1];
+        if (MathHelper.round(Math.abs(vInt[2])) == 0) {
+            return vInt;
         }
-        return vInt;
+        return [vInt[0]/vInt[2], vInt[1]/vInt[2], 1];
     }
 
     /**

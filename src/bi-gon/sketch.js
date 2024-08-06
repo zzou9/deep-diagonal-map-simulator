@@ -133,6 +133,11 @@ function keyPressed() {
 
         console.log(polygon.hasDegenerateOrbit());
     }
+    
+    // action panel activation
+    if (key === 'a' || key === 'A') {
+        actionPanel.mapAction();
+    }
 
     // changing the number of vertices to show
     if (keyCode === UP_ARROW && polygon.numVertexToShow < 20) { 

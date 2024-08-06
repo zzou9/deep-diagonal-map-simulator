@@ -86,7 +86,10 @@ class ActionPanel extends Panel {
         this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
     }
 
-    mapAction() {
+    /**
+     * Helper method
+     */
+    mapActionHelper() {
         try {
             polygon.cornerCoords = map.act(polygon.cornerCoords.slice());
             polygon.updateInfo();
@@ -95,6 +98,21 @@ class ActionPanel extends Panel {
             clearInterval(this.action);
             console.error(err);
             this.actionButton.text = [["Start Action", color.GREEN]];
+            this.isRunning = false;
+        }
+    }
+
+    /**
+     * Called when the action button is pressed or the "a" key is pressed
+     */
+    mapAction() {
+        if (!this.isRunning) {
+            this.actionButton.text = [["Pause Action", color.RED]];
+            this.action = setInterval(() => this.mapActionHelper(), 1000/this.speed);
+            this.isRunning = true;
+        } else {
+            this.actionButton.text = [["Start Action", color.GREEN]];
+            clearInterval(this.action);
             this.isRunning = false;
         }
     }
@@ -170,17 +188,9 @@ class ActionPanel extends Panel {
                 this.polygon.getTrajectory();
             }
 
-            // display control
+            // action control
             if (this.actionButton.isHovering()) {
-                if (!this.isRunning) {
-                    this.actionButton.text = [["Pause Action", color.RED]];
-                    this.action = setInterval(() => this.mapAction(), 1000/this.speed);
-                    this.isRunning = true;
-                } else {
-                    this.actionButton.text = [["Start Action", color.GREEN]];
-                    clearInterval(this.action);
-                    this.isRunning = false;
-                }
+                this.mapAction();
             }
         }
     }

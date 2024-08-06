@@ -9,12 +9,14 @@ class CtrlPanel extends Panel {
      * @param {Number} y y coordinate
      * @param {TwistedBigon} polygon the polygon
      * @param {TwistedMap} map the map
+     * @param {Array<TwistedBigon>} mapPolygons polygon mirrors
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=310) {
+    constructor(x, y, polygon, map, mapPolygons, w=200, h=310) {
         super(x, y, w, h, "Control", color.CADET_BLUE);
         this.polygon = polygon;
+        this.mapPolygons = mapPolygons;
         this.map = map;
         this.rate = -2;
         // populate the buttons
@@ -102,10 +104,20 @@ class CtrlPanel extends Panel {
             if (this.decNumVertex.isHovering() && this.polygon.numVertexToShow > 6) {
                 this.polygon.numVertexToShow -= 1;
                 this.polygon.updateVertices();
+                // broadcast to mirrors
+                for (let i = 0; i < this.mapPolygons.length; i++) {
+                    this.mapPolygons[i].numVertexToShow = this.polygon.numVertexToShow;
+                    this.mapPolygons[i].updateVertices();
+                }
             }
-            if (this.incNumVertex.isHovering() && this.polygon.numVertexToShow < 20) {
+            if (this.incNumVertex.isHovering() && this.polygon.numVertexToShow < 100) {
                 this.polygon.numVertexToShow += 1;
                 this.polygon.updateVertices();
+                // broadcast to mirrors
+                for (let i = 0; i < this.mapPolygons.length; i++) {
+                    this.mapPolygons[i].numVertexToShow = this.polygon.numVertexToShow;
+                    this.mapPolygons[i].updateVertices();
+                }
             }
 
             // changing size of the dragging vertices
@@ -119,6 +131,10 @@ class CtrlPanel extends Panel {
             // set the bigon back to default
             if (this.defaultButton.isHovering()) {
                 this.polygon.setDefault();
+                // broadcast
+                for (let i = 0; i < this.mapPolygons.length; i++) {
+                    this.mapPolygons[i].setDefault();
+                }
             }
 
             // dragging control
@@ -152,41 +168,73 @@ class CtrlPanel extends Panel {
                 if (this.decX0.isHovering()) {
                     this.polygon.cornerCoords[0] -= Math.pow(10, r);
                     this.polygon.updateInfo(true, true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].resetToCoords(this.polygon.cornerCoords);
+                    }
                 }
                 if (this.incX0.isHovering()) {
                     this.polygon.cornerCoords[0] += Math.pow(10, r);
                     this.polygon.updateInfo(true, true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].resetToCoords(this.polygon.cornerCoords);
+                    }
                 }
         
                 if (this.decX1.isHovering()) {
                     this.polygon.cornerCoords[1] -= Math.pow(10, r);
                     this.polygon.updateInfo(true, true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].resetToCoords(this.polygon.cornerCoords);
+                    }
                 }
                 if (this.incX1.isHovering()) {
                     this.polygon.cornerCoords[1] += Math.pow(10, r);
                     this.polygon.updateInfo(true, true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].resetToCoords(this.polygon.cornerCoords);
+                    }
                 }
         
                 if (this.decX2.isHovering()) {
                     this.polygon.cornerCoords[2] -= Math.pow(10, r);
                     this.polygon.updateInfo(true, true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].resetToCoords(this.polygon.cornerCoords);
+                    }
                 }
                 if (this.incX2.isHovering()) {
                     this.polygon.cornerCoords[2] += Math.pow(10, r);
                     this.polygon.updateInfo(true, true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].resetToCoords(this.polygon.cornerCoords);
+                    }
                 }
         
                 if (this.decX3.isHovering()) {
                     this.polygon.cornerCoords[3] -= Math.pow(10, r);
                     this.polygon.updateInfo(true, true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].resetToCoords(this.polygon.cornerCoords);
+                    }
                 }
                 if (this.incX3.isHovering()) {
                     this.polygon.cornerCoords[3] += Math.pow(10, r);
                     this.polygon.updateInfo(true, true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].resetToCoords(this.polygon.cornerCoords);
+                    }
                 }
             }
             catch (err) {
-                console.log(err);ß
+                console.log(err);
             }
         }
     }
@@ -198,7 +246,7 @@ class CtrlPanel extends Panel {
         if (mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.w && mouseY <= this.y + 30) {
             if (this.showPanel) {
                 this.showPanel = false;
-                this.h = 40
+                this.h = 30
             } else {
                 this.showPanel = true;
                 this.h = 310;

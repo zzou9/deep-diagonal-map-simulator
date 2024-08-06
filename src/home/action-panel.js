@@ -97,7 +97,10 @@ class ActionPanel extends Panel {
         this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
     }
 
-    mapAction() {
+    /**
+     * Helper method to control map action
+     */
+    mapActionHelper() {
         try {
             this.polygon.vertices = this.map.act(polygon.cloneVertices());
             this.polygon.updateInfo;
@@ -106,6 +109,21 @@ class ActionPanel extends Panel {
             clearInterval(this.action);
             console.log(err);
             this.actionButton.text = [["Start Action", color.GREEN]];
+            this.isRunning = false;
+        }
+    }
+
+    /**
+     * Called when the action button is pressed or the "a" key is pressed
+     */
+    mapAction() {
+        if (!this.isRunning) {
+            this.actionButton.text = [["Pause Action", color.RED]];
+            this.action = setInterval(() => this.mapActionHelper(), 1000/this.speed);
+            this.isRunning = true;
+        } else {
+            this.actionButton.text = [["Start Action", color.GREEN]];
+            clearInterval(this.action);
             this.isRunning = false;
         }
     }
@@ -171,18 +189,12 @@ class ActionPanel extends Panel {
             this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
         }
 
-        // display control
+        // action control
         if (this.actionButton.isHovering()) {
-            if (!this.isRunning) {
-                this.actionButton.text = [["Pause Action", color.RED]];
-                this.action = setInterval(() => this.mapAction(), 1000/this.speed);
-                this.isRunning = true;
-            } else {
-                this.actionButton.text = [["Start Action", color.GREEN]];
-                clearInterval(this.action);
-                this.isRunning = false;
-            }
+            this.mapAction();
         }
+
+        // display control
         if (this.showDiagonalButton.isHovering()) {
             if (!this.polygon.showDiagonal) {
                 this.polygon.showDiagonal = true;

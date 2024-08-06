@@ -36,9 +36,9 @@ class Panel {
         // title
         noStroke();
         textAlign(CENTER, CENTER);
-        textFont("Georgia", 15);
+        textFont("Georgia", 13);
         fill(color.BLACK);
-        text(this.title, this.x+this.w/2, this.y+20);
+        text(this.title, this.x+this.w/2, this.y+15);
 
         if (this.showPanel) {
             // buttons

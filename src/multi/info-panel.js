@@ -116,10 +116,10 @@ class InfoPanel extends Panel {
         if (mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.w && mouseY <= this.y + 30) {
             if (this.showPanel) {
                 this.showPanel = false;
-                this.h = 40
+                this.h = 30
             } else {
                 this.showPanel = true;
-                this.h = 170;
+                this.h = 230;
             }
         }
     }

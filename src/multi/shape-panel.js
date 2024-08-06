@@ -12,13 +12,15 @@ class ShapePanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=200) {
+    constructor(x, y, polygon, map, w=200, h=30) {
         super(x, y, w, h, "Shape", color.KHAKI);
         this.polygon = polygon;
         this.coords = polygon.cornerCoords.slice();
         this.vertices = Reconstruct.reconstruct3(this.coords.slice(), 6);
         this.prevCoords = polygon.cornerCoords.slice();
         this.map = map;
+        this.showPanel = false;
+
         this.center = [x + w/2, y + h/2];
         this.scale = Math.min(w, h-20) / 5;
         // populate the buttons
@@ -86,7 +88,7 @@ class ShapePanel extends Panel {
         if (mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.w && mouseY <= this.y + 30) {
             if (this.showPanel) {
                 this.showPanel = false;
-                this.h = 40;
+                this.h = 30;
             } else {
                 this.showPanel = true;
                 this.h = 200;

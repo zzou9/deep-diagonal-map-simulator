@@ -11,11 +11,11 @@ class TwistedBigon{
     constructor(map, 
         scale=(windowWidth + windowHeight)/20) {
         this.map = map;
-        this.cornerCoords = new Array(4);
+        this.cornerCoords = [0.5, 0.5, 0.5, 0.5];
         this.numVertexToShow = 6;
         this.verticesToShow = new Array(this.numVertexToShow);
         this.vertexSize = 8;
-        this.canDrag = true;
+        this.canDrag = false;
         this.scale = scale; 
         this.updateToPanel = true; // whether to update to the shape panel
         this.referenceCoords = [0.5, 0.5, 0.5, 0.5]; // the reference corner coordinates
@@ -37,9 +37,9 @@ class TwistedBigon{
         this.trajectory2 = new Array();
 
         // Monodromy of the twisted bigon
-        this.monodromy = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+        this.monodromy = new Array(3);
         this.eigenvalues = new Array(3);
-        this.dualMonodromy = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+        this.dualMonodromy = new Array(3);
         this.omega1 = 0;
         this.omega2 = 0;
 
@@ -57,8 +57,8 @@ class TwistedBigon{
     * @param {boolean} [resetReference=false] whether to reset the reference coordinates
     */
     updateInfo(updateTrajectory=false, updateToPanel=false, resetReference=false) {
-        this.updateVertices();
         this.updateMonodromy();
+        this.updateVertices();
         this.updateEigenvalues();
         this.updateInvariantsFromPoly();
         if (updateTrajectory) {
@@ -77,7 +77,7 @@ class TwistedBigon{
      * Update the visualization of the bigon
      */
     updateVertices() {
-        this.verticesToShow = Reconstruct.reconstruct3(this.cornerCoords, this.numVertexToShow);
+        this.verticesToShow = Reconstruct.reconstructBigon(this.monodromy, this.numVertexToShow);
     }
 
     /**
@@ -94,7 +94,7 @@ class TwistedBigon{
      */
     updateMonodromy() {
         // first, compute the lift of the monodromy
-        const v = this.verticesToShow;
+        const v = Reconstruct.reconstruct3(this.cornerCoords);
         const M1 = Normalize.getProjectiveLift(v[0], v[1], v[2], v[3]);
         const M2 = Normalize.getProjectiveLift(v[2], v[3], v[4], v[5]);
         const M2Inv = MathHelper.invert3(M2);
@@ -256,10 +256,12 @@ class TwistedBigon{
 
     /**
     * Display the polygon
+    * @param {number} [xt=xT] x axis translation
+    * @param {number} [yt=yT] y axis translation
     */
-    show() {
+    show(xt=xT, yt=yT) {
         // translate the coordinate system 
-        translate(xT, yT);
+        translate(xt, yt);
 
         // draw edges
         fill(255, 255, 255, 127);
@@ -318,7 +320,6 @@ class TwistedBigon{
             for (let i = 0; i < this.trajectory1.length; i++) {
                 if (MathHelper.round(this.trajectory1[i][2] == 0)) {
                     continue;
-                    throw new Error("The trajectory is on the line at infinity");
                 }
                 const x = this.trajectory1[i][0]  / this.trajectory1[i][2];
                 const y = this.trajectory1[i][1] / this.trajectory1[i][2];
@@ -332,7 +333,7 @@ class TwistedBigon{
             noStroke();
             for (let i = 0; i < this.trajectory2.length; i++) {
                 if (MathHelper.round(this.trajectory2[i][2] == 0)) {
-                    throw new Error("The trajectory is on the line at infinity");
+                    continue;
                 }
                 const x = this.trajectory2[i][0]  / this.trajectory2[i][2];
                 const y = this.trajectory2[i][1] / this.trajectory2[i][2];
@@ -340,17 +341,19 @@ class TwistedBigon{
             }
         }
 
-        translate(-xT, -yT);
+        translate(-xt, -yt);
     }
 
     /**
     * Drag a vertex 
+    * @param {number} [xt=xT] x axis translation
+    * @param {number} [yt=yT] y axis translation
     */
-    dragVertex() {
+    dragVertex(xt=xT, yt=yT) {
         if (this.canDrag) {
             const w = 5 / this.scale;
-            const mX = (mouseX - xT) / this.scale;
-            const mY = (mouseY - yT) / this.scale;
+            const mX = (mouseX - xt) / this.scale;
+            const mY = (mouseY - yt) / this.scale;
             for (let i = 4; i < 6; i++) {
                 const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
                 const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];

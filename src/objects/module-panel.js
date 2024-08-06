@@ -12,7 +12,7 @@ class ModulePanel extends Panel {
      * @param {Number} w width of the panel
      * @param {Number} h height of the panel
      */
-    constructor(x, y, current, fill=color.CYAN, w=230, h=20) {
+    constructor(x, y, current, fill=color.CYAN, w=0, h=0) {
         super(x, y, w, h, "", fill);
         this.current = current;
 
