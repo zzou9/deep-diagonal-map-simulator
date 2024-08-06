@@ -27,8 +27,8 @@ class TwistedBigon{
          * Trajectory 2 corresponds to the trajectory of the second vertex
          * In the visualization polygon it shows where vertex 6 is sent to via the map
          */
-        this.showTrajectory1 = false;
-        this.showTrajectory2 = false;
+        this.showTrajectory1 = true;
+        this.showTrajectory2 = true;
         this.iteration1 = 10; // number of iterations to show (exponential 2)
         this.iteration2 = 10;
         this.traj1Size = 2;
@@ -269,7 +269,7 @@ class TwistedBigon{
         beginShape();
         for (let i = 0; i < this.numVertexToShow; i++) {
             if (MathHelper.round(this.verticesToShow[i][2]) == 0) {
-                throw new Error("Vertex" + i.toString() + "is not on the affine patch");
+                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
             }
             const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
             const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
@@ -282,7 +282,7 @@ class TwistedBigon{
         noStroke();
         for (let i = 0; i < this.numVertexToShow; i++) {
             if (MathHelper.round(this.verticesToShow[i][2]) == 0) {
-                throw new Error("Vertex" + i.toString() + "is not on the affine patch");
+                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
             }
             const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
             const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
@@ -409,7 +409,7 @@ class TwistedBigon{
             let temp = this.cornerCoords.slice(); // deep copy the vertices
             for (let i = 0; i < maxIter; i++) {
                 try {
-                    temp = this.map.act(temp, false, false);
+                    temp = this.map.act(temp, false, false, false);
                     const vertices = Reconstruct.reconstruct3(temp, 6);
                     if (this.showTrajectory1 && i < Math.pow(2, this.iteration1)) {
                         this.trajectory1[i] = vertices[4];

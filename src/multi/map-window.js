@@ -66,7 +66,8 @@ class MapWindow extends Window {
         this.canvas.beginShape();
         for (let i = 0; i < numVertexToShow; i++) {
             if (MathHelper.round(verticesToShow[i][2]) == 0) {
-                throw new Error("Vertex" + i.toString() + "is not on the affine patch");
+                continue;
+                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
@@ -79,7 +80,8 @@ class MapWindow extends Window {
         this.canvas.noStroke();
         for (let i = 0; i < numVertexToShow; i++) {
             if (MathHelper.round(verticesToShow[i][2]) == 0) {
-                throw new Error("Vertex" + i.toString() + "is not on the affine patch");
+                continue;
+                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
@@ -93,7 +95,6 @@ class MapWindow extends Window {
             for (let i = 0; i < trajectory1.length; i++) {
                 if (MathHelper.round(trajectory1[i][2] == 0)) {
                     continue;
-                    throw new Error("The trajectory is on the line at infinity");
                 }
                 const x = trajectory1[i][0] / trajectory1[i][2];
                 const y = trajectory1[i][1] / trajectory1[i][2];
@@ -107,7 +108,7 @@ class MapWindow extends Window {
             this.canvas.noStroke();
             for (let i = 0; i < trajectory2.length; i++) {
                 if (MathHelper.round(trajectory2[i][2] == 0)) {
-                    throw new Error("The trajectory is on the line at infinity");
+                    continue;
                 }
                 const x = trajectory2[i][0]  / trajectory2[i][2];
                 const y = trajectory2[i][1] / trajectory2[i][2];

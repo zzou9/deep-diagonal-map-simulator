@@ -8,16 +8,14 @@ class CtrlPanel extends Panel {
      * @param {Number} x x coordinate
      * @param {Number} y y coordinate
      * @param {TwistedBigon} polygon the polygon
-     * @param {TwistedMap} map the map
      * @param {Array<TwistedBigon>} mapPolygons polygon mirrors
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, mapPolygons, w=200, h=310) {
+    constructor(x, y, polygon, mapPolygons, w=200, h=310) {
         super(x, y, w, h, "Control", color.CADET_BLUE);
         this.polygon = polygon;
         this.mapPolygons = mapPolygons;
-        this.map = map;
         this.rate = -2;
         // populate the buttons
         this.numVertexBox = new Button(this.x+25, this.y+40, 100, 20, [["# Vertices: " + this.polygon.numVertexToShow, color.BLACK]]);

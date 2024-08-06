@@ -1,8 +1,12 @@
+// polygons and maps
 let polygon;
 let map1Polygon;
 let map2Polygon;
 let map1;
-let map2
+let map2;
+let map3;
+let mapPolygons;
+let maps;
 
 // plotting vertices
 let xT;
@@ -46,27 +50,35 @@ function setup() {
     // map instance
     map1 = new TwistedMap();
     map2 = new TwistedMap(l=5, k=1);
+    map3 = new TwistedMap(l=5, k=3);
 
-    // multiple polygons
+    // multiple mapPolygons
 
 
-    // instantiate polygons
-    polygon = new TwistedBigon(map1, (xT + yT)/18);
+    // instantiate mapPolygons
+    polygon = new TwistedBigon(map1, (xT + yT)/20);
     map1Polygon = new TwistedBigon(map1, (xT + yT)/20);
     map2Polygon = new TwistedBigon(map2, (xT + yT)/20);
-    
+    map3Polygon = new TwistedBigon(map3, (xT + yT)/20);
+
     polygon.canDrag = true;
+    polygon.showTrajectory1 = false;
+    polygon.showTrajectory2 = false;
+
+    mapPolygons = [map1Polygon, map2Polygon, map3Polygon];
+    maps = [map1, map2, map3];
 
     // instantiate windows
-    shapeWindow = new PolygonWindow(250, 600, 300, 300, polygon, "Edit Shape", [map1Polygon, map2Polygon], color.INDIGO);
-    map1Window = new MapWindow(250, 80, 500, 500, map1Polygon, "Map 1");
-    map2Window = new MapWindow(800, 80, 500, 500, map2Polygon, "Map 2");
+    shapeWindow = new PolygonWindow(230, 600, 300, 300, polygon, "Edit Shape", mapPolygons, color.INDIGO);
+    map1Window = new MapWindow(230, 80, 500, 500, map1Polygon, "Map 1");
+    map2Window = new MapWindow(740, 80, 500, 500, map2Polygon, "Map 2");
+    map3Window = new MapWindow(1250, 80, 500, 500, map3Polygon, "Map 2");
     
 
     // instantiate panels
-    ctrlPanel = new CtrlPanel(10, 10, polygon, map1, [map1Polygon, map2Polygon]);
-    actionPanel = new ActionPanel(10, ctrlPanel.y+ctrlPanel.h+10, [map1, map2], [map1Polygon, map2Polygon]);
-    trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, [map1Polygon, map2Polygon]);
+    ctrlPanel = new CtrlPanel(10, 10, polygon, mapPolygons);
+    actionPanel = new ActionPanel(10, ctrlPanel.y+ctrlPanel.h+10, maps, mapPolygons);
+    trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, mapPolygons);
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map1);
     modulePanel = new ModulePanel(xT-175, 40, "Multi", color.BLACK);
     // shapePanel = new ShapePanel(2*xT - 210, infoPanel.y+infoPanel.h+10, polygon, map);
@@ -80,6 +92,7 @@ function draw() {
     shapeWindow.show();
     map1Window.show();
     map2Window.show();
+    map3Window.show();
 
     // title
     noStroke();
@@ -131,6 +144,7 @@ function mouseClicked() {
     shapeWindow.mouseAction();
     map1Window.mouseAction();
     map2Window.mouseAction();
+    map3Window.mouseAction();
 }
 
 function mouseDragged() {
@@ -141,6 +155,7 @@ function mouseDragged() {
     shapeWindow.mouseDragAction();
     map1Window.mouseDragAction();
     map2Window.mouseDragAction();
+    map3Window.mouseDragAction();
 }
 
 function keyPressed() {
@@ -152,22 +167,27 @@ function keyPressed() {
             map1Polygon.updateInfo();
             map2Polygon.cornerCoords = map2.act(map2Polygon.cornerCoords.slice());
             map2Polygon.updateInfo();
+            map3Polygon.cornerCoords = map3.act(map3Polygon.cornerCoords.slice());
+            map3Polygon.updateInfo();
         }
         catch (err) {
             console.error(err);
         }
     } else if (key === 'z' || key === 'Z') {
         if (map1.canRevert()) {
-            ctrlPanel.disableInscribe();
             const prev = map1.revert();
             map1Polygon.cornerCoords = prev[0];
             map1.numIterations = prev[1];
         }
         if (map2.canRevert()) {
-            ctrlPanel.disableInscribe();
             const prev = map2.revert();
             map2Polygon.cornerCoords = prev[0];
             map2.numIterations = prev[1];
+        }
+        if (map3.canRevert()) {
+            const prev = map3.revert();
+            map3Polygon.cornerCoords = prev[0];
+            map3.numIterations = prev[1];
         }
     }
 
@@ -181,12 +201,11 @@ function keyPressed() {
         shapeWindow.toggleDrag();
         map1Window.toggleDrag();
         map2Window.toggleDrag();
+        map3Window.toggleDrag();
     }
 
     // printing in the console
     if (key === 'p') {
-
-        console.log(map2Polygon.map);
         // console.log(x[0]*x[1]*x[2]*x[3]);
         // console.log("(x0 * x2) / (x1 * x3):", x[0]*x[2] / (x[1]*x[3]));
         // console.log("x1 * x3:", x[1]*x[3]);
@@ -203,10 +222,12 @@ function keyPressed() {
         polygon.numVertexToShow += 1;
         map1Polygon.numVertexToShow += 1;
         map2Polygon.numVertexToShow += 1;
+        map3Polygon.numVertexToShow += 1;
     } else if (keyCode === DOWN_ARROW && polygon.numVertexToShow > 6){ 
         polygon.numVertexToShow -= 1;
         map1Polygon.numVertexToShow -= 1;
         map2Polygon.numVertexToShow -= 1;
+        map3Polygon.numVertexToShow -= 1;
     }
 
     // // changing the diagonals of the map
@@ -224,4 +245,5 @@ function keyPressed() {
     polygon.updateInfo();
     map1Polygon.updateInfo();
     map2Polygon.updateInfo();
+    map3Polygon.updateInfo();
 }

@@ -21,10 +21,11 @@ class TwistedMap {
      * A helper method that applies the map for a twisted bigon
      * @param {Array<number>} coords corner coords of the twisted bigon
      * @param {Array<Array<number>>} T a lift of the monodromy
-     * @param {Number} p number of times to apply the map 
+     * @param {number} p number of times to apply the map 
+     * @param {boolean} checkAfine check whether the image vertices are on the affine plane
      * @returns {Array<Array<Number>>} the resulting homogeneous coordinates of the vertices
      */
-    applyMap(coords, p) {
+    applyMap(coords, p, checkAfine) {
         const k = this.k;
         const l = this.l;
         // draw the old vertices
@@ -51,6 +52,11 @@ class TwistedMap {
             const v4 = vertices[i+l];
             const vInt = Geometry.getIntersection(v1, v2, v3, v4);
             imgVertices[i] = vInt;
+            if (checkAfine) {
+                if (MathHelper.round(vInt) == 0) {
+                    throw new Error("Vertex " + i.toString() + " is on the line at infinity");
+                }
+            }
         }
         let tempCoords = Geometry.getCornerCoords(imgVertices);
         let imgCoords = new Array(4);
@@ -85,10 +91,11 @@ class TwistedMap {
      * @param {Array<number>} coords corner coordinates of the bigon to act
      * @param {boolean} [store=true] whether to store the vertex
      * @param {boolean} [countIteration=true] whether to count iterations
+     * @param {boolean} [checkAfine=true] check whether the image vertices are on the affine patch
      * @returns the vertices of the image polygon of the pentagram map
      */
-    act(coords, store=true, countIteration=true) {
-        const newCoords = this.applyMap(coords, this.power);
+    act(coords, store=true, countIteration=true, checkAfine=true) {
+        const newCoords = this.applyMap(coords, this.power, checkAfine);
         // record the previous vertices for undo purposes
         if (store) {
             this.store(coords);
