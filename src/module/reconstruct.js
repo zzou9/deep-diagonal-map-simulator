@@ -166,6 +166,32 @@ class Reconstruct extends Geometry {
     }
 
     /**
+     * Reconstruct the first 6 homogeneous coordinates of a twisted bigon
+     * @param {Array<number>} x 
+     */
+    static reconstructBigon6(x) {
+        if (x.length != 4) {
+            throw new Error("The input invariance is not a twisted bigon");
+        }
+        let coords = new Array(6);
+        coords[0] = [0, 0, 1];
+        coords[1] = [1, 0, 1];
+        coords[2] = [1, 1, 1];
+        coords[3] = [0, 1, 1];
+        coords[4] = [
+            -x[1] + x[0]*x[1],
+            1 - x[1],
+            1 - x[1] + x[0]*x[1]
+        ];
+        coords[5] = [
+            -x[1] + x[0]*x[1] + x[1]*x[2]*x[3],
+            1 - x[1] - x[3] + x[1]*x[2]*x[3],
+            1 - x[1] - x[3] + x[0]*x[1] + x[1]*x[2]*x[3]
+        ];
+        return coords;
+    }
+
+    /**
      * Reconstruct the homogeneous coordinates of a twisted bigon given its monodromy.
      * The first four coordinates are given as 
      *  [0, 0, 1]

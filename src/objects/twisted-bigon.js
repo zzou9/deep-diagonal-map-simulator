@@ -94,7 +94,7 @@ class TwistedBigon{
      */
     updateMonodromy() {
         // first, compute the lift of the monodromy
-        const v = Reconstruct.reconstruct3(this.cornerCoords);
+        const v = Reconstruct.reconstructBigon6(this.cornerCoords);
         const M1 = Normalize.getProjectiveLift(v[0], v[1], v[2], v[3]);
         const M2 = Normalize.getProjectiveLift(v[2], v[3], v[4], v[5]);
         const M2Inv = MathHelper.invert3(M2);
@@ -410,7 +410,7 @@ class TwistedBigon{
             for (let i = 0; i < maxIter; i++) {
                 try {
                     temp = this.map.act(temp, false, false, false);
-                    const vertices = Reconstruct.reconstruct3(temp, 6);
+                    const vertices = Reconstruct.reconstructBigon6(temp);
                     if (this.showTrajectory1 && i < Math.pow(2, this.iteration1)) {
                         this.trajectory1[i] = vertices[4];
                     }

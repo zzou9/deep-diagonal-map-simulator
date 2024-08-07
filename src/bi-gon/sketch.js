@@ -26,6 +26,9 @@ let infoPanel;
 let shapePanel;
 let modulePanel;
 
+// markers
+let markers
+
 function setup() {
     xT = windowWidth/2;
     yT = windowHeight/2;
@@ -35,9 +38,6 @@ function setup() {
     polygon = new TwistedBigon(map);
     polygon.canDrag = true;
 
-    // multiple polygons
-
-
     // instantiate panels
     ctrlPanel = new CtrlPanel(10, 10, polygon, map);
     actionPanel = new ActionPanel(10, ctrlPanel.y+ctrlPanel.h+10, map, polygon);
@@ -45,11 +45,21 @@ function setup() {
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map);
     shapePanel = new ShapePanel(2*xT - 210, infoPanel.y+infoPanel.h+10, polygon, map);
     modulePanel = new ModulePanel(xT-175, 40, "Bi-gon", color.BLACK);
+
+    // draw markers
+    markers = new Array();
 }
 
 function draw() {
     background(color.BLACK);
     polygon.show();
+
+    // show markers 
+    for (let i = 0; i < markers.length; i++) {
+        noStroke();
+        fill(color.ROYAL_BLUE);
+        circle(markers[i][0], markers[i][1], 4);
+    }
 
     // title
     noStroke();
@@ -159,6 +169,16 @@ function keyPressed() {
         map.k = map.l - 1;
         map.numIterations = 0;
         actionPanel.updateDiagonalAndSpacing();
+    }
+
+    // markers
+    if (key === 'w' || key === 'W') {
+        // add marker
+        markers.push([mouseX, mouseY]);
+    }
+    if (key === 'c' || key === 'C') {
+        // clear all markers
+        markers = new Array();
     }
 
     // update information of the polygon

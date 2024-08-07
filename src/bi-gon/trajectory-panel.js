@@ -16,7 +16,7 @@ class TrajectoryPanel extends Panel {
         this.polygon = polygon;
 
         // populate the buttons
-        this.showTrajectory1Button = new Button(this.x+25, this.y+40, 150, 20, [["Show Trajectory 1", color.GREEN]]);
+        this.showTrajectory1Button = new Button(this.x+25, this.y+40, 150, 20, [["Hide Trajectory 1", color.RED]]);
         this.buttons.push(this.showTrajectory1Button);
         this.iteration1Box = new Button(this.x+25, this.y+70, 100, 20, [["# Iterations: " + this.polygon.iteration1, color.BLACK]]);
         this.buttons.push(this.iteration1Box);
@@ -31,7 +31,7 @@ class TrajectoryPanel extends Panel {
         this.incTraj1Size = new TriangleButton(this.x+155, this.y+105, 10, 10, "right");
         this.buttons.push(this.incTraj1Size);
 
-        this.showTrajectory2Button = new Button(this.x+25, this.y+130, 150, 20, [["Show Trajectory 2", color.GREEN]]);
+        this.showTrajectory2Button = new Button(this.x+25, this.y+130, 150, 20, [["Hide Trajectory 2", color.RED]]);
         this.buttons.push(this.showTrajectory2Button);
         this.iteration2Box = new Button(this.x+25, this.y+160, 100, 20, [["# Iterations: " + this.polygon.iteration2, color.BLACK]]);
         this.buttons.push(this.iteration2Box);
