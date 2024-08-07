@@ -27,7 +27,8 @@ let shapePanel;
 let modulePanel;
 
 // markers
-let markers
+let markers;
+let markerCoords;
 
 function setup() {
     xT = windowWidth/2;
@@ -48,6 +49,7 @@ function setup() {
 
     // draw markers
     markers = new Array();
+    markerCoords = new Array();
 }
 
 function draw() {
@@ -132,7 +134,7 @@ function keyPressed() {
     }
 
     if (key === 'p') {
-        const x = polygon.cornerCoords;
+        // const x = polygon.cornerCoords;
         // console.log(x[0]*x[1]*x[2]*x[3]);
         // console.log("(x0 * x2) / (x1 * x3):", x[0]*x[2] / (x[1]*x[3]));
         // console.log("x1 * x3:", x[1]*x[3]);
@@ -141,7 +143,12 @@ function keyPressed() {
         // const T = polygon.monodromy;
         // console.log(MathHelper.eigenvalue3(T));
 
-        console.log(polygon.hasDegenerateOrbit());
+        // print the marked coordinates 
+        let repl = '';
+        for (let i = 0; i < markerCoords.length; i++) {
+            repl = repl + markerCoords[i][0].toString() + ',' + markerCoords[i][1].toString() + '\n';
+        }
+        console.log(repl);
     }
     
     // action panel activation
@@ -175,10 +182,12 @@ function keyPressed() {
     if (key === 'w' || key === 'W') {
         // add marker
         markers.push([mouseX, mouseY]);
+        markerCoords.push([polygon.cornerCoords[2], polygon.cornerCoords[3]]);
     }
     if (key === 'c' || key === 'C') {
         // clear all markers
         markers = new Array();
+        markerCoords = new Array();
     }
 
     // update information of the polygon
