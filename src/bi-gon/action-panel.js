@@ -14,13 +14,14 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=220) {
+    constructor(x, y, map, polygon, w=200, h=30) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
         this.speed = 10;
         this.action = null;
         this.isRunning = false;
+        this.showPanel = false;
 
         /**
          * Populate the buttons
@@ -202,7 +203,7 @@ class ActionPanel extends Panel {
         if (mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.w && mouseY <= this.y + 30) {
             if (this.showPanel) {
                 this.showPanel = false;
-                this.h = 40
+                this.h = 30;
             } else {
                 this.showPanel = true;
                 this.h = 220;

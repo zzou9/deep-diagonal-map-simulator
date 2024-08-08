@@ -11,9 +11,10 @@ class TrajectoryPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, w=200, h=220) {
+    constructor(x, y, polygon, w=200, h=30) {
         super(x, y, w, h, "Trajectories", color.CADET_BLUE);
         this.polygon = polygon;
+        this.showPanel = false;
 
         // populate the buttons
         this.showTrajectory1Button = new Button(this.x+25, this.y+40, 150, 20, [["Hide Trajectory 1", color.RED]]);
@@ -134,7 +135,7 @@ class TrajectoryPanel extends Panel {
         if (mouseX >= this.x && mouseY >= this.y && mouseX <= this.x + this.w && mouseY <= this.y + 30) {
             if (this.showPanel) {
                 this.showPanel = false;
-                this.h = 40
+                this.h = 30;
             } else {
                 this.showPanel = true;
                 this.h = 220;

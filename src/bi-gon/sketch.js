@@ -1,6 +1,11 @@
 let polygon;
 let map;
 
+// window
+let polygonWindow;
+let planeWindow;
+let shapePolygon;
+
 // plotting vertices
 let xT;
 let yT;
@@ -15,7 +20,11 @@ const color = {
     CYAN: "#00ffff", 
     CADET_BLUE: "#5f9ea0",
     ROYAL_BLUE: "#4169e1", 
-    KHAKI: "#f0e68c"
+    KHAKI: "#f0e68c",
+    PURPLE: "#800080",
+    INDIGO: "#4b0082",
+    GRAY: "#808080",
+    ORANGE: "#ffa500"
 }
 
 // panels
@@ -23,7 +32,6 @@ let ctrlPanel;
 let actionPanel;
 let trajPanel;
 let infoPanel;
-let shapePanel;
 let modulePanel;
 
 // markers
@@ -38,13 +46,20 @@ function setup() {
     map = new TwistedMap();
     polygon = new TwistedBigon(map);
     polygon.canDrag = true;
+    polygon.vertexSize = 6;
+    shapePolygon = new TwistedBigon(map);
+    shapePolygon.canDrag = true;
+
+    // create windows
+    shapeWindow = new PolygonWindow(10, 500, 300, 300, shapePolygon, "Edit Shape", [polygon], color.INDIGO);
+    planeWindow = new PlaneWindow(2*xT-310, 500, 300, 300, shapePolygon, "Plane", [polygon], [1, 3]);
 
     // instantiate panels
-    ctrlPanel = new CtrlPanel(10, 10, polygon, map);
+    ctrlPanel = new CtrlPanel(10, 10, shapePolygon, [polygon]);
     actionPanel = new ActionPanel(10, ctrlPanel.y+ctrlPanel.h+10, map, polygon);
+    actionPanel.showPanel = false;
     trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, polygon);
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map);
-    shapePanel = new ShapePanel(2*xT - 210, infoPanel.y+infoPanel.h+10, polygon, map);
     modulePanel = new ModulePanel(xT-175, 40, "Bi-gon", color.BLACK);
 
     // draw markers
@@ -63,6 +78,10 @@ function draw() {
         circle(markers[i][0], markers[i][1], 4);
     }
 
+    // showing windows
+    shapeWindow.show();
+    planeWindow.show();
+
     // title
     noStroke();
     textAlign(CENTER, CENTER);
@@ -70,11 +89,11 @@ function draw() {
     fill(color.WHITE);
     text("Pentagram Map Simulator", xT, 20);
     
+    // showing panels
     ctrlPanel.show();
     actionPanel.show();
     trajPanel.show();
     infoPanel.show();
-    shapePanel.show();
     modulePanel.show();
 
     if (mouseIsPressed) {
@@ -89,6 +108,7 @@ function draw() {
 }
 
 function mouseClicked() {
+    // panel actions
     ctrlPanel.buttonMouseAction();
     actionPanel.buttonMouseAction();
     if (actionPanel.isRunning) {
@@ -96,21 +116,23 @@ function mouseClicked() {
     }
     trajPanel.buttonMouseAction();
     infoPanel.buttonMouseAction();
-    shapePanel.buttonMouseAction();
     modulePanel.buttonMouseAction();
 
     // update alignment of panels
     actionPanel.y = ctrlPanel.y+ctrlPanel.h+10;
     trajPanel.y = actionPanel.y+actionPanel.h+10;
-    shapePanel.y = infoPanel.y+infoPanel.h+10;
     actionPanel.updateButtonPositions();
     trajPanel.updateButtonPositions();
-    shapePanel.updateButtonPositions();
+    
+    // window actions
+    shapeWindow.mouseAction();
+    planeWindow.mouseAction();
 }
 
 function mouseDragged() {
     // dragging vertices
-    polygon.dragVertex();
+    shapeWindow.mouseDragAction();
+    planeWindow.mouseDragAction();
 }
 
 function keyPressed() {
@@ -143,12 +165,21 @@ function keyPressed() {
         // const T = polygon.monodromy;
         // console.log(MathHelper.eigenvalue3(T));
 
-        // print the marked coordinates 
-        let repl = '';
-        for (let i = 0; i < markerCoords.length; i++) {
-            repl = repl + markerCoords[i][0].toString() + ',' + markerCoords[i][1].toString() + '\n';
-        }
-        console.log(repl);
+        // // print the marked coordinates 
+        // let repl = '';
+        // for (let i = 0; i < markerCoords.length; i++) {
+        //     repl = repl + markerCoords[i][0].toString() + ',' + markerCoords[i][1].toString() + '\n';
+        // }
+        // console.log(repl);
+        // polygon.printTrajectory();
+        const y = polygon.altCoords;
+        console.log(y[0]*y[1]*y[2]*y[3]);
+    }
+
+    // window toggle dragging
+    if (key === 'w' || key === 'W') {
+        shapeWindow.toggleDrag();
+        planeWindow.toggleDrag();
     }
     
     // action panel activation
@@ -157,12 +188,12 @@ function keyPressed() {
     }
 
     // changing the number of vertices to show
-    if (keyCode === UP_ARROW && polygon.numVertexToShow < 20) { 
+    if (keyCode === UP_ARROW && polygon.numVertexToShow < 100) { 
         polygon.numVertexToShow += 1;
-        polygon.updateVertices();
+        shapePolygon.numVertexToShow += 1;
     } else if (keyCode === DOWN_ARROW && polygon.numVertexToShow > 6){ 
         polygon.numVertexToShow -= 1;
-        polygon.updateVertices();
+        shapePolygon.numVertexToShow -= 1;
     }
 
     // changing the diagonals of the map
@@ -179,7 +210,7 @@ function keyPressed() {
     }
 
     // markers
-    if (key === 'w' || key === 'W') {
+    if (key === 'r' || key === 'R') {
         // add marker
         markers.push([mouseX, mouseY]);
         markerCoords.push([polygon.cornerCoords[2], polygon.cornerCoords[3]]);
@@ -192,4 +223,5 @@ function keyPressed() {
 
     // update information of the polygon
     polygon.updateInfo();
+    shapePolygon.updateInfo();
 }

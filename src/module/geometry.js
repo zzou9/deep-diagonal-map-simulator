@@ -352,5 +352,30 @@ class Geometry extends MathHelper {
         return coords;
     }
 
+    static getCoords(vertices, k, l) {
+        const n = vertices.length;
+        let coords = new Array(2*n);
+        for (let i = 0; i < n; i++) {
+            const t0 = this.cross(vertices[(i+l)%n], vertices[(i+k)%n]); // the line on which the four points are colinear
+            const t1 = this.cross(vertices[(i-k+n)%n], vertices[(i-l+n)%n]); 
+            const t2 = this.cross(vertices[i], vertices[(i-l+n)%n]); 
+            const v1 = this.cross(t0, t1);
+            const v2 = this.cross(t0, t2);
+            const v3 = vertices[(i+l)%n];
+            const v4 = vertices[(i+k)%n];
+            coords[2*i+1] = this.inverseCrossRatio(v1, v2, v3, v4); // the indices match up with the notation in [Sch07]
+
+            const s0 = this.cross(vertices[(i-l+n)%n], vertices[(i-k+n)%n]); // the line on which the four points are colinear
+            const s1 = this.cross(vertices[(i+k)%n], vertices[(i+l)%n]); 
+            const s2 = this.cross(vertices[i], vertices[(i+l)%n]); 
+            const u1 = this.cross(s0, s1);
+            const u2 = this.cross(s0, s2);
+            const u3 = vertices[(i-l+n)%n];
+            const u4 = vertices[(i-k+n)%n];
+            coords[2*i] = this.inverseCrossRatio(u1, u2, u3, u4);
+        }
+        return coords;
+    }
+
     
 }

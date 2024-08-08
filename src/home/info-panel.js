@@ -23,6 +23,8 @@ class InfoPanel extends Panel {
         this.buttons.push(this.embedBox);
         this.convexBox = new Button(this.x+25, this.y+80, 150, 20, [["Convex: " + this.polygon.embedded, color.BLACK]], color.KHAKI);
         this.buttons.push(this.convexBox);
+        this.energyBox = new Button(this.x+25, this.y+100, 150, 20, [["(2, 1) Energy: " + MathHelper.round(this.polygon.energy, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.energyBox);
     }
 
     /**
@@ -33,6 +35,8 @@ class InfoPanel extends Panel {
         this.iterateBox.text = [["Iteration: " + this.map.numIterations, color.BLACK]];
         this.embedBox.text = [["Embedded: " + this.polygon.embedded, color.BLACK]];
         this.convexBox.text = [["Convex: " + this.polygon.convex, color.BLACK]];
+        const repl = "(" + this.map.l.toString() + ", " + this.map.k.toString() + ") Energy: " + MathHelper.round(this.polygon.energy, 5).toString();
+        this.energyBox.text = [[repl, color.BLACK]];
     }
 
     /**

@@ -35,6 +35,7 @@ class Polygon{
         this.showEllipse = false; // display the ellipse of inertia
         this.twisted = false; // whether it is a twisted n-gon
         this.updateToPanel = true; // whether to update to the shape panel
+        this.energy = 0; // energy of the polygon
 
         // if regular, populate vertices
         let angle = TWO_PI / this.numVertex;
@@ -398,19 +399,14 @@ class Polygon{
      * @returns the energy
      */
     computeEnergy() {
-        const n = this.numVertex;
-        const l = this.map.l;
-        const k = this.map.k;
-        const v = this.vertices;
-        let energy = 1;
-        for (let i = 0; i < n; i++) {
-            const l1 = [v[i][0] - v[(i-k+n)%n][0], v[i][1] - v[(i-k+n)%n][1]];
-            const l2 = [v[i][0] - v[(i-l+n)%n][0], v[i][1] - v[(i-l+n)%n][1]];
-            const l3 = [v[i][0] - v[(i+l)%n][0], v[i][1] - v[(i+l)%n][1]];
-            const l4 = [v[i][0] - v[(i+k+n)%n][0], v[i][1] - v[(i+k+n)%n][1]];
-            energy *= MathHelper.crossRatio(l1, l2, l3, l4);
+        const k = this.map.l;
+        const l = this.map.k;
+        let cornerCoords = Geometry.getCoords(this.vertices, k, l);
+        let prod = 1;
+        for (let i = 0; i < cornerCoords.length; i++) {
+            prod *= cornerCoords[i];
         }
-        return energy;
+        this.energy = prod;
     }
 
     /**
@@ -422,6 +418,7 @@ class Polygon{
         this.embedded = Geometry.isEmbedded(this.vertices);
         this.convex = Geometry.isConvex(this.vertices);
         this.isBird = Geometry.isBird(this.vertices, this.map.l);
+        this.computeEnergy();
         if (this.showNext) {
             this.nextEmbedded = map.getNextEmbedded(this.vertices);
             this.nextConvex = map.getNextConvex(this.vertices);

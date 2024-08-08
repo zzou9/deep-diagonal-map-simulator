@@ -12,6 +12,7 @@ class TwistedBigon{
         scale=(windowWidth + windowHeight)/20) {
         this.map = map;
         this.cornerCoords = [0.5, 0.5, 0.5, 0.5];
+        this.altCoords = new Array(4);
         this.numVertexToShow = 6;
         this.verticesToShow = new Array(this.numVertexToShow);
         this.vertexSize = 8;
@@ -35,6 +36,7 @@ class TwistedBigon{
         this.traj2Size = 2;
         this.trajectory1 = new Array();
         this.trajectory2 = new Array();
+        this.cornerCoordTraj = new Array();
 
         // Monodromy of the twisted bigon
         this.monodromy = new Array(3);
@@ -58,6 +60,7 @@ class TwistedBigon{
     */
     updateInfo(updateTrajectory=false, updateToPanel=false, resetReference=false) {
         this.updateMonodromy();
+        this.updateAltCoords();
         this.updateVertices();
         this.updateEigenvalues();
         this.updateInvariantsFromPoly();
@@ -146,6 +149,23 @@ class TwistedBigon{
         const c2 = MathHelper.characteristicPoly3(this.dualMonodromy);
         this.omega1 = Math.pow(c1[0], 3) / c1[2];
         this.omega2 = Math.pow(c2[0], 3) / c2[2];
+    }
+    
+    /**
+     * Update alternative coordinates
+     */
+    updateAltCoords() {
+        this.altCoords = new Array(4);
+        const k = this.map.l;
+        const l = this.map.k;
+        // use monodromy to get vertices of a lift
+        let vertices = Reconstruct.reconstructBigon(this.monodromy, 2*k+2);
+        // compute the coordinates 
+        let coords = Geometry.getCoords(vertices, k, l);
+        this.altCoords[0] = coords[2*k];
+        this.altCoords[1] = coords[2*k+1];
+        this.altCoords[2] = coords[2*k+2];
+        this.altCoords[3] = coords[2*k+3];
     }
 
     /**
@@ -348,12 +368,13 @@ class TwistedBigon{
     * Drag a vertex 
     * @param {number} [xt=xT] x axis translation
     * @param {number} [yt=yT] y axis translation
+    * @param {number} [scale=this.scale] scaling of the polygon
     */
-    dragVertex(xt=xT, yt=yT) {
+    dragVertex(xt=xT, yt=yT, scale=this.scale) {
         if (this.canDrag) {
-            const w = 5 / this.scale;
-            const mX = (mouseX - xt) / this.scale;
-            const mY = (mouseY - yt) / this.scale;
+            const w = 10 / scale;
+            const mX = (mouseX - xt) / scale;
+            const mY = (mouseY - yt) / scale;
             for (let i = 4; i < 6; i++) {
                 const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
                 const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
@@ -406,10 +427,12 @@ class TwistedBigon{
             // clear cache
             this.trajectory1 = new Array();
             this.trajectory2 = new Array();
+            this.cornerCoordTraj = new Array(maxIter);
             let temp = this.cornerCoords.slice(); // deep copy the vertices
             for (let i = 0; i < maxIter; i++) {
                 try {
                     temp = this.map.act(temp, false, false, false);
+                    this.cornerCoordTraj[i] = temp;
                     const vertices = Reconstruct.reconstructBigon6(temp);
                     if (this.showTrajectory1 && i < Math.pow(2, this.iteration1)) {
                         this.trajectory1[i] = vertices[4];
@@ -423,6 +446,17 @@ class TwistedBigon{
                 }
             }
         } 
+    }
+
+    /**
+     * Print the first three coords of the trajectory
+     */
+    printTrajectory() {
+        let repl = 'x0,x1,x2\n';
+        for (let i = 0; i < this.cornerCoordTraj.length; i++) {
+            repl = repl + this.cornerCoordTraj[i][0].toString() + ',' + this.cornerCoordTraj[i][1].toString() + ',' + this.cornerCoordTraj[i][2].toString() + '\n'
+        } 
+        console.log(repl);
     }
 
     /**

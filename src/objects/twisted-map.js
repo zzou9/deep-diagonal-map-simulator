@@ -30,9 +30,9 @@ class TwistedMap {
         const l = this.l;
         // draw the old vertices
         let vertices;
-        if (l > 3) {
+        if (l >= 3) {
             // use monodromy to draw vertices
-            const v = Reconstruct.reconstruct3(coords);
+            const v = Reconstruct.reconstructBigon6(coords);
             const M1 = Normalize.getProjectiveLift(v[0], v[1], v[2], v[3]);
             const M2 = Normalize.getProjectiveLift(v[2], v[3], v[4], v[5]);
             const M2Inv = MathHelper.invert3(M2);

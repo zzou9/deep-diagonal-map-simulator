@@ -456,24 +456,24 @@ class SevenGon extends Polygon {
         }
     }
 
-    /**
-     * Compute the energy of the map (as in [Sch24])
-     * @returns the energy
-     */
-    computeEnergy() {
-        const n = this.numVertex;
-        const l = this.map.l;
-        const k = this.map.k;
-        const v = this.vertices;
-        let energy = 1;
-        for (let i = 0; i < n; i++) {
-            const l1 = MathHelper.cross(v[i], v[(i-l+n)%n]);
-            const l2 = MathHelper.cross(v[i], v[(i-k+n)%n]);
+    // /**
+    //  * Compute the energy of the map (as in [Sch24])
+    //  * @returns the energy
+    //  */
+    // computeEnergy() {
+    //     const n = this.numVertex;
+    //     const l = this.map.l;
+    //     const k = this.map.k;
+    //     const v = this.vertices;
+    //     let energy = 1;
+    //     for (let i = 0; i < n; i++) {
+    //         const l1 = MathHelper.cross(v[i], v[(i-l+n)%n]);
+    //         const l2 = MathHelper.cross(v[i], v[(i-k+n)%n]);
 
-            energy *= Geometry.inverseCrossRatio(l1, l2, l3, l4);
-        }
-        return energy;
-    }
+    //         energy *= Geometry.inverseCrossRatio(l1, l2, l3, l4);
+    //     }
+    //     return energy;
+    // }
 
     /**
      * Update the information of the polygon: 

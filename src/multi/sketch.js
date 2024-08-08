@@ -24,13 +24,17 @@ const color = {
     ROYAL_BLUE: "#4169e1", 
     KHAKI: "#f0e68c",
     PURPLE: "#800080",
-    INDIGO: "#4b0082"
+    INDIGO: "#4b0082",
+    GRAY: "#808080",
+    ORANGE: "#ffa500"
 }
 
 // canvas and window
 let shapeWindow;
 let map1Window;
 let map2Window;
+let map3Window;
+let planeWindow;
 
 // panels
 let ctrlPanel;
@@ -72,8 +76,8 @@ function setup() {
     shapeWindow = new PolygonWindow(230, 600, 300, 300, polygon, "Edit Shape", mapPolygons, color.INDIGO);
     map1Window = new MapWindow(230, 80, 500, 500, map1Polygon, "Map 1");
     map2Window = new MapWindow(740, 80, 500, 500, map2Polygon, "Map 2");
-    map3Window = new MapWindow(1250, 80, 500, 500, map3Polygon, "Map 2");
-    
+    map3Window = new MapWindow(1250, 80, 500, 500, map3Polygon, "Map 3");
+    planeWindow = new PlaneWindow(1000, 500, 300, 300, polygon, "Plane", mapPolygons, [1, 3], color.INDIGO);
 
     // instantiate panels
     ctrlPanel = new CtrlPanel(10, 10, polygon, mapPolygons);
@@ -93,6 +97,7 @@ function draw() {
     map1Window.show();
     map2Window.show();
     map3Window.show();
+    planeWindow.show();
 
     // title
     noStroke();
@@ -145,6 +150,7 @@ function mouseClicked() {
     map1Window.mouseAction();
     map2Window.mouseAction();
     map3Window.mouseAction();
+    planeWindow.mouseAction();
 }
 
 function mouseDragged() {
@@ -156,6 +162,7 @@ function mouseDragged() {
     map1Window.mouseDragAction();
     map2Window.mouseDragAction();
     map3Window.mouseDragAction();
+    planeWindow.mouseDragAction();
 }
 
 function keyPressed() {
@@ -202,6 +209,7 @@ function keyPressed() {
         map1Window.toggleDrag();
         map2Window.toggleDrag();
         map3Window.toggleDrag();
+        planeWindow.toggleDrag();
     }
 
     // printing in the console

@@ -67,7 +67,6 @@ class MapWindow extends Window {
         for (let i = 0; i < numVertexToShow; i++) {
             if (MathHelper.round(verticesToShow[i][2]) == 0) {
                 continue;
-                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
@@ -81,7 +80,6 @@ class MapWindow extends Window {
         for (let i = 0; i < numVertexToShow; i++) {
             if (MathHelper.round(verticesToShow[i][2]) == 0) {
                 continue;
-                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];

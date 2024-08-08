@@ -92,7 +92,8 @@ class Window {
             this.y = mouseY - this.h / 2;
             this.center = [this.x+this.w/2, this.y+this.h/2];
         } else {
-            if (mouseX >= this.x+this.w-5 && mouseY >= this.y+this.h-5 && mouseX <= this.x+this.w+5 && mouseY <= this.y+this.h+5) {
+            const offset = 10;
+            if (mouseX >= this.x+this.w-offset && mouseY >= this.y+this.h-offset && mouseX <= this.x+this.w+offset && mouseY <= this.y+this.h+offset) {
                 this.w = mouseX - this.x;
                 this.h = mouseY - this.y;
                 this.canvas.remove();

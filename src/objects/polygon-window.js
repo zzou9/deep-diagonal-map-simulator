@@ -17,6 +17,7 @@ class PolygonWindow extends Window {
     constructor(x, y, w, h, polygon, title, mapPolygons, fill=color.BLACK) {
         super(x, y, w, h, title, fill);
         this.polygon = polygon;
+        this.polygonScale = (this.w+this.h)/10;
         this.mapPolygons = mapPolygons;
     }
 
@@ -42,15 +43,8 @@ class PolygonWindow extends Window {
         // copying info from the polygon
         let verticesToShow = this.polygon.verticesToShow;
         let numVertexToShow = this.polygon.numVertexToShow;
-        let scale = this.polygon.scale;
         let canDrag = this.polygon.canDrag;
         let vertexSize = this.polygon.vertexSize;
-        let showTrajectory1 = this.polygon.showTrajectory1;
-        let showTrajectory2 = this.polygon.showTrajectory2;
-        let trajectory1 = this.polygon.trajectory1;
-        let trajectory2 = this.polygon.trajectory2;
-        let traj1Size = this.polygon.traj1Size;
-        let traj2Size = this.polygon.traj2Size;
 
         // translate the coordinate system 
         this.canvas.translate(this.w/2, this.h/2);
@@ -65,7 +59,7 @@ class PolygonWindow extends Window {
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
-            this.canvas.vertex((1-2*x) * scale, (1-2*y) * scale);
+            this.canvas.vertex((1-2*x) * this.polygonScale, (1-2*y) * this.polygonScale);
         }
         this.canvas.endShape(CLOSE);
 
@@ -78,9 +72,8 @@ class PolygonWindow extends Window {
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
-            this.canvas.circle((1-2*x) * scale, (1-2*y) * scale, 3);
+            this.canvas.circle((1-2*x) * this.polygonScale, (1-2*y) * this.polygonScale, 3);
         }
-
 
         // emphasize vertices to drag
         if (canDrag) {
@@ -92,7 +85,7 @@ class PolygonWindow extends Window {
             }
             const x1 = verticesToShow[4][0] / verticesToShow[4][2];
             const y1 = verticesToShow[4][1] / verticesToShow[4][2];
-            this.canvas.circle((1-2*x1) * scale, (1-2*y1) * scale, vertexSize);
+            this.canvas.circle((1-2*x1) * this.polygonScale, (1-2*y1) * this.polygonScale, vertexSize);
 
             // second vertex
             this.canvas.fill(color.GREEN);
@@ -102,47 +95,19 @@ class PolygonWindow extends Window {
             }
             const x2 = verticesToShow[5][0] / verticesToShow[5][2];
             const y2 = verticesToShow[5][1] / verticesToShow[5][2];
-            this.canvas.circle((1-2*x2) * scale, (1-2*y2) * scale, vertexSize);
-        }
-
-        // display trajectories
-        if (showTrajectory1) {
-            this.canvas.fill(color.RED);
-            this.canvas.noStroke();
-            for (let i = 0; i < trajectory1.length; i++) {
-                if (MathHelper.round(trajectory1[i][2] == 0)) {
-                    continue;
-                }
-                const x = trajectory1[i][0] / trajectory1[i][2];
-                const y = trajectory1[i][1] / trajectory1[i][2];
-                this.canvas.circle((1-2*x) * scale, (1-2*y) * scale, traj1Size);
-            }
-        }
-
-        // display trajectories
-        if (showTrajectory2) {
-            this.canvas.fill(color.GREEN);
-            this.canvas.noStroke();
-            for (let i = 0; i < trajectory2.length; i++) {
-                if (MathHelper.round(trajectory2[i][2] == 0)) {
-                    continue;
-                }
-                const x = trajectory2[i][0]  / trajectory2[i][2];
-                const y = trajectory2[i][1] / trajectory2[i][2];
-                this.canvas.circle((1-2*x) * scale, (1-2*y) * scale, traj2Size);
-            }
+            this.canvas.circle((1-2*x2) * this.polygonScale, (1-2*y2) * this.polygonScale, vertexSize);
         }
 
         this.canvas.translate(-this.w/2, -this.h/2);
     }
 
     /**
-     * 
+     * Drag the vertices if needed
      */
     mouseDragAction() {
         super.mouseDragAction();
         if (!this.canDrag) {
-            this.polygon.dragVertex(this.center[0], this.center[1]);
+            this.polygon.dragVertex(this.center[0], this.center[1], this.polygonScale);
 
             // broadcast to other polygons
             for (let i = 0; i < this.mapPolygons.length; i++) {

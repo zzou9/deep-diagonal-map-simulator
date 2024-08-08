@@ -72,9 +72,9 @@ class MathHelper {
         } else if (delta === 0) {
             // Three real roots, at least two equal
             const u = Math.cbrt(-q / 2);
-            roots.push(2 * u - a / 3, rounding);
-            roots.push(-u - a / 3, rounding);
-            roots.push(-u - a / 3, rounding);
+            roots.push(2 * u - a / 3);
+            roots.push(-u - a / 3);
+            roots.push(-u - a / 3);
             roots.push(1);
         } else {
             // Three distinct real roots

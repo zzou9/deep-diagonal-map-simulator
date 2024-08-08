@@ -18,7 +18,7 @@ class ActionPanel extends Panel {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
-        this.speed = 1;
+        this.speed = 10;
         this.action = null;
         this.isRunning = false;
 
