@@ -128,31 +128,31 @@ class ActionPanel extends Panel {
             if (this.decDiagonal.isHovering() && this.map.l-1 > this.map.k) {
                 this.map.l--;
                 this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
-                this.polygon.getTrajectory();
+                this.polygon.updateInfo(true, false);
             }
             if (this.incDiagonal.isHovering()) {
                 this.map.l++;
                 this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
-                this.polygon.getTrajectory();
+                this.polygon.updateInfo(true, false);
             }
 
             // spacing control
             if (this.decSpacing.isHovering() && this.map.k > 1) {
                 this.map.k--;
                 this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
-                this.polygon.getTrajectory();
+                this.polygon.updateInfo(true, false);
             }
             if (this.incSpacing.isHovering() && this.map.k < this.map.l-1) {
                 this.map.k++;
                 this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
-                this.polygon.getTrajectory();
+                this.polygon.updateInfo(true, false);
             }
 
             // shifting control
             if (this.decShifts.isHovering() && this.map.shifts > 0) {
                 this.map.shifts--;
                 this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
-                this.polygon.getTrajectory();
+                this.polygon.updateInfo(true, false);
             }
             if (this.incShifts.isHovering()) {
                 if (this.map.twisted) {
@@ -164,7 +164,7 @@ class ActionPanel extends Panel {
                     this.map.shifts++;
                     this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
                 }
-                this.polygon.getTrajectory();
+                this.polygon.updateInfo(true, false);
             }
 
             // speed control
@@ -181,12 +181,12 @@ class ActionPanel extends Panel {
             if (this.decPower.isHovering() && this.map.power > 1) {
                 this.map.power--;
                 this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
-                this.polygon.getTrajectory();
+                this.polygon.updateInfo(true, false);
             }
             if (this.incPower.isHovering()) {
                 this.map.power++;
                 this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
-                this.polygon.getTrajectory();
+                this.polygon.updateInfo(true, false);
             }
 
             // action control

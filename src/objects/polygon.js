@@ -401,7 +401,7 @@ class Polygon{
     computeEnergy() {
         const k = this.map.l;
         const l = this.map.k;
-        let cornerCoords = Geometry.getCoords(this.vertices, k, l);
+        let cornerCoords = Geometry.getEnergyCoords(this.vertices, k, l);
         let prod = 1;
         for (let i = 0; i < cornerCoords.length; i++) {
             prod *= cornerCoords[i];

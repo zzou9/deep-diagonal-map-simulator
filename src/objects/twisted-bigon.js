@@ -12,13 +12,15 @@ class TwistedBigon{
         scale=(windowWidth + windowHeight)/20) {
         this.map = map;
         this.cornerCoords = [0.5, 0.5, 0.5, 0.5];
-        this.altCoords = new Array(4);
+        this.energyCoords = new Array(4);
+        this.energy = 1;
+        this.O = 1;
+        this.E = 1;
         this.numVertexToShow = 6;
         this.verticesToShow = new Array(this.numVertexToShow);
         this.vertexSize = 8;
         this.canDrag = false;
         this.scale = scale; 
-        this.updateToPanel = true; // whether to update to the shape panel
         this.referenceCoords = [0.5, 0.5, 0.5, 0.5]; // the reference corner coordinates
 
         /**
@@ -55,20 +57,16 @@ class TwistedBigon{
     * - Monodromy lift
     * - Invariants from the monodromy
     * @param {boolean} [updateTrajectory=false] whether to update the trajectory
-    * @param {boolean} [updateToPanel=false] whether to update to panel
     * @param {boolean} [resetReference=false] whether to reset the reference coordinates
     */
-    updateInfo(updateTrajectory=false, updateToPanel=false, resetReference=false) {
+    updateInfo(updateTrajectory=false, resetReference=false) {
         this.updateMonodromy();
-        this.updateAltCoords();
+        this.updateEnergyCoords();
         this.updateVertices();
         this.updateEigenvalues();
         this.updateInvariantsFromPoly();
         if (updateTrajectory) {
             this.getTrajectory();
-        }
-        if (updateToPanel) {
-            this.updateToPanel = true;
         }
         if (resetReference) {
             this.referenceCoords = this.cornerCoords.slice();
@@ -152,20 +150,25 @@ class TwistedBigon{
     }
     
     /**
-     * Update alternative coordinates
+     * Update the energy coordinates given by the cross ratio of (k,l) map
      */
-    updateAltCoords() {
-        this.altCoords = new Array(4);
+    updateEnergyCoords() {
+        this.energyCoords = new Array(4);
         const k = this.map.l;
         const l = this.map.k;
         // use monodromy to get vertices of a lift
         let vertices = Reconstruct.reconstructBigon(this.monodromy, 2*k+2);
         // compute the coordinates 
-        let coords = Geometry.getCoords(vertices, k, l);
-        this.altCoords[0] = coords[2*k];
-        this.altCoords[1] = coords[2*k+1];
-        this.altCoords[2] = coords[2*k+2];
-        this.altCoords[3] = coords[2*k+3];
+        let coords = Geometry.getEnergyCoords(vertices, k, l);
+        this.energyCoords[0] = coords[2*k];
+        this.energyCoords[1] = coords[2*k+1];
+        this.energyCoords[2] = coords[2*k+2];
+        this.energyCoords[3] = coords[2*k+3];
+
+        // update energy, O, E
+        this.O = this.energyCoords[0] * this.energyCoords[2];
+        this.E = this.energyCoords[1] * this.energyCoords[3];
+        this.energy = this.O * this.E;
     }
 
     /**
@@ -262,7 +265,7 @@ class TwistedBigon{
         }
 
         // compute the coords of the vertices to show
-        this.updateInfo(true, true, true);
+        this.updateInfo(true, true);
     }
 
     /**
@@ -271,7 +274,7 @@ class TwistedBigon{
     */
     resetToCoords(coords) {
         this.cornerCoords = coords;
-        this.updateInfo(true, true, true);
+        this.updateInfo(true, true);
     }
 
     /**
@@ -394,7 +397,7 @@ class TwistedBigon{
                             this.cornerCoords[j] = tempCoords[j+4];
                         }
                         // clear the number of iterations
-                        this.updateInfo(true, true, true);
+                        this.updateInfo(true, true);
                     }
                     catch (err) {
                         console.log(err);

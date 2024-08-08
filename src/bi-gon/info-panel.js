@@ -12,7 +12,7 @@ class InfoPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=250) {
+    constructor(x, y, polygon, map, w=200, h=290) {
         super(x, y, w, h, "Information", color.KHAKI);
         this.polygon = polygon;
         this.map = map;
@@ -30,15 +30,25 @@ class InfoPanel extends Panel {
         this.x3Box = new Button(this.x+25, this.y+120, 150, 20, [["x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x3Box);
 
+        // record the energy
+        this.oBox = new Button(this.x+25, this.y+140, 150, 20, [["O(3, 1): " + MathHelper.round(this.polygon.O, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.oBox);
+        this.eBox = new Button(this.x+25, this.y+160, 150, 20, [["E(3, 1): " + MathHelper.round(this.polygon.E, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.eBox);
+        this.energyBox = new Button(this.x+25, this.y+180, 150, 20, [["(3, 1) Energy: " + MathHelper.round(this.polygon.energy, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.energyBox);
+
         // alternative coordinates
-        this.y0Box = new Button(this.x+25, this.y+150, 150, 20, [["y0: " + MathHelper.round(this.polygon.altCoords[0], 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.y0Box);
-        this.y1Box = new Button(this.x+25, this.y+170, 150, 20, [["y1: " + MathHelper.round(this.polygon.altCoords[1], 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.y1Box);
-        this.y2Box = new Button(this.x+25, this.y+190, 150, 20, [["y2: " + MathHelper.round(this.polygon.altCoords[2], 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.y2Box);
-        this.y3Box = new Button(this.x+25, this.y+210, 150, 20, [["y3: " + MathHelper.round(this.polygon.altCoords[3], 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.y3Box);
+        this.e0Box = new Button(this.x+25, this.y+200, 150, 20, [["e0: " + MathHelper.round(this.polygon.energyCoords[0], 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.e0Box);
+        this.e1Box = new Button(this.x+25, this.y+220, 150, 20, [["e1: " + MathHelper.round(this.polygon.energyCoords[1], 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.e1Box);
+        this.e2Box = new Button(this.x+25, this.y+240, 150, 20, [["e2: " + MathHelper.round(this.polygon.energyCoords[2], 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.e2Box);
+        this.e3Box = new Button(this.x+25, this.y+260, 150, 20, [["e3: " + MathHelper.round(this.polygon.energyCoords[3], 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.e3Box);
+
+        
 
         // // eigenvalues of corner coordinates
         // const eigen = this.polygon.eigenvalues;
@@ -89,10 +99,16 @@ class InfoPanel extends Panel {
         this.x3Box.text[0][0] = "x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5);
 
         // alternative coordinates
-        this.y0Box.text[0][0] = "y0: " + MathHelper.round(this.polygon.altCoords[0], 5);
-        this.y1Box.text[0][0] = "y1: " + MathHelper.round(this.polygon.altCoords[1], 5);
-        this.y2Box.text[0][0] = "y2: " + MathHelper.round(this.polygon.altCoords[2], 5);
-        this.y3Box.text[0][0] = "y3: " + MathHelper.round(this.polygon.altCoords[3], 5);
+        this.e0Box.text[0][0] = "e0: " + MathHelper.round(this.polygon.energyCoords[0], 5);
+        this.e1Box.text[0][0] = "e1: " + MathHelper.round(this.polygon.energyCoords[1], 5);
+        this.e2Box.text[0][0] = "e2: " + MathHelper.round(this.polygon.energyCoords[2], 5);
+        this.e3Box.text[0][0] = "e3: " + MathHelper.round(this.polygon.energyCoords[3], 5);
+
+        // energy
+        const mapRepl = "(" + this.map.l.toString() + ", " + this.map.k.toString() + ") ";
+        this.oBox.text[0][0] = "O" + mapRepl + ": " + MathHelper.round(this.polygon.O, 5).toString();
+        this.eBox.text[0][0] = "E" + mapRepl + ": " + MathHelper.round(this.polygon.E, 5).toString();
+        this.energyBox.text[0][0] = mapRepl + " Energy: " + MathHelper.round(this.polygon.energy, 5).toString();
 
         // // eigenvalues of monodromy
         // const eigen = this.polygon.eigenvalues;
@@ -135,7 +151,7 @@ class InfoPanel extends Panel {
                 this.h = 30;
             } else {
                 this.showPanel = true;
-                this.h = 250;
+                this.h = 290;
             }
         }
     }

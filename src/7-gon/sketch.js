@@ -118,7 +118,7 @@ function keyPressed() {
         // Reconstruct.reconstruct3(Geometry.getCornerCoords(polygon.vertices));
         // console.log(polygon.getPentagramInvariants());
 
-        const x = Geometry.getCoords(polygon.vertices, map.k, map.l);
+        const x = Geometry.getCoords(polygon.vertices, 3, 2);
         let prod = 1;
         for (let i = 0; i < x.length; i++) {
             prod *= x[i];

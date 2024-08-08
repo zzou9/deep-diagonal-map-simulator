@@ -3,7 +3,7 @@ let map;
 
 // window
 let polygonWindow;
-let planeWindow;
+// let planeWindow;
 let shapePolygon;
 
 // plotting vertices
@@ -52,7 +52,7 @@ function setup() {
 
     // create windows
     shapeWindow = new PolygonWindow(10, 500, 300, 300, shapePolygon, "Edit Shape", [polygon], color.INDIGO);
-    planeWindow = new PlaneWindow(2*xT-310, 500, 300, 300, shapePolygon, "Plane", [polygon], [1, 3]);
+    // planeWindow = new PlaneWindow(2*xT-310, 500, 300, 300, shapePolygon, "Plane", [polygon], [1, 3]);
 
     // instantiate panels
     ctrlPanel = new CtrlPanel(10, 10, shapePolygon, [polygon]);
@@ -80,7 +80,7 @@ function draw() {
 
     // showing windows
     shapeWindow.show();
-    planeWindow.show();
+    // planeWindow.show();
 
     // title
     noStroke();
@@ -126,13 +126,13 @@ function mouseClicked() {
     
     // window actions
     shapeWindow.mouseAction();
-    planeWindow.mouseAction();
+    // planeWindow.mouseAction();
 }
 
 function mouseDragged() {
     // dragging vertices
     shapeWindow.mouseDragAction();
-    planeWindow.mouseDragAction();
+    // planeWindow.mouseDragAction();
 }
 
 function keyPressed() {
@@ -172,14 +172,15 @@ function keyPressed() {
         // }
         // console.log(repl);
         // polygon.printTrajectory();
-        const y = polygon.altCoords;
-        console.log(y[0]*y[1]*y[2]*y[3]);
+
+        // try the map
+        const x = polygon.energyCoords;
     }
 
     // window toggle dragging
     if (key === 'w' || key === 'W') {
         shapeWindow.toggleDrag();
-        planeWindow.toggleDrag();
+        // planeWindow.toggleDrag();
     }
     
     // action panel activation

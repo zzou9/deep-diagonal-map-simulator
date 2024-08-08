@@ -352,7 +352,7 @@ class Geometry extends MathHelper {
         return coords;
     }
 
-    static getCoords(vertices, k, l) {
+    static getEnergyCoords(vertices, k, l) {
         const n = vertices.length;
         let coords = new Array(2*n);
         for (let i = 0; i < n; i++) {
