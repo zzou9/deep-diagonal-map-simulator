@@ -352,6 +352,13 @@ class Geometry extends MathHelper {
         return coords;
     }
 
+    /**
+     * Compute the energy embedding of a polygon
+     * @param {Array<Array<number>>} vertices homogeneous coords of the vertices
+     * @param {number} k parameter
+     * @param {number} l parameter
+     * @returns 
+     */
     static getEnergyCoords(vertices, k, l) {
         const n = vertices.length;
         let coords = new Array(2*n);
@@ -377,5 +384,64 @@ class Geometry extends MathHelper {
         return coords;
     }
 
-    
+    /**
+     * Translate the (2, 1) coordinate to the (3, 1) coordinate
+     * @param {Array<number>} x the (2, 1) coordinate of the twisted polygon
+     * @returns the (3, 1) coordinate of the twisted polygon
+     */
+    static translate21To31(x) {
+        const n = x.length;
+        let e = new Array(n);
+        for (let k = 0; k < n/2; k++) {
+            e[2*k] = (x[2*k] * (1 - x[(2*k-2+n)%n]*x[(2*k-1+n)%n])) / ((1 - x[(2*k-2+n)%n]) * (1 - x[(2*k+2)%n]*x[(2*k+3)%n]));
+            e[2*k+1] = (x[2*k+1] * (1 - x[(2*k+2)%n]*x[(2*k+3)%n])) / ((1 - x[(2*k+3)%n]) * (1 - x[(2*k-2+n)%n]*x[(2*k-1+n)%n]));
+        }
+        return e;
+    }
+
+    /**
+     * Translate the (3, 1) coordinate of a twisted bigon to the (2, 1) corner invariants.
+     * @param {Array<number>} e the (3, 1) coordinate of the twisted bigon
+     * @returns the (2, 1) coordinate of the twisted bigon
+     */
+    static translate31To21Bigon(e) {
+        let x = new Array(4);
+        x[0] = e[0] * (1 - e[2]) / (1 - e[0]*e[2]);
+        x[1] = e[1] * (1 - e[3]) / (1 - e[1]*e[3]);
+        x[2] = e[2] * (1 - e[0]) / (1 - e[0]*e[2]);
+        x[3] = e[3] * (1 - e[1]) / (1 - e[1]*e[3]);
+        return x;
+    }
+
+    /**
+     * Compute alpha_1 of the pentagram map decomposition
+     * @param {Array<number>} x corner coordinates
+     * @returns corner coordinates of the image polygon
+     */
+    static alphaOne(x) {
+        const n = x.length;
+        let imgCoords = new Array(n);
+        for (let k = 0; k < n/2; k++) {
+            imgCoords[2*k] = x[(2*k-1+n)%n] * (1 - x[(2*k-3+n)%n] * x[(2*k-2+n)%n]) / (1 - x[(2*k+1)%n] * x[(2*k+2)%n]);
+            imgCoords[(2*k-1+n)%n] = x[2*k] * (1 - x[(2*k+1)%n] * x[(2*k+2)%n]) / (1 - x[(2*k-3+n)%n] * x[(2*k-2+n)%n]);
+        }
+        return imgCoords;
+    }
+
+    /**
+     * Compute alpha_2 of the pentagram map decomposition
+     * @param {Array<number>} x corner coordinates
+     * @returns corner coordinates of the image polygon
+     */
+    static alphaTwo(x) {
+        const n = x.length;
+        let imgCoords = new Array(n);
+        for (let k = 0; k < n/2; k++) {
+            imgCoords[2*k] = x[(2*k+1)%n] * (1 - x[(2*k+2)%n] * x[(2*k+3)%n]) / (1 - x[(2*k-2+n)%n] * x[(2*k-1+n)%n]);
+            imgCoords[2*k+1] = x[2*k] * (1 - x[(2*k-2+n)%n] * x[(2*k-1+n)%n]) / (1 - x[(2*k+2)%n] * x[(2*k+3)%n]);
+        }
+        return imgCoords;
+    }
+
+
 }

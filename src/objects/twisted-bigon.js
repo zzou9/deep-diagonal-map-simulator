@@ -160,10 +160,13 @@ class TwistedBigon{
         let vertices = Reconstruct.reconstructBigon(this.monodromy, 2*k+2);
         // compute the coordinates 
         let coords = Geometry.getEnergyCoords(vertices, k, l);
-        this.energyCoords[0] = coords[2*k];
-        this.energyCoords[1] = coords[2*k+1];
-        this.energyCoords[2] = coords[2*k+2];
-        this.energyCoords[3] = coords[2*k+3];
+        for (let i = 0; i < 4; i++) {
+            this.energyCoords[(2*k+i)%4] = coords[2*k+i];
+        }
+        // this.energyCoords[0] = coords[2*k];
+        // this.energyCoords[1] = coords[2*k+1];
+        // this.energyCoords[2] = coords[2*k+2];
+        // this.energyCoords[3] = coords[2*k+3];
 
         // update energy, O, E
         this.O = this.energyCoords[0] * this.energyCoords[2];
@@ -178,58 +181,6 @@ class TwistedBigon{
      */
     getDistanceToReference() {
         return MathHelper.l2dist(this.cornerCoords, this.referenceCoords);
-    }
-
-    /**
-     * Compute the l2 distance of the visualization of P1 and P2
-     * @returns the l2 distance between P1 and P2
-     */
-    getP1P2Dist() {
-        const v1 = this.verticesToShow[3];
-        const v2 = this.verticesToShow[4];
-        const p1 = [v1[0]/v1[2], v1[1]/v1[2]];
-        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
-        return MathHelper.l2dist(p1, p2);
-    }
-
-    /**
-     * Compute the angle between the two vectors: p1p2 and p0p1
-     * @returns the signed angle in radians
-     */
-    getTheta1Angle() {
-        const v = this.verticesToShow[4];
-        const p2 = [v[0]/v[2], v[1]/v[2]];
-        const p0p1 = [-1, 0];
-        const p1p2 = [p2[0], p2[1]-1];
-        // compute the angle of two vectors
-        return MathHelper.angle2D(p1p2, p0p1);
-    }
-
-    /**
-     * Compute the l2 distance of the visualization of P2 and P3
-     * @returns the l2 distance between P2 and P3
-     */
-    getP2P3Dist() {
-        const v2 = this.verticesToShow[4];
-        const v3 = this.verticesToShow[5];
-        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
-        const p3 = [v3[0]/v3[2], v3[1]/v3[2]];
-        return MathHelper.l2dist(p2, p3);
-    }
-
-    /**
-     * Compute the angle between the two vectors: p2p3 and p1p2
-     * @returns the signed angle in radians
-     */
-    getTheta2Angle() {
-        const v2 = this.verticesToShow[4];
-        const v3 = this.verticesToShow[5];
-        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
-        const p3 = [v3[0]/v3[2], v3[1]/v3[2]];
-        const p1p2 = [p2[0], p2[1]-1];
-        const p2p3 = [p3[0]-p2[0], p3[1]-p2[1]];
-        // compute the angle of two vectors
-        return MathHelper.angle2D(p2p3, p1p2);
     }
 
     /**
@@ -503,4 +454,62 @@ class TwistedBigon{
         }
         return false;
     }
+
+    /**
+     * Obsolete methods
+     */
+
+
+    /**
+     * Compute the l2 distance of the visualization of P1 and P2
+     * @returns the l2 distance between P1 and P2
+     */
+    getP1P2Dist() {
+        const v1 = this.verticesToShow[3];
+        const v2 = this.verticesToShow[4];
+        const p1 = [v1[0]/v1[2], v1[1]/v1[2]];
+        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
+        return MathHelper.l2dist(p1, p2);
+    }
+
+    /**
+     * Compute the angle between the two vectors: p1p2 and p0p1
+     * @returns the signed angle in radians
+     */
+    getTheta1Angle() {
+        const v = this.verticesToShow[4];
+        const p2 = [v[0]/v[2], v[1]/v[2]];
+        const p0p1 = [-1, 0];
+        const p1p2 = [p2[0], p2[1]-1];
+        // compute the angle of two vectors
+        return MathHelper.angle2D(p1p2, p0p1);
+    }
+
+    /**
+     * Compute the l2 distance of the visualization of P2 and P3
+     * @returns the l2 distance between P2 and P3
+     */
+    getP2P3Dist() {
+        const v2 = this.verticesToShow[4];
+        const v3 = this.verticesToShow[5];
+        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
+        const p3 = [v3[0]/v3[2], v3[1]/v3[2]];
+        return MathHelper.l2dist(p2, p3);
+    }
+
+    /**
+     * Compute the angle between the two vectors: p2p3 and p1p2
+     * @returns the signed angle in radians
+     */
+    getTheta2Angle() {
+        const v2 = this.verticesToShow[4];
+        const v3 = this.verticesToShow[5];
+        const p2 = [v2[0]/v2[2], v2[1]/v2[2]];
+        const p3 = [v3[0]/v3[2], v3[1]/v3[2]];
+        const p1p2 = [p2[0], p2[1]-1];
+        const p2p3 = [p3[0]-p2[0], p3[1]-p2[1]];
+        // compute the angle of two vectors
+        return MathHelper.angle2D(p2p3, p1p2);
+    }
+
 }

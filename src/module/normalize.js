@@ -31,7 +31,7 @@ class Normalize {
             [1/l[0][0], 0, 0],
             [0, 1/l[1][0], 0],
             [0, 0, 1/l[2][0]]
-        ]
+        ];
         return MathHelper.matrixMult(D, M);
     }
 

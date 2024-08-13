@@ -17,7 +17,9 @@ class SevenGon extends Polygon {
         this.trajectory = new Array();
         this.showTrajectory = false; // whether to show the trajectory of the 3rd vertex
         this.corner = Geometry.getCornerCoords(this.vertices); // the corner invariants of this polygon
+        this.energyCoords = new Array(14);
         this.getTrajectory();
+        this.updateInfo();
         this.opacity = 0.5; // the opacity of the polygon
         this.vertexColor = [color.RED, color.ORANGE, color.YELLOW, color.GREEN, color.CYAN, color.VIOLET, color.PURPLE];
     }
@@ -482,6 +484,7 @@ class SevenGon extends Polygon {
      */
     updateInfo() {
         super.updateInfo();
+        this.energyCoords = Geometry.getEnergyCoords(this.vertices, this.map.l, this.map.k);
     }
 
     /**

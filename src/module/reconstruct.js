@@ -139,7 +139,7 @@ class Reconstruct extends Geometry {
      * Reconstruct the homogeneous coordinates of a polygon given its corner invariants
      * The formula comes from a mathematica file Schwartz sent to me
      * @param {Array<number>} x the corner invariants
-     * @param {number} [numVertices=5] number of vertices to reconstruct
+     * @param {number} [numVertices=6] number of vertices to reconstruct
      * @returns the homogeneous coordinates of the polygon
      */
     static reconstruct3(x, numVertices=6) {

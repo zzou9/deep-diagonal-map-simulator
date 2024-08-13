@@ -111,19 +111,37 @@ function keyPressed() {
         }
     }
     if (key === 'p') {
-        // polygon.recordDistance(500);
-        // polygon.recordComponents();
-        // console.log(polygon.print());
-        // console.log(Geometry.getCornerCoords(polygon.vertices));
-        // Reconstruct.reconstruct3(Geometry.getCornerCoords(polygon.vertices));
-        // console.log(polygon.getPentagramInvariants());
+        let x = map.applyFactor(polygon.vertices.map(a => a.slice()), 3);
+        let coord1 = Geometry.getEnergyCoords(x, 3, 1);
+        let xPrime = map.applyFactor(map.applyFactor(map.applyFactor(x.map(a => a.slice()), 1), 3), 1);
+        let coord2 = Geometry.getEnergyCoords(xPrime, 3, 1);
+        console.log("Original:", polygon.energyCoords);
+        console.log("Factor 1:", coord1);
+        console.log("Factor 2:", coord2);
+        let coord3 = Geometry.alphaTwo(polygon.energyCoords);
+        let coord4 = Geometry.alphaOne(coord3);
+        console.log("Estimate 1:", coord3);
+        console.log("Estimate 2:", coord4);
 
-        const x = Geometry.getCoords(polygon.vertices, 3, 2);
-        let prod = 1;
-        for (let i = 0; i < x.length; i++) {
-            prod *= x[i];
+        let e = 1;
+        let e1 = 1;
+        let e2 = 1;
+        let e3 = 1;
+        let e4 = 1;
+        for (let i = 0; i < 14; i++) {
+            e *= polygon.energyCoords[i];
+            e1 *= coord1[i];
+            e2 *= coord2[i];
+            e3 *= coord3[i];
+            e4 *= coord4[i];
         }
-        console.log(prod);
+
+        console.log("E:", e);
+        console.log("E1:", e1);
+        console.log("E2:", e2);
+        console.log("E3:", e3);
+        console.log("E4:", e4);
+        
     }
 
     // changing the diagonals of the map

@@ -165,6 +165,15 @@ class PentagramMap {
         return this.applyMap(vertices, this.l, this.k, this.power, this.normalization, this.twisted, this.shifts);
     }
 
+    applyFactor(vertices, k) {
+        const n = vertices.length;
+        let imgVertices = new Array(n)
+        for (let i = 0; i < n; i++) {
+            imgVertices[i] = MathHelper.cross(vertices[(-i+n)%n], vertices[(-i-k+2*n)%n]); // see formula
+        }
+        return imgVertices;
+    }
+
     /**
      * Get the next embedded power of the map
      * @param {Array<Array<Number>>} vertices coordinates of the vertices

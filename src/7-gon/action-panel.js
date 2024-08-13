@@ -122,26 +122,31 @@ class ActionPanel extends Panel {
         if (this.decDiagonal.isHovering() && this.map.l-1 > this.map.k) {
             this.map.l--;
             this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
+            this.polygon.updateInfo();
         }
         if (this.incDiagonal.isHovering() && this.polygon.numVertex > 3*this.map.l) {
             this.map.l++;
             this.diagonalBox.text = [["Diagonal: " + this.map.l, color.BLACK]];
+            this.polygon.updateInfo();
         }
 
         // spacing control
         if (this.decSpacing.isHovering() && this.map.k > 1) {
             this.map.k--;
             this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
+            this.polygon.updateInfo();
         }
         if (this.incSpacing.isHovering() && this.map.k < this.map.l-1 && this.polygon.numVertex > 3*this.map.k+1) {
             this.map.k++;
             this.spacingBox.text = [["Spacing: " + this.map.k, color.BLACK]];
+            this.polygon.updateInfo();
         }
 
         // shifting control
         if (this.decShifts.isHovering() && this.map.shifts > 0) {
             this.map.shifts--;
             this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
+            this.polygon.updateInfo();
         }
         if (this.incShifts.isHovering()) {
             if (this.map.twisted) {
@@ -153,6 +158,7 @@ class ActionPanel extends Panel {
                 this.map.shifts++;
                 this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
             }
+            this.polygon.updateInfo();
         }
 
         // speed control
@@ -169,10 +175,12 @@ class ActionPanel extends Panel {
         if (this.decPower.isHovering() && this.map.power > 1) {
             this.map.power--;
             this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
+            this.polygon.updateInfo();
         }
         if (this.incPower.isHovering()) {
             this.map.power++;
             this.powerBox.text = [["Power: " + this.map.power, color.BLACK]];
+            this.polygon.updateInfo();
         }
 
         // display control

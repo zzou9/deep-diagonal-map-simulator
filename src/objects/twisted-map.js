@@ -20,7 +20,6 @@ class TwistedMap {
     /**
      * A helper method that applies the map for a twisted bigon
      * @param {Array<number>} coords corner coords of the twisted bigon
-     * @param {Array<Array<number>>} T a lift of the monodromy
      * @param {number} p number of times to apply the map 
      * @param {boolean} checkAfine check whether the image vertices are on the affine plane
      * @returns {Array<Array<Number>>} the resulting homogeneous coordinates of the vertices
@@ -106,6 +105,36 @@ class TwistedMap {
             this.numIterations += this.power;
         }
         return newCoords;
+    }
+
+    /**
+     * Apply a factorized version of the map D_k:
+     * The map D_k on P = (x0, x1, x2, x3) is given as 
+     * D_k(P)_i = <x(-k-i), x(-i)>
+     * @param {*} coords 
+     * @param {*} k 
+     */
+    applyFactor(coords, k) {
+        // use monodromy to draw vertices
+        const v = Reconstruct.reconstructBigon6(coords);
+        const M1 = Normalize.getProjectiveLift(v[0], v[1], v[2], v[3]);
+        const M2 = Normalize.getProjectiveLift(v[2], v[3], v[4], v[5]);
+        const M2Inv = MathHelper.invert3(M2);
+        const T = MathHelper.matrixMult(M2Inv, M1);
+        let vertices = Reconstruct.reconstructBigon(T, k+6);
+        // let vertices = Reconstruct.reconstruct3(coords, k+6);
+        // populate the new vertices 
+        let imgVertices = new Array(6);
+        for (let i = 0; i < 6; i++) {
+            imgVertices[5-i] = MathHelper.cross(vertices[i], vertices[i+k]); // see formula
+        }
+        let tempCoords = Geometry.getCornerCoords(imgVertices);
+        // populate the image corner invariants
+        let imgCoords = new Array(4);
+        for (let i = 0; i < 4; i++) {
+            imgCoords[i] = tempCoords[i+4];
+        }
+        return imgCoords;
     }
 
     /**
