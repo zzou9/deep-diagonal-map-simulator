@@ -22,12 +22,14 @@ class ModulePanel extends Panel {
         this.rotationButton = new Button(this.convexButton.x+this.convexButton.w+10, y, 50, 20, [["Rotation", color.BLACK]], color.WHITE);
         this.sevengonButton = new Button(this.rotationButton.x+this.rotationButton.w+10, y, 50, 20, [["7-Gon", color.BLACK]], color.WHITE);
         this.bigonButton = new Button(this.sevengonButton.x+this.sevengonButton.w+10, y, 50, 20, [["Bi-gon", color.BLACK]], color.WHITE);
-        this.multiButton = new Button(this.bigonButton.x+this.bigonButton.w+10, y, 50, 20, [["Multi", color.BLACK]], color.WHITE);
+        this.triangleButton = new Button(this.bigonButton.x+this.bigonButton.w+10, y, 50, 20, [["Triangle", color.BLACK]], color.WHITE);
+        this.multiButton = new Button(this.triangleButton.x+this.triangleButton.w+10, y, 50, 20, [["Multi", color.BLACK]], color.WHITE);
         this.buttons.push(this.homeButton);
         this.buttons.push(this.convexButton);
         this.buttons.push(this.rotationButton);
         this.buttons.push(this.sevengonButton);
         this.buttons.push(this.bigonButton);
+        this.buttons.push(this.triangleButton);
         this.buttons.push(this.multiButton);
 
         // highlight the current module
@@ -46,6 +48,9 @@ class ModulePanel extends Panel {
                 break;
             case "Bi-gon":
                 this.bigonButton.fill = color.KHAKI;
+                break;
+            case "Triangle":
+                this.triangleButton.fill = color.KHAKI;
                 break;
             case "Multi":
                 this.multiButton.fill = color.KHAKI;
@@ -75,6 +80,9 @@ class ModulePanel extends Panel {
             }
             if (this.bigonButton.isHovering() && this.current != "Bi-gon") {
                 window.location.href = 'bi-gon.html';
+            }
+            if (this.triangleButton.isHovering() && this.current != "Triangle") {
+                window.location.href = 'triangle.html';
             }
             if (this.multiButton.isHovering() && this.current != "Multi") {
                 window.location.href = 'multi.html';

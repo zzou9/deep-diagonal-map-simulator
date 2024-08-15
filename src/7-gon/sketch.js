@@ -55,7 +55,7 @@ function setup() {
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
-    modulePanel = new ModulePanel(xT-175, 40, "7-Gon", color.BLACK);
+    modulePanel = new ModulePanel(xT-200, 40, "7-Gon", color.BLACK);
 }
 
 function draw() {
@@ -119,7 +119,7 @@ function keyPressed() {
         console.log("current", e);
         console.log("formula", e_);
         console.log("correct", e__);
-        
+
         // const v__ = Geometry.applyFactor(v_, 1);
         // const e_ = Geometry.getEnergyCoords(v__, 3, 1);
         // console.log("3", e);

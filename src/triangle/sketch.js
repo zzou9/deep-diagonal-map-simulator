@@ -43,11 +43,11 @@ function setup() {
     yT = windowHeight/2;
 
     createCanvas(windowWidth, windowHeight);
-    map = new TwistedMap();
-    polygon = new TwistedBigon(map);
+    map = new TriangleMap();
+    polygon = new TwistedTriangle(map);
     polygon.canDrag = true;
     polygon.vertexSize = 6;
-    shapePolygon = new TwistedBigon(map);
+    shapePolygon = new TwistedTriangle(map);
     shapePolygon.canDrag = true;
 
     // create windows
@@ -60,7 +60,7 @@ function setup() {
     actionPanel.showPanel = false;
     trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, polygon);
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map);
-    modulePanel = new ModulePanel(xT-200, 40, "Bi-gon", color.BLACK);
+    modulePanel = new ModulePanel(xT-200, 40, "Triangle", color.BLACK);
 
     // draw markers
     markers = new Array();
@@ -204,8 +204,6 @@ function keyPressed() {
         // console.log(e__);
 
         console.log(polygon.getInvariantsFrom31());
-
-        console.log(-0 == 0);
     }
 
     // window toggle dragging
@@ -223,7 +221,7 @@ function keyPressed() {
     if (keyCode === UP_ARROW && polygon.numVertexToShow < 100) { 
         polygon.numVertexToShow += 1;
         shapePolygon.numVertexToShow += 1;
-    } else if (keyCode === DOWN_ARROW && polygon.numVertexToShow > 6){ 
+    } else if (keyCode === DOWN_ARROW && polygon.numVertexToShow > 7){ 
         polygon.numVertexToShow -= 1;
         shapePolygon.numVertexToShow -= 1;
     }

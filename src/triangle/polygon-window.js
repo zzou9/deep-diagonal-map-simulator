@@ -94,6 +94,16 @@ class PolygonWindow extends Window {
             const x2 = verticesToShow[5][0] / verticesToShow[5][2];
             const y2 = verticesToShow[5][1] / verticesToShow[5][2];
             this.canvas.circle((1-2*x2) * this.polygonScale, (1-2*y2) * this.polygonScale, vertexSize);
+
+            // third vertex
+            this.canvas.fill(color.ORANGE);
+            this.canvas.stroke(color.BLACK);
+            if (MathHelper.round(verticesToShow[6][2]) == 0) {
+                throw new Error("Vertex 3 is not on the affine patch");
+            }
+            const x3 = verticesToShow[6][0] / verticesToShow[6][2];
+            const y3 = verticesToShow[6][1] / verticesToShow[6][2];
+            this.canvas.circle((1-2*x3) * this.polygonScale, (1-2*y3) * this.polygonScale, vertexSize);
         }
 
         this.canvas.translate(-this.w/2, -this.h/2);

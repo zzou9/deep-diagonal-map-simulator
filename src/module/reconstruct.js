@@ -192,6 +192,34 @@ class Reconstruct extends Geometry {
     }
 
     /**
+     * Reconstruct the first 7 homogeneous coordinates of a twisted triangle
+     * @param {Array<number>} x 
+     */
+    static reconstructTriangle7(x) {
+        let coords = new Array(7);
+        coords[0] = [0, 0, 1];
+        coords[1] = [1, 0, 1];
+        coords[2] = [1, 1, 1];
+        coords[3] = [0, 1, 1];
+        coords[4] = [
+            x[0]*x[1] - x[1], 
+            -x[1] + 1, 
+            x[0]*x[1] - x[1] + 1
+        ];
+        coords[5] = [
+            x[1]*x[2]*x[3] + x[0]*x[1] - x[1], 
+            x[1]*x[2]*x[3] - x[1] - x[3] + 1, 
+            x[1]*x[2]*x[3] + x[0]*x[1] - x[1] - x[3] + 1
+        ];
+        coords[6] = [
+            x[1]*x[2]*x[3] - x[0]*x[1]*(x[5] - 1) + x[1]*x[5] - x[1], 
+            x[1]*x[2]*x[3] + x[3]*x[4]*x[5] + x[1]*x[5] - x[1] - x[3] - x[5] + 1, 
+            x[1]*x[2]*x[3] - x[0]*x[1]*(x[5] - 1) + x[3]*x[4]*x[5] + x[1]*x[5] - x[1] - x[3] - x[5] + 1
+        ];
+        return coords;
+    }
+
+    /**
      * Reconstruct the homogeneous coordinates of a twisted bigon given its monodromy.
      * The first four coordinates are given as 
      *  [0, 0, 1]
@@ -211,6 +239,31 @@ class Reconstruct extends Geometry {
         coords[3] = [0, 1, 1];
         for (let i = 4; i < numVertices; i++) {
             const v = this.matrixMult(T, this.vec(coords[i-2]));
+            coords[i] = [v[0][0], v[1][0], v[2][0]];
+        }
+        return coords;
+    }
+
+    /**
+     * Reconstruct the homogeneous coordinates of a twisted triangle given its monodromy.
+     * The first four coordinates are given as 
+     *  [0, 0, 1]
+     *  [1, 0, 1]
+     *  [1, 1, 1]
+     *  [0, 1, 1]
+     * The method then applies the monodromy repeatedly to get the coordinates
+     * @param {Array<Array<number>>} T a lift of the monodromy of the twisted triangle
+     * @param {number} [numVertices=6] number of vertices to construct
+     * @returns 
+     */
+    static reconstructTriangle(T, numVertices=7) {
+        let coords = new Array(numVertices);
+        coords[0] = [0, 0, 1];
+        coords[1] = [1, 0, 1];
+        coords[2] = [1, 1, 1];
+        coords[3] = [0, 1, 1];
+        for (let i = 4; i < numVertices; i++) {
+            const v = this.matrixMult(T, this.vec(coords[i-3]));
             coords[i] = [v[0][0], v[1][0], v[2][0]];
         }
         return coords;

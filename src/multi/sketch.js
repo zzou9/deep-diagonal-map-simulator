@@ -84,7 +84,7 @@ function setup() {
     actionPanel = new ActionPanel(10, ctrlPanel.y+ctrlPanel.h+10, maps, mapPolygons);
     trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, mapPolygons);
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map1);
-    modulePanel = new ModulePanel(xT-175, 40, "Multi", color.BLACK);
+    modulePanel = new ModulePanel(xT-200, 40, "Multi", color.BLACK);
     // shapePanel = new ShapePanel(2*xT - 210, infoPanel.y+infoPanel.h+10, polygon, map);
 }
 
