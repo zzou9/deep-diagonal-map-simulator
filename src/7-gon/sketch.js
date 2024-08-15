@@ -111,37 +111,26 @@ function keyPressed() {
         }
     }
     if (key === 'p') {
-        let x = map.applyFactor(polygon.vertices.map(a => a.slice()), 3);
-        let coord1 = Geometry.getEnergyCoords(x, 3, 1);
-        let xPrime = map.applyFactor(map.applyFactor(map.applyFactor(x.map(a => a.slice()), 1), 3), 1);
-        let coord2 = Geometry.getEnergyCoords(xPrime, 3, 1);
-        console.log("Original:", polygon.energyCoords);
-        console.log("Factor 1:", coord1);
-        console.log("Factor 2:", coord2);
-        let coord3 = Geometry.alphaTwo(polygon.energyCoords);
-        let coord4 = Geometry.alphaOne(coord3);
-        console.log("Estimate 1:", coord3);
-        console.log("Estimate 2:", coord4);
-
-        let e = 1;
-        let e1 = 1;
-        let e2 = 1;
-        let e3 = 1;
-        let e4 = 1;
-        for (let i = 0; i < 14; i++) {
-            e *= polygon.energyCoords[i];
-            e1 *= coord1[i];
-            e2 *= coord2[i];
-            e3 *= coord3[i];
-            e4 *= coord4[i];
-        }
-
-        console.log("E:", e);
-        console.log("E1:", e1);
-        console.log("E2:", e2);
-        console.log("E3:", e3);
-        console.log("E4:", e4);
+        const v = polygon.vertices.map(a => a.slice())
+        const v_ = Geometry.applyFactor(v, 3);
+        const e = Geometry.getEnergyCoords(v_, 3, 1);
+        const e_ = Geometry.betaTwo(e);
+        const e__ = Geometry.getEnergyCoords(v_, 3, 1);
+        console.log("current", e);
+        console.log("formula", e_);
+        console.log("correct", e__);
         
+        // const v__ = Geometry.applyFactor(v_, 1);
+        // const e_ = Geometry.getEnergyCoords(v__, 3, 1);
+        // console.log("3", e);
+        // console.log("3, 1", e_);
+        // let prod = 1;
+        // let prod_ = 1;
+        // for (let i = 0; i < e.length; i++) {
+        //     prod *= e[i];
+        //     prod_ *= e_[i];
+        // }
+        // console.log(prod, prod_);
     }
 
     // changing the diagonals of the map

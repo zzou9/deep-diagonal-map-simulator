@@ -12,7 +12,7 @@ class InfoPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=290) {
+    constructor(x, y, polygon, map, w=200, h=330) {
         super(x, y, w, h, "Information", color.KHAKI);
         this.polygon = polygon;
         this.map = map;
@@ -78,10 +78,10 @@ class InfoPanel extends Panel {
         // // record distance and monodromy invariants
         // this.distBox = new Button(this.x+25, this.y+220, 150, 20, [["Dist to Ref: " + MathHelper.round(this.polygon.getDistanceToReference(), 5), color.BLACK]], color.KHAKI);
         // this.buttons.push(this.distBox);
-        // this.invariant1Box = new Button(this.x+25, this.y+200, 150, 20, [["Invariant 1: " + MathHelper.round(this.polygon.omega1, 5), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.invariant1Box);
-        // this.invariant2Box = new Button(this.x+25, this.y+220, 150, 20, [["Invariant 2: " + MathHelper.round(this.polygon.omega2, 5), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.invariant2Box);
+        this.invariant1Box = new Button(this.x+25, this.y+280, 150, 20, [["Invariant 1: " + MathHelper.round(this.polygon.omega1, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.invariant1Box);
+        this.invariant2Box = new Button(this.x+25, this.y+300, 150, 20, [["Invariant 2: " + MathHelper.round(this.polygon.omega2, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.invariant2Box);
     }
 
     /**
@@ -127,9 +127,9 @@ class InfoPanel extends Panel {
         // this.p1p2Box.text[0][0] = "||P1 P2||: " + MathHelper.round(this.polygon.getP1P2Dist(), 5);
         // this.p2p3Box.text[0][0] = "||P2 P3||: " + MathHelper.round(this.polygon.getP2P3Dist(), 5)
 
-        // // invariants
-        // this.invariant1Box.text[0][0] = "Invariant 1: " + MathHelper.round(this.polygon.omega1, 5);
-        // this.invariant2Box.text[0][0] = "Invariant 2: " + MathHelper.round(this.polygon.omega2, 5);
+        // invariants
+        this.invariant1Box.text[0][0] = "Invariant 1: " + MathHelper.round(this.polygon.omega1, 5);
+        this.invariant2Box.text[0][0] = "Invariant 2: " + MathHelper.round(this.polygon.omega2, 5);
 
         // monodromy
     }
@@ -151,7 +151,7 @@ class InfoPanel extends Panel {
                 this.h = 30;
             } else {
                 this.showPanel = true;
-                this.h = 290;
+                this.h = 330;
             }
         }
     }

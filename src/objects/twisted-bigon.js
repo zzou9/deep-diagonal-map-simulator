@@ -11,7 +11,7 @@ class TwistedBigon{
     constructor(map, 
         scale=(windowWidth + windowHeight)/20) {
         this.map = map;
-        this.cornerCoords = [0.5, 0.5, 0.5, 0.5];
+        this.cornerCoords = [1, 1, 1, 1];
         this.energyCoords = new Array(4);
         this.energy = 1;
         this.O = 1;
@@ -21,7 +21,7 @@ class TwistedBigon{
         this.vertexSize = 8;
         this.canDrag = false;
         this.scale = scale; 
-        this.referenceCoords = [0.5, 0.5, 0.5, 0.5]; // the reference corner coordinates
+        this.referenceCoords = this.cornerCoords.slice(); // the reference corner coordinates
 
         /**
          * Trajectory control:
@@ -205,9 +205,9 @@ class TwistedBigon{
     */
     setDefault() {
         // first, find the corner coordinates of a regular 8-gon
-        let vertices = new Array(6);
-        const angle = TWO_PI / 6;
-        for (let i = 0; i < 6; i++) {
+        let vertices = new Array(8);
+        const angle = TWO_PI / 8;
+        for (let i = 0; i < 8; i++) {
             vertices[i] = [cos(angle*i), sin(angle*i), 1];
         }
         const coords = Geometry.getCornerCoords(vertices);
@@ -453,6 +453,22 @@ class TwistedBigon{
             }
         }
         return false;
+    }
+
+
+    /**
+     * Compute the two invariants from the (3, 1) coordinates
+     * @returns [Omega_1, Omega_2]
+     */
+    getInvariantsFrom31() {
+        const e = Geometry.translate21To31(this.cornerCoords.slice());
+        const num1 = Math.pow(e[0]*e[2] - 1, 2) * (e[1]*e[3] - 1) * (e[1] - 1) * (e[3] - 1);
+        const denom1 = e[1]*e[1]*e[3]*e[3]*e[0]*e[2]*(e[0] - 1)*(e[2] - 1);
+        const omega1 = -num1 / denom1;
+        const num2 = Math.pow(e[1]*e[3] - 1, 2) * (e[0]*e[2] - 1) * (e[0] - 1) * (e[2] - 1);
+        const denom2 = e[0]*e[0]*e[2]*e[2]*e[1]*e[3]*(e[1] - 1)*(e[3] - 1);
+        const omega2 = -num2 / denom2;
+        return [omega1, omega2];
     }
 
     /**

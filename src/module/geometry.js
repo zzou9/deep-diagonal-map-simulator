@@ -443,5 +443,65 @@ class Geometry extends MathHelper {
         return imgCoords;
     }
 
+    /**
+     * Apply beta_1 (a factorization of the (3, 1) map) to the (3, 1) coordinate of a twisted bigon
+     * @param {Array<number>} e (3, 1) coordinate of a twisted bigon
+     * @returns the (3, 1) coordinate of the image twisted bigon
+     */
+    static betaOneBigon(e) {
+        let eImg = new Array(4);
+        eImg[0] = ((e[1]*e[2] - 1)*(e[3] - 1)*e[0]) / ((e[0]*e[3] - 1)*(e[1] - 1));
+        eImg[1] = ((e[1]*e[2] - 1)*(e[0] - 1)*e[3]) / ((e[0]*e[3] - 1)*(e[2] - 1));
+        eImg[2] = ((e[0]*e[3] - 1)*(e[1] - 1)*e[2]) / ((e[1]*e[2] - 1)*(e[3] - 1));
+        eImg[3] = ((e[0]*e[3] - 1)*(e[2] - 1)*e[1]) / ((e[1]*e[2] - 1)*(e[0] - 1));
+        return eImg;
+    }
 
+    /**
+     * Apply beta_2 (a factorization of the (3, 1) map) to the (3, 1) coordinate of a twisted bigon
+     * @param {Array<number>} e (3, 1) coordinate of a twisted bigon
+     * @returns the (3, 1) coordinate of the image twisted bigon
+     */
+    static betaTwoBigon(e) {
+        let eImg = new Array(4);
+        eImg[0] = ((e[2]*e[3] - 1)*(e[1] - 1)*e[0]) / ((e[0]*e[1] - 1)*(e[3] - 1));
+        eImg[1] = ((e[0]*e[1] - 1)*(e[2] - 1)*e[3]) / ((e[2]*e[3] - 1)*(e[0] - 1));
+        eImg[2] = ((e[0]*e[1] - 1)*(e[3] - 1)*e[2]) / ((e[2]*e[3] - 1)*(e[1] - 1));
+        eImg[3] = ((e[2]*e[3] - 1)*(e[0] - 1)*e[1]) / ((e[0]*e[1] - 1)*(e[2] - 1));
+        return eImg;
+    }
+
+    /**
+     * Apply the (3, 1) map on the corner coordinates of a twisted bigon
+     * @param {Array<number>} x the corner invariants of the bigon
+     * @returns the image coordinates
+     */
+    static bigon31(x) {
+        let xImg = new Array(4);
+        xImg[0] = (x[1] + x[2] - 1)*x[0] / (x[0]*x[1] - (x[2] - 1)*(x[3] - 1));
+        xImg[1] = (x[0] + x[3] - 1)*x[1] / (x[0]*x[1] - (x[2] - 1)*(x[3] - 1));
+        xImg[2] = (x[0] + x[3] - 1)*x[2] / (x[2]*x[3] - (x[0] - 1)*(x[1] - 1));
+        xImg[3] = (x[1] + x[2] - 1)*x[3] / (x[2]*x[3] - (x[0] - 1)*(x[1] - 1));
+        return xImg;
+    }
+
+    static applyFactor(v, k) {
+        // populate the new vertices 
+        const n = v.length;
+        let vImg = new Array(n);
+        for (let i = 0; i < n; i++) {
+            vImg[i] = MathHelper.cross(v[(-i+n)%n], v[(-i-k+2*n)%n]); // see formula
+        }
+        return vImg;
+    }
+    
+    static betaTwo(e) {
+        const n = e.length;
+        let eImg = new Array(n);
+        for (let i = 0; i < n/2; i++) {
+            eImg[2*i] = ((e[(2*i+2)%n]*e[(2*i+3)%n] - 1) * (e[(2*i+1)%n] - 1) * e[2*i]) / ((e[2*i]*e[(2*i+1)%n] - 1) * (e[(2*i-1+n)%n] - 1));
+            eImg[2*i+1] = ((e[(2*i)%n]*e[(2*i+1)%n] - 1) * (e[(2*i+2)%n] - 1) * e[2*i+1]) / ((e[(2*i+2)%n]*e[(2*i+3)%n] - 1) * (e[(2*i)%n] - 1));
+        }
+        return eImg;
+    }
 }

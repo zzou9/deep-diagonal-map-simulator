@@ -173,21 +173,37 @@ function keyPressed() {
         // console.log(repl);
         // polygon.printTrajectory();
 
-        // try the map
-        let xPrime = map.applyFactor(polygon.cornerCoords.slice(), 3);
-        let vertices = Reconstruct.reconstruct3(xPrime, 12);
-        let ePrime = Geometry.getEnergyCoords(vertices, 3, 1);
-        let eCoords = [ePrime[6], ePrime[7], ePrime[8], ePrime[9]];
+        // // try the map
+        // let xPrime = map.applyFactor(polygon.cornerCoords.slice(), 3);
+        // let vertices = Reconstruct.reconstruct3(xPrime, 12);
+        // let ePrime = Geometry.getEnergyCoords(vertices, 3, 1);
+        // let eCoords = [ePrime[6], ePrime[7], ePrime[8], ePrime[9]];
 
-        console.log(eCoords);
-        let xDblPrime = map.applyMap(map.applyFactor(xPrime, 1), 1, false);
-        let vertices2 = Reconstruct.reconstruct3(xDblPrime, 12);
-        let eDblPrime = Geometry.getEnergyCoords(vertices2, 3, 1);
-        let eCoords2 = [eDblPrime[6], eDblPrime[7], eDblPrime[8], eDblPrime[9]];
-        console.log(eCoords2);
+        // console.log(eCoords);
+        // let xDblPrime = map.applyMap(map.applyFactor(xPrime, 1), 1, false);
+        // let vertices2 = Reconstruct.reconstruct3(xDblPrime, 12);
+        // let eDblPrime = Geometry.getEnergyCoords(vertices2, 3, 1);
+        // let eCoords2 = [eDblPrime[6], eDblPrime[7], eDblPrime[8], eDblPrime[9]];
+        // console.log(eCoords2);
 
-        let repl = polygon.energyCoords[0].toString() + ", " + eCoords[0].toString() + ", " + eCoords[2].toString();
-        console.log(repl);
+        // let repl = polygon.energyCoords[0].toString() + ", " + eCoords[0].toString() + ", " + eCoords[2].toString();
+        // console.log(repl);
+
+        // // try swapping coordinates
+        // const x = polygon.cornerCoords;
+        // console.log(Geometry.translate21To31(x));
+        // const e = polygon.energyCoords;
+        // console.log(Geometry.translate31To21Bigon(e));
+
+        // // try (3, 1) coordinate map
+        // const x = polygon.cornerCoords;
+        // console.log(Geometry.bigon31(x));
+        // const e = polygon.energyCoords;
+        // const e_ = Geometry.betaTwoBigon(e);
+        // const e__ = Geometry.betaOneBigon(e_);
+        // console.log(e__);
+
+        console.log(polygon.getInvariantsFrom31());
     }
 
     // window toggle dragging
