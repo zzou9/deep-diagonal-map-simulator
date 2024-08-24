@@ -17,7 +17,7 @@ class PolygonWindow extends Window {
     constructor(x, y, w, h, polygon, title, mapPolygons, fill=color.BLACK) {
         super(x, y, w, h, title, fill);
         this.polygon = polygon;
-        this.polygonScale = (this.w+this.h)/10;
+        this.polygonScale = (this.w+this.h)/8;
         this.mapPolygons = mapPolygons;
     }
 
@@ -115,7 +115,7 @@ class PolygonWindow extends Window {
     mouseDragAction() {
         super.mouseDragAction();
         if (!this.canDrag) {
-            this.polygon.dragVertex(this.center[0], this.center[1], this.polygonScale);
+            this.polygon.dragVertexExperimental(this.center[0], this.center[1], this.polygonScale);
 
             // broadcast to other polygons
             for (let i = 0; i < this.mapPolygons.length; i++) {

@@ -13,11 +13,14 @@ class TwistedTriangle{
         this.map = map;
         this.cornerCoords = new Array(6);
         this.energyCoords = new Array(6);
+        this.a = new Array(6);
+        this.b = new Array(6);
         this.energy = 1;
         this.O = 0;
         this.E = 0;
-        this.numVertexToShow = 7;
+        this.numVertexToShow = 9;
         this.verticesToShow = new Array(this.numVertexToShow);
+        this.u = new Array(3);
         this.vertexSize = 8;
         this.canDrag = false;
         this.scale = scale; 
@@ -30,9 +33,9 @@ class TwistedTriangle{
          * Trajectory 2 corresponds to the trajectory of the second vertex
          * In the visualization polygon it shows where vertex 6 is sent to via the map
          */
-        this.showTrajectory1 = true;
-        this.showTrajectory2 = true;
-        this.showTrajectory3 = true;
+        this.showTrajectory1 = false;
+        this.showTrajectory2 = false;
+        this.showTrajectory3 = false;
         this.iteration1 = 10; // number of iterations to show (exponential 2)
         this.iteration2 = 10;
         this.iteration3 = 10;
@@ -48,6 +51,7 @@ class TwistedTriangle{
         this.monodromy = new Array(3);
         this.eigenvalues = new Array(3);
         this.dualMonodromy = new Array(3);
+        this.inverseT = new Array(3);
         this.omega1 = 0;
         this.omega2 = 0;
 
@@ -83,6 +87,10 @@ class TwistedTriangle{
      */
     updateVertices() {
         this.verticesToShow = Reconstruct.reconstructTriangle(this.monodromy, this.numVertexToShow);
+        // update p-3
+        const T = this.inverseT;
+        const ut = MathHelper.matrixMult(T, MathHelper.vec(this.verticesToShow[2]));
+        this.u = [ut[0][0], ut[1][0], ut[2][0]];
     }
 
     /**
@@ -104,6 +112,7 @@ class TwistedTriangle{
         const M2 = Normalize.getProjectiveLift(v[3], v[4], v[5], v[6]);
         const M2Inv = MathHelper.invert3(M2);
         this.monodromy = MathHelper.matrixMult(M2Inv, M1);
+        this.inverseT = MathHelper.invert3(this.monodromy);
         // next, compute the lift of the dual
         const T = MathHelper.transpose(this.monodromy);
         const Tdual = [
@@ -157,7 +166,16 @@ class TwistedTriangle{
      * Update the energy coordinates given by the cross ratio of (k,l) map
      */
     updateEnergyCoords() {
-        this.energyCoords = new Array(4);
+        // update a 
+        this.a = new Array(6);
+        const x = this.cornerCoords;
+        for (let i = 0; i < 3; i++) {
+            this.a[2*i] = (1 - x[2*i]) / (1 - x[2*i]*x[2*i+1]);
+            this.a[2*i+1] = (1 - x[2*i+1]) / (1 - x[2*i]*x[2*i+1]);
+        }
+
+        // update energy coordinate
+        this.energyCoords = new Array(6);
         const k = this.map.l;
         const l = this.map.k;
         // use monodromy to get vertices of a lift
@@ -165,7 +183,14 @@ class TwistedTriangle{
         // compute the coordinates 
         let coords = Geometry.getEnergyCoords(vertices, k, l);
         for (let i = 0; i < 6; i++) {
-            this.energyCoords[(2*k+i)%6] = coords[2*k+i];
+            this.energyCoords[(2*k+i+2)%6] = coords[2*k+i];
+        }
+
+        // update b 
+        this.b = new Array(6);
+        for (let i = 0; i < 3; i++) {
+            this.b[2*i] = (1 - this.energyCoords[2*i]) / (1 - this.energyCoords[2*i]*this.energyCoords[2*i+1]);
+            this.b[2*i+1] = (1 - this.energyCoords[2*i+1]) / (1 - this.energyCoords[2*i]*this.energyCoords[2*i+1]);
         }
 
         // update energy, O, E
@@ -181,6 +206,16 @@ class TwistedTriangle{
      */
     getDistanceToReference() {
         return MathHelper.l2dist(this.cornerCoords, this.referenceCoords);
+    }
+
+    /**
+     * Get the corner coordinates from input A
+     */
+    getCornerFromA() {
+        for (let i = 0; i < 3; i++) {
+            this.cornerCoords[2*i] = (1 - this.a[2*i]) / this.a[2*i+1];
+            this.cornerCoords[2*i+1] = (1 - this.a[2*i+1]) / this.a[2*i];
+        }
     }
 
     /**
@@ -205,9 +240,9 @@ class TwistedTriangle{
     */
     setDefault() {
         // first, find the corner coordinates of a regular 8-gon
-        let vertices = new Array(9);
-        const angle = TWO_PI / 9;
-        for (let i = 0; i < 9; i++) {
+        let vertices = new Array(8);
+        const angle = TWO_PI / 8;
+        for (let i = 0; i < 8; i++) {
             vertices[i] = [cos(angle*i), sin(angle*i), 1];
         }
         const coords = Geometry.getCornerCoords(vertices);
@@ -215,6 +250,14 @@ class TwistedTriangle{
             this.cornerCoords[i] = coords[i];
         }
 
+        // customize
+        // this.a = [3/4, 3/4, 3/4, 3/4, 3/4, 3/4];
+        // this.a = [4/7, 17/21, 17/21, 16/21, 16/21, 5/7]; // this one yields e0 = 3/4 and e1 = ... = e5 = 1/2
+        // this.getCornerFromA();
+
+        // this.cornerCoords = [1/5, 1/3, 3/5, 1/2, 1/3, 1/5]; // this one always gives e'0 = 3/4 and e'1 = ... = e'5 = 1/2 
+        // this.cornerCoords = [9/17, 1/3, 1/4, 5/17, 1/3, 3/8]; // this one yields e0 = 3/4 and e1 = ... = e5 = 1/2
+        this.cornerCoords = [2, 2, 2, 2, 2, 2];
         // compute the coords of the vertices to show
         this.updateInfo(true, true);
     }
@@ -240,7 +283,11 @@ class TwistedTriangle{
         // draw edges
         fill(255, 255, 255, 127);
         stroke(255, 255, 255);
+        strokeWeight(1);
         beginShape();
+        const uX = this.u[0]/this.u[2];
+        const uY = this.u[1]/this.u[2];
+        vertex((1-2*uX) * this.scale, (1-2*uY) * this.scale);
         for (let i = 0; i < this.numVertexToShow; i++) {
             if (MathHelper.round(this.verticesToShow[i][2]) == 0) {
                 throw new Error("Vertex " + i.toString() + " is not on the affine patch");
@@ -263,6 +310,10 @@ class TwistedTriangle{
             circle((1-2*x) * this.scale, (1-2*y) * this.scale, 3);
         }
 
+        // emphasize p-3
+        fill(color.CYAN);
+        stroke(color.BLACK);
+        circle((1-2*uX) * this.scale, (1-2*uY) * this.scale, this.vertexSize);
 
         // emphasize vertices to drag
         if (this.canDrag) {
@@ -343,6 +394,62 @@ class TwistedTriangle{
     }
 
     /**
+     * Displaying some diagonal lines for inverstigation purposes
+     */
+    showLines() {
+        function drawCorner(v0, v1, v2, v3, v4, xt, yt, s, lineColor=color.CYAN) {
+            // apex is the vertex <<v0, v1>, <v3, v4>>
+            let apex = MathHelper.cross(MathHelper.cross(v0, v1), MathHelper.cross(v3, v4));
+            // p0 is the vertex <<v0, v1>, <v2, v3>>
+            let p0 = MathHelper.cross(MathHelper.cross(v0, v1), MathHelper.cross(v2, v3));
+            // p1 is the vertex <<v1, v2>, <v3, v4>>
+            let p1 = MathHelper.cross(MathHelper.cross(v1, v2), MathHelper.cross(v3, v4));
+
+            // draw lines
+            let vx0 = (1 - 2*v0[0]/v0[2]) * s + xt;
+            let vy0 = (1 - 2*v0[1]/v0[2]) * s + yt;
+            let vx1 = (1 - 2*v1[0]/v1[2]) * s + xt;
+            let vy1 = (1 - 2*v1[1]/v1[2]) * s + yt;
+            let vx2 = (1 - 2*v2[0]/v2[2]) * s + xt;
+            let vy2 = (1 - 2*v2[1]/v2[2]) * s + yt;
+            let vx3 = (1 - 2*v3[0]/v3[2]) * s + xt;
+            let vy3 = (1 - 2*v3[1]/v3[2]) * s + yt;
+            let vx4 = (1 - 2*v4[0]/v4[2]) * s + xt;
+            let vy4 = (1 - 2*v4[1]/v4[2]) * s + yt;
+
+            let ax = (1 - 2*apex[0]/apex[2]) * s + xt;
+            let ay = (1 - 2*apex[1]/apex[2]) * s + yt;
+            let px0 = (1 - 2*p0[0]/p0[2]) * s + xt;
+            let py0 = (1 - 2*p0[1]/p0[2]) * s + yt;
+            let px1 = (1 - 2*p1[0]/p1[2]) * s + xt;
+            let py1 = (1 - 2*p1[1]/p1[2]) * s + yt;
+
+            stroke(lineColor);
+            strokeWeight(1);
+            line(vx0, vy0, ax, ay);
+            line(vx1, vy1, ax, ay);
+            line(vx3, vy3, ax, ay);
+            line(vx4, vy4, ax, ay);
+            line(px0, py0, ax, ay);
+            line(px1, py1, ax, ay);
+            line(vx2, vy2, px0, py0);
+            line(vx2, vy2, px1, py1);
+        }
+
+        const v = Reconstruct.reconstructTriangle(this.monodromy, 9);
+
+        // lines for (e0, e1)
+        drawCorner(this.u, v[1], v[2], v[3], v[5], xT, yT, this.scale);
+        // drawCorner(v[2], v[4], v[5], v[6], v[8], xT, yT, this.scale);
+
+        // // lines for (e2, e3)
+        // drawCorner(v[0], v[2], v[3], v[4], v[6], xT, yT, this.scale);
+        
+        // // lines for (e4, e5)
+        // drawCorner(v[1], v[3], v[4], v[5], v[7], xT, yT, this.scale);
+    }
+
+    /**
     * Drag a vertex 
     * @param {number} [xt=xT] x axis translation
     * @param {number} [yt=yT] y axis translation
@@ -380,6 +487,193 @@ class TwistedTriangle{
                     }
                 }
             }
+        }
+    }
+
+    /**
+    * Drag a vertex 
+    * @param {number} [xt=xT] x axis translation
+    * @param {number} [yt=yT] y axis translation
+    * @param {number} [scale=this.scale] scaling of the polygon
+    */
+    dragVertexExperimental(xt=xT, yt=yT, scale=this.scale) {
+
+        /**
+         * Project a point to a line
+         * @param {Array<number>} p0 the first point of the line (given in homogeneous coords)
+         * @param {Array<number>} p1 the second point of the line (given in homogeneous coords)
+         * @param {Array<number>} v the point to project (given in homogeneous coords)
+         * @returns 
+         */
+        function projectPointToLine(p0, p1, v) {
+            let x0 = p0[0]/p0[2];
+            let y0 = p0[1]/p0[2];
+            let x1 = p1[0]/p1[2];
+            let y1 = p1[1]/p1[2];
+            // Direction vector of the line
+            let d0 = x1 - x0;
+            let d1 = y1 - y0;
+          
+            // Translate v relative to p0
+            let v0 = v[0] - x0;
+            let v1 = v[1] - y0;
+          
+            // Calculate the scalar t
+            let t = (v0 * d0 + v1 * d1) / (d0 * d0 + d1 * d1);
+          
+            // Compute the projection point
+            let projX = x0 + t * d0;
+            let projY = y0 + t * d1;
+          
+            return [projX, projY];
+        }
+
+
+        if (this.canDrag) {
+            const w = 10 / scale;
+            const mX = (1 - (mouseX - xt) / scale) / 2;
+            const mY = (1 - (mouseY - yt) / scale) / 2;
+
+            // moving vertex 4
+            const x4 = this.verticesToShow[4][0] / this.verticesToShow[4][2];
+            const y4 = this.verticesToShow[4][1] / this.verticesToShow[4][2];
+            if (mX - w <= x4 && mX + w >= x4 && mY - w <= y4 && mY + w >= y4) {
+                try {
+                    // record the new vertex and check whether the triangle breaks
+                    let vNew4 = projectPointToLine(this.verticesToShow[1], this.verticesToShow[4], [mX, mY]);
+                    this.verticesToShow[4] = [vNew4[0], vNew4[1], 1];
+                    this.verticesToShow[4] = [mX, mY, 1];
+
+                    // first, compute the line on which e2 is fixed
+                    const x2 = this.verticesToShow[4][0];
+                    const y2 = this.verticesToShow[4][1];
+                    const z2 = this.verticesToShow[4][2];
+                    const e2 = this.energyCoords[2];
+                    const Y = this.verticesToShow[6][1]/this.verticesToShow[6][2];
+                    // fix Y, find X
+                    const fX = -(e2*Y*x2*z2 - ((e2 - 1)*Y - e2 + 1)*x2*x2 - (e2 + Y - 1)*x2*y2)/((e2 - 1)*x2*y2 + y2*y2 - ((e2 - 1)*x2 + y2)*z2);
+                    const l2 = MathHelper.cross(this.verticesToShow[4], [fX, Y, 1]);
+
+                    // next, compute the line on which e3 is fixed
+                    const x1 = this.verticesToShow[4][0];
+                    const y1 = this.verticesToShow[4][1];
+                    const z1 = this.verticesToShow[4][2];
+                    const X = x1;
+                    const e3 = this.energyCoords[3];
+                    // fix X, find Y
+                    const fY = ((e3 - 1)*x1 - (e3 + X - 1)*y1 + X*z1)/((e3 - 1)*x1 - e3*y1 + z1); // formula derived from sagemath
+                    const l3 = MathHelper.cross(this.verticesToShow[2], [X, fY, 1]);
+
+                    this.verticesToShow[6] = MathHelper.cross(l2, l3);
+
+                    // change the corner coordinates accordingly, also change the rest of the vertices
+                    const tempCoords = Geometry.getCornerCoords(this.verticesToShow.map(a => a.slice()));
+                    for (let j = 0; j < 7; j++) {
+                        if (!Number.isFinite(tempCoords[j+4]) || tempCoords[j+4] == 0) {
+                            throw new Error("The points of the twisted triangle are not in general positions");
+                        }
+                        this.cornerCoords[j] = tempCoords[j+4];
+                    }
+                    // clear the number of iterations
+                    this.updateInfo(true, true);
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+
+            // moving vertex 5
+            const x5 = this.verticesToShow[5][0] / this.verticesToShow[5][2];
+            const y5 = this.verticesToShow[5][1] / this.verticesToShow[5][2];
+            if (mX - w <= x5 && mX + w >= x5 && mY - w <= y5 && mY + w >= y5) {
+                try {
+                    // record the new vertex and check whether the triangle breaks
+                    let vNew5 = projectPointToLine(this.verticesToShow[2], this.verticesToShow[5], [mX, mY]);
+                    this.verticesToShow[5] = [vNew5[0], vNew5[1], 1];
+                    this.verticesToShow[5] = [mX, mY, 1];
+
+                    // change the corner coordinates accordingly, also change the rest of the vertices
+                    const tempCoords = Geometry.getCornerCoords(this.verticesToShow.map(a => a.slice()));
+                    for (let j = 0; j < 7; j++) {
+                        if (!Number.isFinite(tempCoords[j+4]) || tempCoords[j+4] == 0) {
+                            throw new Error("The points of the twisted triangle are not in general positions");
+                        }
+                        this.cornerCoords[j] = tempCoords[j+4];
+                    }
+                    // clear the number of iterations
+                    this.updateInfo(true, true);
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+            
+
+            // moving vertex 6
+            const x6 = this.verticesToShow[6][0] / this.verticesToShow[6][2];
+            const y6 = this.verticesToShow[6][1] / this.verticesToShow[6][2];
+            if (mX - w <= x6 && mX + w >= x6 && mY - w <= y6 && mY + w >= y6) {
+                try {
+                    // record the new vertex and check whether the triangle breaks
+                
+                    let vNew6 = projectPointToLine(this.verticesToShow[4], this.verticesToShow[6], [mX, mY]);
+                    this.verticesToShow[6] = [vNew6[0], vNew6[1], 1];
+                    // this.verticesToShow[6] = [mX, mY, 1];
+
+                    // fixing e2, p2
+                    const x2 = this.verticesToShow[4][0];
+                    const y2 = this.verticesToShow[4][1];
+                    const z2 = this.verticesToShow[4][2];
+                    const C = this.energyCoords[2];
+                    const X = mX;
+                    const Y = mY;
+                    // fix X, find Y
+                    const fY = ((C - 1)*x2*x2 + ((C - 1)*X - C + 1)*x2*y2 + X*y2*y2 - ((C - 1)*X*x2 + X*y2)*z2)/((C - 1)*x2*x2 - C*x2*z2 + x2*y2);
+                    // this.verticesToShow[6] = [X, fY, 1];
+
+                    // // fixing e3, p2
+                    // const x1 = this.verticesToShow[4][0];
+                    // const y1 = this.verticesToShow[4][1];
+                    // const z1 = this.verticesToShow[4][2];
+                    // const C = this.energyCoords[3];
+                    // // fix X, find Y
+                    // const fY = ((C - 1)*x1 - (C + mX - 1)*y1 + mX*z1)/((C - 1)*x1 - C*y1 + z1); // formula derived from sagemath
+                    // this.verticesToShow[6] = [mX, fY, 1];
+                    // // fix Y, find X
+                    // const fX = -(((C - 1)*mY - C + 1)*x1 - (C*mY - C + 1)*y1 + mY*z1)/(y1 - z1); // formula derived from sagemath
+                    // this.verticesToShow[6] = [fX, mY, 1];
+
+                    // // adjust p2 so that e3 is fixed
+                    // const x0 = this.verticesToShow[6][0];
+                    // const y0 = this.verticesToShow[6][1];
+                    // const z0 = this.verticesToShow[6][2];
+                    // const C = this.energyCoords[3];
+                    // const X = mX;
+                    // const Y = mY;
+                    // // fix X, find Y
+                    // const fY = -((C - 1)*X*z0 - ((C - 1)*X + 1)*y0 + x0)/(C*y0 - (C - 1)*z0 - x0); // formula derived from sagemath
+                    // this.verticesToShow[4] = [X, fY, 1];
+                    // // fix Y, find X
+                    // const fX = -((C - 1)*Y*z0 + (Y - 1)*x0 - (C*Y - 1)*y0)/((C - 1)*y0 - (C - 1)*z0); // formula derived from sagemath
+                    // this.verticesToShow[4] = [fX, Y, 1];
+
+                    // change the corner coordinates accordingly, also change the rest of the vertices
+                    const tempCoords = Geometry.getCornerCoords(this.verticesToShow.map(a => a.slice()));
+                    for (let j = 0; j < 7; j++) {
+                        if (!Number.isFinite(tempCoords[j+4]) || tempCoords[j+4] == 0) {
+                            throw new Error("The points of the twisted triangle are not in general positions");
+                        }
+                        this.cornerCoords[j] = tempCoords[j+4];
+                    }
+
+                    // clear the number of iterations
+                    this.updateInfo(true, true);
+                }
+                catch (err) {
+                    console.log(err);
+                }
+            }
+            
         }
     }
 

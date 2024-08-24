@@ -38,6 +38,8 @@ let modulePanel;
 let markers;
 let markerCoords;
 
+let repl = 'e0,e1,e2,e3,e4,e5,e0_\n';
+
 function setup() {
     xT = windowWidth/2;
     yT = windowHeight/2;
@@ -51,7 +53,7 @@ function setup() {
     shapePolygon.canDrag = true;
 
     // create windows
-    shapeWindow = new PolygonWindow(10, 500, 300, 300, shapePolygon, "Edit Shape", [polygon], color.INDIGO);
+    shapeWindow = new PolygonWindow(10, 500, 500, 400, shapePolygon, "Edit Shape", [polygon], color.INDIGO);
     // planeWindow = new PlaneWindow(2*xT-310, 500, 300, 300, shapePolygon, "Plane", [polygon], [1, 3]);
 
     // instantiate panels
@@ -70,6 +72,8 @@ function setup() {
 function draw() {
     background(color.BLACK);
     polygon.show();
+    // for investigation purposes
+    // polygon.showLines();
 
     // show markers 
     for (let i = 0; i < markers.length; i++) {
@@ -78,9 +82,9 @@ function draw() {
         circle(markers[i][0], markers[i][1], 4);
     }
 
-    // showing windows
-    shapeWindow.show();
-    // planeWindow.show();
+    // // showing windows
+    // shapeWindow.show();
+    // // planeWindow.show();
 
     // title
     noStroke();
@@ -124,15 +128,17 @@ function mouseClicked() {
     actionPanel.updateButtonPositions();
     trajPanel.updateButtonPositions();
     
-    // window actions
-    shapeWindow.mouseAction();
-    // planeWindow.mouseAction();
+    // // window actions
+    // shapeWindow.mouseAction();
+    // // planeWindow.mouseAction();
 }
 
 function mouseDragged() {
-    // dragging vertices
-    shapeWindow.mouseDragAction();
-    // planeWindow.mouseDragAction();
+    // // dragging vertices
+    // shapeWindow.mouseDragAction();
+    // // planeWindow.mouseDragAction();
+    polygon.dragVertexExperimental();
+    // polygon.dragVertex();
 }
 
 function keyPressed() {
@@ -156,65 +162,61 @@ function keyPressed() {
     }
 
     if (key === 'p') {
-        // const x = polygon.cornerCoords;
-        // console.log(x[0]*x[1]*x[2]*x[3]);
-        // console.log("(x0 * x2) / (x1 * x3):", x[0]*x[2] / (x[1]*x[3]));
-        // console.log("x1 * x3:", x[1]*x[3]);
-        // console.log("x0 * x2:", x[0]*x[2]);
 
-        // const T = polygon.monodromy;
-        // console.log(MathHelper.eigenvalue3(T));
+        /**
+         * Helper method to display a list
+         * @param {Array<number>} lst 
+         * @param {string} [str=''] 
+         */
+        function disp(lst, str='') {
+            for (let i = 0; i < lst.length; i++) {
+                lst[i] = MathHelper.round(lst[i], 5);
+            }
+            console.log(str, lst);
+        }
 
-        // // print the marked coordinates 
-        // let repl = '';
-        // for (let i = 0; i < markerCoords.length; i++) {
-        //     repl = repl + markerCoords[i][0].toString() + ',' + markerCoords[i][1].toString() + '\n';
-        // }
+        // print the next three iterations of the map
+        const e = polygon.energyCoords;
+        const x3 = map.applyFactor(polygon.cornerCoords.slice(), 3);
+        const x33 = map.applyFactor(x3, 3);
+        const x_ = map.applyFactor(x3, 1);
+        const x3_ = map.applyFactor(x_, 3);
+        const x__ = map.applyFactor(x3_, 1);
+        const e3 = Geometry.translate21To31(x3);
+        const e33 = Geometry.translate21To31(x33);
+        const e_ = Geometry.translate21To31(x_);
+        const e3_ = Geometry.translate21To31(x3_);
+        const e__ = Geometry.translate21To31(x__);
+        disp(e, "E:");
+        disp(e3, "E':");
+
+        console.log(e[1]-e[0]);
+
         // console.log(repl);
-        // polygon.printTrajectory();
-
-        // // try the map
-        // let xPrime = map.applyFactor(polygon.cornerCoords.slice(), 3);
-        // let vertices = Reconstruct.reconstruct3(xPrime, 12);
-        // let ePrime = Geometry.getEnergyCoords(vertices, 3, 1);
-        // let eCoords = [ePrime[6], ePrime[7], ePrime[8], ePrime[9]];
-
-        // console.log(eCoords);
-        // let xDblPrime = map.applyMap(map.applyFactor(xPrime, 1), 1, false);
-        // let vertices2 = Reconstruct.reconstruct3(xDblPrime, 12);
-        // let eDblPrime = Geometry.getEnergyCoords(vertices2, 3, 1);
-        // let eCoords2 = [eDblPrime[6], eDblPrime[7], eDblPrime[8], eDblPrime[9]];
-        // console.log(eCoords2);
-
-        // let repl = polygon.energyCoords[0].toString() + ", " + eCoords[0].toString() + ", " + eCoords[2].toString();
-        // console.log(repl);
-
-        // // try swapping coordinates
-        // const x = polygon.cornerCoords;
-        // console.log(Geometry.translate21To31(x));
-        // const e = polygon.energyCoords;
-        // console.log(Geometry.translate31To21Bigon(e));
-
-        // // try (3, 1) coordinate map
-        // const x = polygon.cornerCoords;
-        // console.log(Geometry.bigon31(x));
-        // const e = polygon.energyCoords;
-        // const e_ = Geometry.betaTwoBigon(e);
-        // const e__ = Geometry.betaOneBigon(e_);
-        // console.log(e__);
-
-        console.log(polygon.getInvariantsFrom31());
     }
 
     // window toggle dragging
     if (key === 'w' || key === 'W') {
-        shapeWindow.toggleDrag();
-        // planeWindow.toggleDrag();
+        // shapeWindow.toggleDrag();
+        // // planeWindow.toggleDrag();
     }
     
     // action panel activation
     if (key === 'a' || key === 'A') {
         actionPanel.mapAction();
+    }
+
+    // record info for the map
+    if (key === 's' || key === 'S') {
+        const e = polygon.energyCoords;
+        const x3 = map.applyFactor(polygon.cornerCoords.slice(), 3);
+        const e3 = Geometry.translate21To31(x3);
+        const e_ = e3[0];
+        // record in repl
+        for (let i = 0; i < 6; i++) {
+            repl = repl + e[i].toString() + ',';
+        }
+        repl = repl + e_.toString() + '\n';
     }
 
     // changing the number of vertices to show
@@ -224,6 +226,14 @@ function keyPressed() {
     } else if (keyCode === DOWN_ARROW && polygon.numVertexToShow > 7){ 
         polygon.numVertexToShow -= 1;
         shapePolygon.numVertexToShow -= 1;
+    }
+
+    // control panel rate
+    if (key === 'q') {
+        ctrlPanel.rate -= 1;
+    }
+    if (key === 'e') {
+        ctrlPanel.rate += 1;
     }
 
     // changing the diagonals of the map
@@ -249,6 +259,7 @@ function keyPressed() {
         // clear all markers
         markers = new Array();
         markerCoords = new Array();
+        repl = 'e0,e1,e2,e3,e4,e5,e0_\n';
     }
 
     // update information of the polygon

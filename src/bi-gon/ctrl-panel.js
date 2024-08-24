@@ -17,6 +17,10 @@ class CtrlPanel extends Panel {
         this.polygon = polygon;
         this.mapPolygons = mapPolygons;
         this.rate = -2;
+
+        // experimental, toggle (3, 1) coordinate
+        this.toggle31 = true;
+
         // populate the buttons
         this.numVertexBox = new Button(this.x+25, this.y+40, 100, 20, [["# Vertices: " + this.polygon.numVertexToShow, color.BLACK]]);
         this.buttons.push(this.numVertexBox);
@@ -77,10 +81,17 @@ class CtrlPanel extends Panel {
     show() {
         this.numVertexBox.text[0][0] = "# Vertices: " + this.polygon.numVertexToShow;
         this.sizeBox.text[0][0] = "Vertex Size: " + this.polygon.vertexSize;
-        this.x0Box.text[0][0] = "x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5);
-        this.x1Box.text[0][0] = "x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5);
-        this.x2Box.text[0][0] = "x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5);
-        this.x3Box.text[0][0] = "x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5);
+        if (this.toggle31) {
+            this.x0Box.text[0][0] = "e0: " + MathHelper.round(this.polygon.energyCoords[0], 5);
+            this.x1Box.text[0][0] = "e1: " + MathHelper.round(this.polygon.energyCoords[1], 5);
+            this.x2Box.text[0][0] = "e2: " + MathHelper.round(this.polygon.energyCoords[2], 5);
+            this.x3Box.text[0][0] = "e3: " + MathHelper.round(this.polygon.energyCoords[3], 5);
+        } else {
+            this.x0Box.text[0][0] = "x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5);
+            this.x1Box.text[0][0] = "x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5);
+            this.x2Box.text[0][0] = "x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5);
+            this.x3Box.text[0][0] = "x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5);
+        }
         this.rateBox.text[0][0] = "Rate: " + this.rate;
         super.show();
     }
@@ -164,8 +175,12 @@ class CtrlPanel extends Panel {
             const r = this.rate;
             try {
                 if (this.decX0.isHovering()) {
-                    this.polygon.cornerCoords[0] -= Math.pow(10, r);
-                    // this.polygon.cornerCoords[2] -= Math.pow(10, r);
+                    if (this.toggle31) {
+                        this.polygon.energyCoords[0] -= Math.pow(10, r);
+                        this.polygon.cornerCoords = Geometry.translate31To21Bigon(this.polygon.energyCoords);
+                    } else {
+                        this.polygon.cornerCoords[0] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -173,8 +188,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX0.isHovering()) {
-                    this.polygon.cornerCoords[0] += Math.pow(10, r);
-                    // this.polygon.cornerCoords[2] += Math.pow(10, r);
+                    if (this.toggle31) {
+                        this.polygon.energyCoords[0] += Math.pow(10, r);
+                        this.polygon.cornerCoords = Geometry.translate31To21Bigon(this.polygon.energyCoords);
+                    } else {
+                        this.polygon.cornerCoords[0] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -183,8 +202,12 @@ class CtrlPanel extends Panel {
                 }
         
                 if (this.decX1.isHovering()) {
-                    this.polygon.cornerCoords[1] -= Math.pow(10, r);
-                    this.polygon.cornerCoords[3] -= Math.pow(10, r);
+                    if (this.toggle31) {
+                        this.polygon.energyCoords[1] -= Math.pow(10, r);
+                        this.polygon.cornerCoords = Geometry.translate31To21Bigon(this.polygon.energyCoords);
+                    } else {
+                        this.polygon.cornerCoords[1] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -192,8 +215,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX1.isHovering()) {
-                    this.polygon.cornerCoords[1] += Math.pow(10, r);
-                    this.polygon.cornerCoords[3] += Math.pow(10, r);
+                    if (this.toggle31) {
+                        this.polygon.energyCoords[1] += Math.pow(10, r);
+                        this.polygon.cornerCoords = Geometry.translate31To21Bigon(this.polygon.energyCoords);
+                    } else {
+                        this.polygon.cornerCoords[1] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -202,7 +229,12 @@ class CtrlPanel extends Panel {
                 }
         
                 if (this.decX2.isHovering()) {
-                    this.polygon.cornerCoords[2] -= Math.pow(10, r);
+                    if (this.toggle31) {
+                        this.polygon.energyCoords[2] -= Math.pow(10, r);
+                        this.polygon.cornerCoords = Geometry.translate31To21Bigon(this.polygon.energyCoords);
+                    } else {
+                        this.polygon.cornerCoords[2] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -210,7 +242,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX2.isHovering()) {
-                    this.polygon.cornerCoords[2] += Math.pow(10, r);
+                    if (this.toggle31) {
+                        this.polygon.energyCoords[2] += Math.pow(10, r);
+                        this.polygon.cornerCoords = Geometry.translate31To21Bigon(this.polygon.energyCoords);
+                    } else {
+                        this.polygon.cornerCoords[2] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -219,7 +256,12 @@ class CtrlPanel extends Panel {
                 }
         
                 if (this.decX3.isHovering()) {
-                    this.polygon.cornerCoords[3] -= Math.pow(10, r);
+                    if (this.toggle31) {
+                        this.polygon.energyCoords[3] -= Math.pow(10, r);
+                        this.polygon.cornerCoords = Geometry.translate31To21Bigon(this.polygon.energyCoords);
+                    } else {
+                        this.polygon.cornerCoords[3] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -227,7 +269,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX3.isHovering()) {
-                    this.polygon.cornerCoords[3] += Math.pow(10, r);
+                    if (this.toggle31) {
+                        this.polygon.energyCoords[3] += Math.pow(10, r);
+                        this.polygon.cornerCoords = Geometry.translate31To21Bigon(this.polygon.energyCoords);
+                    } else {
+                        this.polygon.cornerCoords[3] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {

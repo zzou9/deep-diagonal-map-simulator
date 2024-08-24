@@ -94,6 +94,14 @@ function keyPressed() {
         }
     }
 
+    // print in the console
+    if (key === 'p') {
+        const x = Geometry.getCornerCoords(polygon.vertices.map(a => a.slice()));
+        const x_ = Geometry.applyShifted31(x);
+        console.log("Original:", x);
+        console.log("Image:", x_);
+    }
+
     // changing the number of vertices of a polygon
     if (keyCode === UP_ARROW) { 
         if (polygon.twisted) {

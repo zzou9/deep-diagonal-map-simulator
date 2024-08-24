@@ -120,6 +120,16 @@ function keyPressed() {
         console.log("formula", e_);
         console.log("correct", e__);
 
+        let O = 1;
+        let E = 1;
+        for (let i = 0; i < e.length/2; i++) {
+            O *= e[2*i];
+            E *= e[2*i+1];
+        }
+
+        console.log("O:", O);
+        console.log("E:", E);
+
         // const v__ = Geometry.applyFactor(v_, 1);
         // const e_ = Geometry.getEnergyCoords(v__, 3, 1);
         // console.log("3", e);

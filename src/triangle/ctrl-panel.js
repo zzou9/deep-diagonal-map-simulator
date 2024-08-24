@@ -16,6 +16,7 @@ class CtrlPanel extends Panel {
         super(x, y, w, h, "Control", color.CADET_BLUE);
         this.polygon = polygon;
         this.mapPolygons = mapPolygons;
+        this.toggleA = false;
         this.rate = -2;
         // populate the buttons
         this.numVertexBox = new Button(this.x+25, this.y+40, 100, 20, [["# Vertices: " + this.polygon.numVertexToShow, color.BLACK]]);
@@ -89,12 +90,25 @@ class CtrlPanel extends Panel {
     show() {
         this.numVertexBox.text[0][0] = "# Vertices: " + this.polygon.numVertexToShow;
         this.sizeBox.text[0][0] = "Vertex Size: " + this.polygon.vertexSize;
-        this.x0Box.text[0][0] = "x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5);
-        this.x1Box.text[0][0] = "x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5);
-        this.x2Box.text[0][0] = "x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5);
-        this.x3Box.text[0][0] = "x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5);
-        this.x4Box.text[0][0] = "x4: " + MathHelper.round(this.polygon.cornerCoords[4], 5);
-        this.x5Box.text[0][0] = "x5: " + MathHelper.round(this.polygon.cornerCoords[5], 5);
+        
+        if (this.toggleA) {
+            // toggle a
+            this.x0Box.text[0][0] = "a0: " + MathHelper.round(this.polygon.a[0], 5);
+            this.x1Box.text[0][0] = "a1: " + MathHelper.round(this.polygon.a[1], 5);
+            this.x2Box.text[0][0] = "a2: " + MathHelper.round(this.polygon.a[2], 5);
+            this.x3Box.text[0][0] = "a3: " + MathHelper.round(this.polygon.a[3], 5);
+            this.x4Box.text[0][0] = "a4: " + MathHelper.round(this.polygon.a[4], 5);
+            this.x5Box.text[0][0] = "a5: " + MathHelper.round(this.polygon.a[5], 5);
+        } else {
+            // toggle corner coordinates
+            this.x0Box.text[0][0] = "x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5);
+            this.x1Box.text[0][0] = "x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5);
+            this.x2Box.text[0][0] = "x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5);
+            this.x3Box.text[0][0] = "x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5);
+            this.x4Box.text[0][0] = "x4: " + MathHelper.round(this.polygon.cornerCoords[4], 5);
+            this.x5Box.text[0][0] = "x5: " + MathHelper.round(this.polygon.cornerCoords[5], 5);
+        }
+        
         this.rateBox.text[0][0] = "Rate: " + this.rate;
         super.show();
     }
@@ -178,8 +192,13 @@ class CtrlPanel extends Panel {
             const r = this.rate;
             try {
                 if (this.decX0.isHovering()) {
-                    this.polygon.cornerCoords[0] -= Math.pow(10, r);
-                    // this.polygon.cornerCoords[2] -= Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[0] -= Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[0] -= Math.pow(10, r);
+                        // this.polygon.cornerCoords[1] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -187,8 +206,13 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX0.isHovering()) {
-                    this.polygon.cornerCoords[0] += Math.pow(10, r);
-                    // this.polygon.cornerCoords[2] += Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[0] += Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[0] += Math.pow(10, r);
+                        // this.polygon.cornerCoords[1] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -197,8 +221,12 @@ class CtrlPanel extends Panel {
                 }
         
                 if (this.decX1.isHovering()) {
-                    this.polygon.cornerCoords[1] -= Math.pow(10, r);
-                    this.polygon.cornerCoords[3] -= Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[1] -= Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[1] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -206,8 +234,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX1.isHovering()) {
-                    this.polygon.cornerCoords[1] += Math.pow(10, r);
-                    this.polygon.cornerCoords[3] += Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[1] += Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[1] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -216,7 +248,12 @@ class CtrlPanel extends Panel {
                 }
         
                 if (this.decX2.isHovering()) {
-                    this.polygon.cornerCoords[2] -= Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[2] -= Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[2] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -224,7 +261,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX2.isHovering()) {
-                    this.polygon.cornerCoords[2] += Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[2] += Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[2] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -233,7 +275,12 @@ class CtrlPanel extends Panel {
                 }
         
                 if (this.decX3.isHovering()) {
-                    this.polygon.cornerCoords[3] -= Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[3] -= Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[3] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -241,7 +288,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX3.isHovering()) {
-                    this.polygon.cornerCoords[3] += Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[3] += Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[3] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -250,7 +302,12 @@ class CtrlPanel extends Panel {
                 }
 
                 if (this.decX4.isHovering()) {
-                    this.polygon.cornerCoords[4] -= Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[4] -= Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[4] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -258,7 +315,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX4.isHovering()) {
-                    this.polygon.cornerCoords[4] += Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[4] += Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[4] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -267,7 +329,12 @@ class CtrlPanel extends Panel {
                 }
 
                 if (this.decX5.isHovering()) {
-                    this.polygon.cornerCoords[5] -= Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[5] -= Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[5] -= Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {
@@ -275,7 +342,12 @@ class CtrlPanel extends Panel {
                     }
                 }
                 if (this.incX5.isHovering()) {
-                    this.polygon.cornerCoords[5] += Math.pow(10, r);
+                    if (this.toggleA) {
+                        this.polygon.a[5] += Math.pow(10, r);
+                        this.polygon.getCornerFromA();
+                    } else {
+                        this.polygon.cornerCoords[5] += Math.pow(10, r);
+                    }
                     this.polygon.updateInfo(true, true, true);
                     // broadcast to mirrors
                     for (let i = 0; i < this.mapPolygons.length; i++) {

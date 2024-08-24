@@ -504,4 +504,18 @@ class Geometry extends MathHelper {
         }
         return eImg;
     }
+
+    /**
+     * Apply a shifted version of Delta(3, 1) to the corner coordinates.
+     * @param {Array<number>} x 
+     */
+    static applyShifted31(x) {
+        const n = x.length;
+        let xImg = new Array(n);
+        for (let i = 0; i < n/2; i++) {
+            xImg[2*i] = (x[(2*i-2+n)%n]*(x[(2*i-4+n)%n] + x[(2*i-1+n)%n] - 1)) / (x[(2*i-2+n)%n]*x[(2*i-1+n)%n] - (x[(2*i+1)%n] - 1)*(x[(2*i-4+n)%n] - 1));
+            xImg[2*i+1] = (x[(2*i+3)%n]*(x[(2*i+2)%n] + x[(2*i+5)%n] - 1)) / (x[(2*i+2)%n]*x[(2*i+3)%n] - (x[(2*i+5)%n] - 1)*(x[(2*i)%n] - 1));
+        }
+        return xImg;
+    }
 }
