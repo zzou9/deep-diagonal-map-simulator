@@ -299,4 +299,43 @@ class Reconstruct extends Geometry {
 
         return T;
     }
+
+    /**
+     * Reconstruct the homogeneous coordinates of a twisted polygon given its monodromy.
+     * The first four coordinates are given as 
+     *  [0, 0, 1]
+     *  [1, 0, 1]
+     *  [1, 1, 1]
+     *  [0, 1, 1]
+     * The method then applies the monodromy repeatedly to get the coordinates
+     * @param {Array<Array<number>>} T a lift of the monodromy of the twisted polygon
+     * @param {Array<number>} x the corner coordinates of the twisted polygon
+     * @param {number} n number of vertices of the twisted polygon
+     * @param {number} numVertices number of vertices to construct
+     * @returns 
+     */
+    static reconstructMonodromy(T, x, n, numVertices) {
+        let coords = new Array(numVertices);
+        coords[0] = [0, 0, 1];
+        coords[1] = [1, 0, 1];
+        coords[2] = [1, 1, 1];
+        coords[3] = [0, 1, 1];
+        if (n < 5) {
+            for (let i = 4; i < numVertices; i++) {
+                const v = this.matrixMult(T, this.vec(coords[i-n]));
+                coords[i] = [v[0][0], v[1][0], v[2][0]];
+            }
+            return coords;
+        } else {
+            let baseCoords = this.reconstruct3(x, n);
+            for (let i = 4; i < n; i++) {
+                coords[i] = [baseCoords[i][0], baseCoords[i][1], baseCoords[i][2]];
+            }
+            for (let i = n; i < numVertices; i++) {
+                const v = this.matrixMult(T, this.vec(coords[i-n]));
+                coords[i] = [v[0][0], v[1][0], v[2][0]];
+            }
+            return coords;
+        }
+    }
 }

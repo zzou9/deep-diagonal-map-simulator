@@ -29,25 +29,22 @@ const color = {
 
 // panels
 let ctrlPanel;
+let coordPanel;
 let actionPanel;
 let trajPanel;
 let infoPanel;
 let modulePanel;
-
-// markers
-let markers;
-let markerCoords;
 
 function setup() {
     xT = windowWidth/2;
     yT = windowHeight/2;
 
     createCanvas(windowWidth, windowHeight);
-    map = new TwistedMap();
-    polygon = new TwistedBigon(map);
+    map = new Map31();
+    polygon = new TwistedPolygon(map);
     polygon.canDrag = true;
     polygon.vertexSize = 6;
-    shapePolygon = new TwistedBigon(map);
+    shapePolygon = new TwistedPolygon(map);
     shapePolygon.canDrag = true;
 
     // create windows
@@ -56,27 +53,17 @@ function setup() {
 
     // instantiate panels
     ctrlPanel = new CtrlPanel(10, 10, shapePolygon, [polygon]);
-    actionPanel = new ActionPanel(10, ctrlPanel.y+ctrlPanel.h+10, map, polygon);
+    coordPanel = new CoordPanel(10, ctrlPanel.y+ctrlPanel.h+10, shapePolygon, [polygon]);
+    actionPanel = new ActionPanel(10, coordPanel.y+coordPanel.h+10, map, polygon);
     actionPanel.showPanel = false;
     trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, polygon);
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map);
-    modulePanel = new ModulePanel("Bi-gon");
-
-    // draw markers
-    markers = new Array();
-    markerCoords = new Array();
+    modulePanel = new ModulePanel(xT-200, 40, "31-Map", color.BLACK);
 }
 
 function draw() {
     background(color.BLACK);
     polygon.show();
-
-    // show markers 
-    for (let i = 0; i < markers.length; i++) {
-        noStroke();
-        fill(color.ROYAL_BLUE);
-        circle(markers[i][0], markers[i][1], 4);
-    }
 
     // showing windows
     shapeWindow.show();
@@ -91,6 +78,7 @@ function draw() {
     
     // showing panels
     ctrlPanel.show();
+    coordPanel.show();
     actionPanel.show();
     trajPanel.show();
     infoPanel.show();
@@ -98,7 +86,7 @@ function draw() {
 
     if (mouseIsPressed) {
         try {
-            ctrlPanel.mousePressedAction();
+            coordPanel.mousePressedAction();
         }
         catch (err) {
             console.log(err);
@@ -110,36 +98,33 @@ function draw() {
 function mouseClicked() {
     // panel actions
     ctrlPanel.buttonMouseAction();
+    coordPanel.buttonMouseAction();
     actionPanel.buttonMouseAction();
-    if (actionPanel.isRunning) {
-        ctrlPanel.disableInscribe();
-    }
     trajPanel.buttonMouseAction();
     infoPanel.buttonMouseAction();
     modulePanel.buttonMouseAction();
 
     // update alignment of panels
-    actionPanel.y = ctrlPanel.y+ctrlPanel.h+10;
+    coordPanel.y = ctrlPanel.y+ctrlPanel.h+10;
+    actionPanel.y = coordPanel.y+coordPanel.h+10;
     trajPanel.y = actionPanel.y+actionPanel.h+10;
+    coordPanel.updateButtonPositions();
     actionPanel.updateButtonPositions();
     trajPanel.updateButtonPositions();
     
     // window actions
     shapeWindow.mouseAction();
-    // planeWindow.mouseAction();
 }
 
 function mouseDragged() {
     // dragging vertices
     shapeWindow.mouseDragAction();
-    // planeWindow.mouseDragAction();
 }
 
 function keyPressed() {
     // applying the map
     if (key === ' ') {
         try {
-            ctrlPanel.disableInscribe();
             polygon.cornerCoords = map.act(polygon.cornerCoords.slice());
             polygon.updateInfo();
         }
@@ -148,7 +133,6 @@ function keyPressed() {
         }
     } else if (key === 'z' || key === 'Z') {
         if (map.canRevert()) {
-            ctrlPanel.disableInscribe();
             const prev = map.revert();
             polygon.cornerCoords = prev[0];
             map.numIterations = prev[1];
@@ -162,7 +146,6 @@ function keyPressed() {
     // window toggle dragging
     if (key === 'w' || key === 'W') {
         shapeWindow.toggleDrag();
-        // planeWindow.toggleDrag();
     }
     
     // action panel activation
@@ -172,47 +155,43 @@ function keyPressed() {
 
     // control panel rate
     if (key === 'q') {
-        ctrlPanel.rate -= 1;
+        coordPanel.rate -= 1;
     }
     if (key === 'e') {
-        ctrlPanel.rate += 1;
+        coordPanel.rate += 1;
     }
 
     // changing the number of vertices to show
-    if (keyCode === UP_ARROW && polygon.numVertexToShow < 100) { 
-        polygon.numVertexToShow += 1;
-        shapePolygon.numVertexToShow += 1;
-    } else if (keyCode === DOWN_ARROW && polygon.numVertexToShow > 6){ 
-        polygon.numVertexToShow -= 1;
-        shapePolygon.numVertexToShow -= 1;
+    if (keyCode === RIGHT_ARROW && polygon.numVertexToShow < 40){ 
+        polygon.numVertexToShow++;
+        shapePolygon.numVertexToShow++;
+        polygon.updateInfo();
+        shapePolygon.updateInfo();
+    } 
+    if (keyCode === LEFT_ARROW && polygon.numVertexToShow > polygon.n+4) { 
+        polygon.numVertexToShow--;
+        shapePolygon.numVertexToShow--;
+        polygon.updateInfo();
+        shapePolygon.updateInfo();
     }
 
-    // changing the diagonals of the map
-    if (keyCode === LEFT_ARROW && map.l > 2) {
-        map.l--;
-        map.k = map.l - 1;
-        map.numIterations = 0;
-        actionPanel.updateDiagonalAndSpacing();
-    } else if (keyCode === RIGHT_ARROW) {
-        map.l++;
-        map.k = map.l - 1;
-        map.numIterations = 0;
-        actionPanel.updateDiagonalAndSpacing();
+    // changing n
+    if (keyCode === UP_ARROW && polygon.n < 6) {
+        polygon.n++;
+        polygon.setDefault();
+        polygon.updateInfo(true, true);
+        shapePolygon.n++;
+        shapePolygon.setDefault();
+        shapePolygon.updateInfo(true, true);
+        map.clearHistory();
+    } 
+    if (keyCode === DOWN_ARROW && polygon.n > 2) {
+        polygon.n--;
+        polygon.setDefault();
+        polygon.updateInfo(true, true);
+        shapePolygon.n--;
+        shapePolygon.setDefault();
+        shapePolygon.updateInfo(true, true);
+        map.clearHistory();
     }
-
-    // markers
-    if (key === 'r' || key === 'R') {
-        // add marker
-        markers.push([mouseX, mouseY]);
-        markerCoords.push([polygon.cornerCoords[2], polygon.cornerCoords[3]]);
-    }
-    if (key === 'c' || key === 'C') {
-        // clear all markers
-        markers = new Array();
-        markerCoords = new Array();
-    }
-
-    // update information of the polygon
-    polygon.updateInfo();
-    shapePolygon.updateInfo();
 }

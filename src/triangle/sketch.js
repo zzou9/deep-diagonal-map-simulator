@@ -62,7 +62,7 @@ function setup() {
     actionPanel.showPanel = false;
     trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, polygon);
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map);
-    modulePanel = new ModulePanel(xT-200, 40, "Triangle", color.BLACK);
+    modulePanel = new ModulePanel("Triangle");
 
     // draw markers
     markers = new Array();

@@ -55,7 +55,7 @@ function setup() {
     actionPanel = new ActionPanel(10, normPanel.y+normPanel.h+10, map, polygon);
     infoPanel = new InfoPanel(windowWidth - 210, 10, polygon, map);
     shapePanel = new ShapePanel(windowWidth - 210, infoPanel.y+infoPanel.h+10, polygon, map);
-    modulePanel = new ModulePanel(xT-200, 40, "7-Gon", color.BLACK);
+    modulePanel = new ModulePanel("7-Gon");
 }
 
 function draw() {

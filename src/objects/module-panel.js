@@ -5,14 +5,14 @@ class ModulePanel extends Panel {
 
     /**
      * Constructor
+     * @param {String} current the current module
      * @param {Number} x x coordinate
      * @param {Number} y y coordinate
-     * @param {String} current the current module
      * @param {String} [fill=color.CYAN] color of the panel
      * @param {Number} w width of the panel
      * @param {Number} h height of the panel
      */
-    constructor(x, y, current, fill=color.CYAN, w=0, h=0) {
+    constructor(current, x=xT-115, y=40, fill=color.CYAN, w=0, h=0) {
         super(x, y, w, h, "", fill);
         this.current = current;
 
@@ -21,9 +21,10 @@ class ModulePanel extends Panel {
         this.convexButton = new Button(this.homeButton.x+this.homeButton.w+10, y, 50, 20, [["Convex", color.BLACK]], color.WHITE);
         this.rotationButton = new Button(this.convexButton.x+this.convexButton.w+10, y, 50, 20, [["Rotation", color.BLACK]], color.WHITE);
         this.sevengonButton = new Button(this.rotationButton.x+this.rotationButton.w+10, y, 50, 20, [["7-Gon", color.BLACK]], color.WHITE);
-        this.bigonButton = new Button(this.sevengonButton.x+this.sevengonButton.w+10, y, 50, 20, [["Bi-gon", color.BLACK]], color.WHITE);
-        this.triangleButton = new Button(this.bigonButton.x+this.bigonButton.w+10, y, 50, 20, [["Triangle", color.BLACK]], color.WHITE);
-        this.multiButton = new Button(this.triangleButton.x+this.triangleButton.w+10, y, 50, 20, [["Multi", color.BLACK]], color.WHITE);
+        this.bigonButton = new Button(x, y+25, 50, 20, [["Bi-gon", color.BLACK]], color.WHITE); // starting on second row
+        this.triangleButton = new Button(this.bigonButton.x+this.bigonButton.w+10, y+25, 50, 20, [["Triangle", color.BLACK]], color.WHITE);
+        this.multiButton = new Button(this.triangleButton.x+this.triangleButton.w+10, y+25, 50, 20, [["Multi", color.BLACK]], color.WHITE);
+        this.map31Button = new Button(this.multiButton.x+this.multiButton.w+10, y+25, 50, 20, [["(3, 1)", color.BLACK]], color.WHITE);
         this.buttons.push(this.homeButton);
         this.buttons.push(this.convexButton);
         this.buttons.push(this.rotationButton);
@@ -31,6 +32,7 @@ class ModulePanel extends Panel {
         this.buttons.push(this.bigonButton);
         this.buttons.push(this.triangleButton);
         this.buttons.push(this.multiButton);
+        this.buttons.push(this.map31Button);
 
         // highlight the current module
         switch (this.current) {
@@ -54,6 +56,9 @@ class ModulePanel extends Panel {
                 break;
             case "Multi":
                 this.multiButton.fill = color.KHAKI;
+                break;
+            case "31-Map":
+                this.map31Button.fill = color.KHAKI;
         }
     }
 
@@ -86,6 +91,9 @@ class ModulePanel extends Panel {
             }
             if (this.multiButton.isHovering() && this.current != "Multi") {
                 window.location.href = 'multi.html';
+            }
+            if (this.map31Button.isHovering() && this.current != "31-Map") {
+                window.location.href = '31-map.html';
             }
         } 
     }
