@@ -12,75 +12,72 @@ class InfoPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=330) {
+    constructor(x, y, polygon, map, w=200, h=440) {
         super(x, y, w, h, "Information", color.KHAKI);
         this.polygon = polygon;
         this.map = map;
+        this.coordBoxes = new Array();
         // populate the panels
-        this.iterateBox = new Button(this.x+25, this.y+40, 150, 20, [["Iteration: " + this.map.numIterations, color.BLACK]], color.KHAKI);
+        this.iterateBox = new Button(this.x+25, this.y+30, 150, 20, [["Iteration: " + this.map.numIterations, color.BLACK]], color.KHAKI);
         this.buttons.push(this.iterateBox);
 
         // record the corner coordinates
-        this.x0Box = new Button(this.x+25, this.y+60, 150, 20, [["x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5), color.BLACK]], color.KHAKI);
+        this.x0Box = new Button(this.x+25, this.iterateBox.y+20, 150, 20, [["x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x0Box);
-        this.x1Box = new Button(this.x+25, this.y+80, 150, 20, [["x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5), color.BLACK]], color.KHAKI);
+        this.x1Box = new Button(this.x+25, this.x0Box.y+20, 150, 20, [["x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x1Box);
-        this.x2Box = new Button(this.x+25, this.y+100, 150, 20, [["x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5), color.BLACK]], color.KHAKI);
+        this.x2Box = new Button(this.x+25, this.x1Box.y+20, 150, 20, [["x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x2Box);
-        this.x3Box = new Button(this.x+25, this.y+120, 150, 20, [["x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5), color.BLACK]], color.KHAKI);
+        this.x3Box = new Button(this.x+25, this.x2Box.y+20, 150, 20, [["x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.x3Box);
+        this.x4Box = new Button(this.x+25, this.x3Box.y+20, 150, 20, [["x4: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x4Box);
+        this.x5Box = new Button(this.x+25, this.x4Box.y+20, 150, 20, [["x5: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x5Box);
+        this.x6Box = new Button(this.x+25, this.x5Box.y+20, 150, 20, [["x6: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x6Box);
+        this.x7Box = new Button(this.x+25, this.x6Box.y+20, 150, 20, [["x7: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x7Box);
+        this.x8Box = new Button(this.x+25, this.x7Box.y+20, 150, 20, [["x8: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x8Box);
+        this.x9Box = new Button(this.x+25, this.x8Box.y+20, 150, 20, [["x9: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x9Box);
+        this.x10Box = new Button(this.x+25, this.x9Box.y+20, 150, 20, [["x10: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x10Box);
+        this.x11Box = new Button(this.x+25, this.x10Box.y+20, 150, 20, [["x11: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x11Box);
+        this.x12Box = new Button(this.x+25, this.x11Box.y+20, 150, 20, [["x12: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x12Box);
+        this.x13Box = new Button(this.x+25, this.x12Box.y+20, 150, 20, [["x13: --", color.BLACK]], color.KHAKI);
+        this.buttons.push(this.x13Box);
+
+        // push the buttons to the coord boxes
+        this.coordBoxes.push(this.x0Box);
+        this.coordBoxes.push(this.x1Box);
+        this.coordBoxes.push(this.x2Box);
+        this.coordBoxes.push(this.x3Box);
+        this.coordBoxes.push(this.x4Box);
+        this.coordBoxes.push(this.x5Box);
+        this.coordBoxes.push(this.x6Box);
+        this.coordBoxes.push(this.x7Box);
+        this.coordBoxes.push(this.x8Box);
+        this.coordBoxes.push(this.x9Box);
+        this.coordBoxes.push(this.x10Box);
+        this.coordBoxes.push(this.x11Box);
+        this.coordBoxes.push(this.x12Box);
+        this.coordBoxes.push(this.x13Box);
 
         // record the energy
-        this.oBox = new Button(this.x+25, this.y+140, 150, 20, [["O(3, 1): " + MathHelper.round(this.polygon.O, 5), color.BLACK]], color.KHAKI);
+        this.oBox = new Button(this.x+25, this.x13Box.y+20, 150, 20, [["O(3, 1): " + MathHelper.round(this.polygon.O, 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.oBox);
-        this.eBox = new Button(this.x+25, this.y+160, 150, 20, [["E(3, 1): " + MathHelper.round(this.polygon.E, 5), color.BLACK]], color.KHAKI);
+        this.eBox = new Button(this.x+25, this.oBox.y+20, 150, 20, [["E(3, 1): " + MathHelper.round(this.polygon.E, 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.eBox);
-        this.energyBox = new Button(this.x+25, this.y+180, 150, 20, [["(3, 1) Energy: " + MathHelper.round(this.polygon.energy, 5), color.BLACK]], color.KHAKI);
+        this.energyBox = new Button(this.x+25, this.eBox.y+20, 150, 20, [["(3, 1) Energy: " + MathHelper.round(this.polygon.energy, 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.energyBox);
 
-        // alternative coordinates
-        this.e0Box = new Button(this.x+25, this.y+200, 150, 20, [["e0: " + MathHelper.round(this.polygon.energyCoords[0], 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.e0Box);
-        this.e1Box = new Button(this.x+25, this.y+220, 150, 20, [["e1: " + MathHelper.round(this.polygon.energyCoords[1], 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.e1Box);
-        this.e2Box = new Button(this.x+25, this.y+240, 150, 20, [["e2: " + MathHelper.round(this.polygon.energyCoords[2], 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.e2Box);
-        this.e3Box = new Button(this.x+25, this.y+260, 150, 20, [["e3: " + MathHelper.round(this.polygon.energyCoords[3], 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.e3Box);
-
-        
-
-        // // eigenvalues of corner coordinates
-        // const eigen = this.polygon.eigenvalues;
-        // this.lambda1Box = new Button(this.x+25, this.y+140, 150, 20, [["Lambda 1: " + eigen[0].toString(), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.lambda1Box);
-        // this.lambda2Box = new Button(this.x+25, this.y+160, 150, 20, [["Lambda 2: " + eigen[1].toString(), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.lambda2Box);
-        // this.lambda3Box = new Button(this.x+25, this.y+180, 150, 20, [["Lambda 3: " + eigen[2].toString(), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.lambda3Box);
-
-        // // record some interesting values
-        // const val1 = this.polygon.cornerCoords[1] + this.polygon.cornerCoords[3] - 1;
-        // this.val1Box = new Button(this.x+25, this.y+160, 150, 20, [["x1 + x3 - 1: " + MathHelper.round(val1, 5), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.val1Box);
-        // const val2 = this.polygon.cornerCoords[0] + this.polygon.cornerCoords[2] - 1;
-        // this.val2Box = new Button(this.x+25, this.y+180, 150, 20, [["x0 + x2 - 1: " + MathHelper.round(val2, 5), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.val2Box);
-        // this.val3Box = new Button(this.x+25, this.y+200, 150, 20, [["val1 / val2: " + MathHelper.round(val1/val2, 5), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.val3Box);
-        
-
-        // this.p1p2Box = new Button(this.x+25, this.y+160, 150, 20, [["||P1 P2||: " + MathHelper.round(this.polygon.getP1P2Dist(), 5), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.p1p2Box);
-        // this.p2p3Box = new Button(this.x+25, this.y+200, 150, 20, [["||P2 P3||: " + MathHelper.round(this.polygon.getP2P3Dist(), 5), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.p2p3Box);
-
-        // // record distance and monodromy invariants
-        // this.distBox = new Button(this.x+25, this.y+220, 150, 20, [["Dist to Ref: " + MathHelper.round(this.polygon.getDistanceToReference(), 5), color.BLACK]], color.KHAKI);
-        // this.buttons.push(this.distBox);
-        this.invariant1Box = new Button(this.x+25, this.y+280, 150, 20, [["Invariant 1: " + MathHelper.round(this.polygon.omega1, 5), color.BLACK]], color.KHAKI);
+        this.invariant1Box = new Button(this.x+25, this.energyBox.y+20, 150, 20, [["Invariant 1: " + MathHelper.round(this.polygon.omega1, 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.invariant1Box);
-        this.invariant2Box = new Button(this.x+25, this.y+300, 150, 20, [["Invariant 2: " + MathHelper.round(this.polygon.omega2, 5), color.BLACK]], color.KHAKI);
+        this.invariant2Box = new Button(this.x+25, this.invariant1Box.y+20, 150, 20, [["Invariant 2: " + MathHelper.round(this.polygon.omega2, 5), color.BLACK]], color.KHAKI);
         this.buttons.push(this.invariant2Box);
     }
 
@@ -89,48 +86,24 @@ class InfoPanel extends Panel {
      */
     show() {
         super.show();
-        // this.distBox.text[0][0] = "Dist to Ref: " + MathHelper.round(this.polygon.getDistanceToReference(), 5);
         this.iterateBox.text[0][0] = "Iteration: " + this.map.numIterations;
 
-        // corner coordinates
-        this.x0Box.text[0][0] = "x0: " + MathHelper.round(this.polygon.cornerCoords[0], 5);
-        this.x1Box.text[0][0] = "x1: " + MathHelper.round(this.polygon.cornerCoords[1], 5);
-        this.x2Box.text[0][0] = "x2: " + MathHelper.round(this.polygon.cornerCoords[2], 5);
-        this.x3Box.text[0][0] = "x3: " + MathHelper.round(this.polygon.cornerCoords[3], 5);
-
-        // alternative coordinates
-        this.e0Box.text[0][0] = "e0: " + MathHelper.round(this.polygon.energyCoords[0], 5);
-        this.e1Box.text[0][0] = "e1: " + MathHelper.round(this.polygon.energyCoords[1], 5);
-        this.e2Box.text[0][0] = "e2: " + MathHelper.round(this.polygon.energyCoords[2], 5);
-        this.e3Box.text[0][0] = "e3: " + MathHelper.round(this.polygon.energyCoords[3], 5);
+        for (let i = 0; i < 14; i++) {
+            if (i < this.polygon.cornerCoords.length) {
+                this.coordBoxes[i].text[0][0] = "x" + i.toString() + ": " + MathHelper.round(this.polygon.cornerCoords[i], 5);
+            } else {
+                this.coordBoxes[i].text[0][0] = "x" + i.toString() + ": --";
+            }
+        }
 
         // energy
         this.oBox.text[0][0] = "O(3, 1): " + MathHelper.round(this.polygon.O, 5).toString();
         this.eBox.text[0][0] = "E(3, 1): " + MathHelper.round(this.polygon.E, 5).toString();
         this.energyBox.text[0][0] = "(3, 1) Energy: " + MathHelper.round(this.polygon.energy, 5).toString();
 
-        // // eigenvalues of monodromy
-        // const eigen = this.polygon.eigenvalues;
-        // this.lambda1Box.text[0][0] = "Lambda 1: " + eigen[0].toString();
-        // this.lambda2Box.text[0][0] = "Lambda 2: " + eigen[1].toString();
-        // this.lambda3Box.text[0][0] = "Lambda 3: " + eigen[2].toString();
-
-        // // other values
-        // const val1 = this.polygon.cornerCoords[1] + this.polygon.cornerCoords[3] - 1;
-        // this.val1Box.text[0][0] = "x1 + x3 - 1: " + MathHelper.round(val1, 5);
-        // const val2 = this.polygon.cornerCoords[0] + this.polygon.cornerCoords[2] - 1;
-        // this.val2Box.text[0][0] = "x0 + x2 - 1: " + MathHelper.round(val2, 5);
-        // this.val3Box.text[0][0] = "val1 / val2: " + MathHelper.round(val1/val2, 5);
-
-
-        // this.p1p2Box.text[0][0] = "||P1 P2||: " + MathHelper.round(this.polygon.getP1P2Dist(), 5);
-        // this.p2p3Box.text[0][0] = "||P2 P3||: " + MathHelper.round(this.polygon.getP2P3Dist(), 5)
-
         // invariants
         this.invariant1Box.text[0][0] = "Invariant 1: " + MathHelper.round(this.polygon.omega1, 5);
         this.invariant2Box.text[0][0] = "Invariant 2: " + MathHelper.round(this.polygon.omega2, 5);
-
-        // monodromy
     }
 
     /**
@@ -150,7 +123,7 @@ class InfoPanel extends Panel {
                 this.h = 30;
             } else {
                 this.showPanel = true;
-                this.h = 330;
+                this.h = 440;
             }
         }
     }

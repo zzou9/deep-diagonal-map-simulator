@@ -19,6 +19,7 @@ class PolygonWindow extends Window {
         this.polygon = polygon;
         this.polygonScale = (this.w+this.h)/10;
         this.mapPolygons = mapPolygons;
+        this.vertexColor = [color.RED, color.GREEN, color.ORANGE, color.CYAN, color.YELLOW, color.PURPLE];
     }
 
     /**
@@ -75,25 +76,16 @@ class PolygonWindow extends Window {
 
         // emphasize vertices to drag
         if (canDrag) {
-            // first vertex
-            this.canvas.fill(color.RED);
-            this.canvas.stroke(color.BLACK);
-            if (MathHelper.round(verticesToShow[4][2]) == 0) {
-                throw new Error("Vertex 1 is not on the affine patch");
+            for (let i = 0; i < this.polygon.n; i++) {
+                this.canvas.fill(this.vertexColor[i%6]);
+                this.canvas.stroke(color.BLACK);
+                if (MathHelper.round(verticesToShow[i+4][2]) == 0) {
+                    throw new Error("Vertex 1 is not on the affine patch");
+                }
+                const x1 = verticesToShow[i+4][0] / verticesToShow[i+4][2];
+                const y1 = verticesToShow[i+4][1] / verticesToShow[i+4][2];
+                this.canvas.circle((1-2*x1) * this.polygonScale, (1-2*y1) * this.polygonScale, vertexSize);
             }
-            const x1 = verticesToShow[4][0] / verticesToShow[4][2];
-            const y1 = verticesToShow[4][1] / verticesToShow[4][2];
-            this.canvas.circle((1-2*x1) * this.polygonScale, (1-2*y1) * this.polygonScale, vertexSize);
-
-            // second vertex
-            this.canvas.fill(color.GREEN);
-            this.canvas.stroke(color.BLACK);
-            if (MathHelper.round(verticesToShow[5][2]) == 0) {
-                throw new Error("Vertex 2 is not on the affine patch");
-            }
-            const x2 = verticesToShow[5][0] / verticesToShow[5][2];
-            const y2 = verticesToShow[5][1] / verticesToShow[5][2];
-            this.canvas.circle((1-2*x2) * this.polygonScale, (1-2*y2) * this.polygonScale, vertexSize);
         }
 
         this.canvas.translate(-this.w/2, -this.h/2);

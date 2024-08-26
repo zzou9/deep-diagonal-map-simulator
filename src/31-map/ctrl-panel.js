@@ -81,7 +81,7 @@ class CtrlPanel extends Panel {
                 }
                 this.polygon.map.clearHistory();
             }
-            if (this.incN.isHovering() && polygon.n < 6) {
+            if (this.incN.isHovering() && polygon.n < 7) {
                 this.polygon.n++;
                 this.polygon.setDefault();
                 this.polygon.updateInfo(true, true);

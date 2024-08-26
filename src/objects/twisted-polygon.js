@@ -22,6 +22,7 @@ class TwistedPolygon{
         this.vertexSize = 8;
         this.canDrag = false;
         this.scale = scale; 
+        this.vertexColor = [color.RED, color.GREEN, color.ORANGE, color.CYAN, color.YELLOW, color.PURPLE];
 
         // Trajectory control
         this.showTrajectory = [true, true]; // an array storing whether to show the trajectories
@@ -146,8 +147,12 @@ class TwistedPolygon{
     updateEnergyCoords() {
         this.energyCoords = Geometry.translate21To31(this.cornerCoords.slice());
         // update energy, O, E
-        this.O = this.energyCoords[0] * this.energyCoords[2];
-        this.E = this.energyCoords[1] * this.energyCoords[3];
+        this.O = 1;
+        this.E = 1;
+        for (let i = 0; i < this.n; i++) {
+            this.O *= this.energyCoords[2*i];
+            this.E *= this.energyCoords[2*i+1];
+        }
         this.energy = this.O * this.E;
     }
 
@@ -183,7 +188,7 @@ class TwistedPolygon{
     updateTrajCtrl() {
         const nPrev = this.showTrajectory.length;
         if (nPrev < this.n) {
-            this.showTrajectory.push(true); // an array storing whether to show the trajectories
+            this.showTrajectory.push(false); // an array storing whether to show the trajectories
             this.iteration.push(10); // number of iterations to show (exponential 2)
             this.trajSize.push(2); // size of the trajectory
             this.trajectory.push(new Array());
@@ -267,31 +272,22 @@ class TwistedPolygon{
 
         // emphasize vertices to drag
         if (this.canDrag) {
-            // first vertex
-            fill(color.RED);
-            stroke(color.BLACK);
-            if (MathHelper.round(this.verticesToShow[4][2]) == 0) {
-                throw new Error("Vertex 1 is not on the affine patch");
+            for (let i = 0; i < this.n; i++) {
+                fill(this.vertexColor[i%6]);
+                stroke(color.BLACK);
+                if (MathHelper.round(this.verticesToShow[i+4][2]) == 0) {
+                    throw new Error("Vertex 1 is not on the affine patch");
+                }
+                const x1 = this.verticesToShow[i+4][0] / this.verticesToShow[i+4][2];
+                const y1 = this.verticesToShow[i+4][1] / this.verticesToShow[i+4][2];
+                circle((1-2*x1) * this.scale, (1-2*y1) * this.scale, this.vertexSize);
             }
-            const x1 = this.verticesToShow[4][0] / this.verticesToShow[4][2];
-            const y1 = this.verticesToShow[4][1] / this.verticesToShow[4][2];
-            circle((1-2*x1) * this.scale, (1-2*y1) * this.scale, this.vertexSize);
-
-            // second vertex
-            fill(color.GREEN);
-            stroke(color.BLACK);
-            if (MathHelper.round(this.verticesToShow[5][2]) == 0) {
-                throw new Error("Vertex 2 is not on the affine patch");
-            }
-            const x2 = this.verticesToShow[5][0] / this.verticesToShow[5][2];
-            const y2 = this.verticesToShow[5][1] / this.verticesToShow[5][2];
-            circle((1-2*x2) * this.scale, (1-2*y2) * this.scale, this.vertexSize);
         }
 
         // display trajectories
         for (let i = 0; i < this.n; i++) {
             if (this.showTrajectory[i]) {
-                fill(color.RED);
+                fill(this.vertexColor[i%6]);
                 noStroke();
                 for (let j = 0; j < this.trajectory[i].length; j++) {
                     if (MathHelper.round(this.trajectory[i][j][2] == 0)) {

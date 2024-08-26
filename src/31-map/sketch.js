@@ -15,16 +15,18 @@ const color = {
     BLACK: "#000000",
     WHITE: "#ffffff",
     RED: "#ff0000",
+    ORANGE: "#ffa500",
+    YELLOW: "#ffff00",
     GREEN: "#00bb00",
     BLUE: "#0000ff",
+    VIOLET: "#ee82ee",
+    PURPLE: "#800080",
     CYAN: "#00ffff", 
     CADET_BLUE: "#5f9ea0",
     ROYAL_BLUE: "#4169e1", 
     KHAKI: "#f0e68c",
-    PURPLE: "#800080",
     INDIGO: "#4b0082",
-    GRAY: "#808080",
-    ORANGE: "#ffa500"
+    GRAY: "#808080"
 }
 
 // panels
@@ -176,7 +178,7 @@ function keyPressed() {
     }
 
     // changing n
-    if (keyCode === UP_ARROW && polygon.n < 6) {
+    if (keyCode === UP_ARROW && polygon.n < 7) {
         polygon.n++;
         polygon.setDefault();
         polygon.updateInfo(true, true);
