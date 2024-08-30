@@ -19,7 +19,7 @@ class CtrlPanel extends Panel {
         this.rate = -2;
 
         // experimental, toggle (3, 1) coordinate
-        this.toggle31 = true;
+        this.toggle31 = false;
 
         // populate the buttons
         this.numVertexBox = new Button(this.x+25, this.y+40, 100, 20, [["# Vertices: " + this.polygon.numVertexToShow, color.BLACK]]);

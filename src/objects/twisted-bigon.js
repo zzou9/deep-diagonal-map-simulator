@@ -206,8 +206,8 @@ class TwistedBigon{
     setDefault() {
         // first, find the corner coordinates of a regular 8-gon
         let vertices = new Array(8);
-        const angle = TWO_PI / 8;
-        for (let i = 0; i < 8; i++) {
+        const angle = TWO_PI / 9;
+        for (let i = 0; i < 9; i++) {
             vertices[i] = [cos(angle*i), sin(angle*i), 1];
         }
         const coords = Geometry.getCornerCoords(vertices);
