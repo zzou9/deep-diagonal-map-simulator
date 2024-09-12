@@ -17,7 +17,6 @@ class Normalize {
             M = MathHelper.transpose(MathHelper.invert3(M));
         }
         catch (err) {
-            console.error(err);
             throw new Error("The points are not in general position");
         }
 
@@ -104,8 +103,7 @@ class Normalize {
             const v = MathHelper.affineTransform(T, vertices[i]);
             // error if v is not on the affine plane
             if (v[2] == 0) {
-                console.error("v is on the line at infinity!");
-                return null;
+                throw new Error("v is on the line at infinity!");
             }
             newVertices[i] = [v[0]/v[2], v[1]/v[2], 1];
         }

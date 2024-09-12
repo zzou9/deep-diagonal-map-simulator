@@ -25,7 +25,7 @@ class TwistedPolygon{
         this.vertexColor = [color.RED, color.GREEN, color.ORANGE, color.CYAN, color.YELLOW, color.PURPLE];
 
         // Trajectory control
-        this.showTrajectory = [true, true]; // an array storing whether to show the trajectories
+        this.showTrajectory = [false, false]; // an array storing whether to show the trajectories
         this.iteration = [10, 10]; // number of iterations to show (exponential 2)
         this.trajSize = [2, 2]; // size of the trajectory
         this.trajectory = [new Array(), new Array()];
@@ -325,7 +325,7 @@ class TwistedPolygon{
                         const tempCoords = Geometry.getCornerCoords(this.verticesToShow.map(a => a.slice()));
                         for (let j = 0; j < 2*this.n; j++) {
                             if (!Number.isFinite(tempCoords[j+4]) || tempCoords[j+4] == 0) {
-                                throw new Error("The points of the bigon are not in general positions");
+                                throw new Error("The points of the polygon are not in general positions");
                             }
                             this.cornerCoords[j] = tempCoords[j+4];
                         }
@@ -339,18 +339,6 @@ class TwistedPolygon{
                 }
             }
         }
-    }
-
-
-    /**
-    * Print the information of the polygon
-    */
-    print() {
-        console.log("This is a twisted bigon. Below are the corner coordinates:");
-        console.log("x0:", this.cornerCoords[0]);
-        console.log("x1:", this.cornerCoords[1]);
-        console.log("x2:", this.cornerCoords[2]);
-        console.log("x3:", this.cornerCoords[3]);
     }
     
 
