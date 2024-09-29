@@ -1,7 +1,7 @@
 /**
- * A class designed specifically for twisted bigons
+ * A class designed specifically for displaying twisted polygons
  */
-class TwistedPolygon{ 
+class DispPolygon{ 
 
     /**
      * Constructor
@@ -20,13 +20,15 @@ class TwistedPolygon{
         this.E = 1;
         this.numVertexToShow = 6;
         this.verticesToShow = new Array(this.numVertexToShow);
+        this.numTrailing = 0;
+        this.trailingVertices = new Array();
         this.vertexSize = 8;
         this.canDrag = false;
         this.scale = scale; 
         this.vertexColor = [color.RED, color.GREEN, color.ORANGE, color.CYAN, color.YELLOW, color.PURPLE];
 
         // Trajectory control
-        this.showTrajectory = [false, false]; // an array storing whether to show the trajectories
+        this.showTrajectory = [true, false]; // an array storing whether to show the trajectories
         this.iteration = [10, 10]; // number of iterations to show (exponential 2)
         this.trajSize = [2, 2]; // size of the trajectory
         this.trajectory = [new Array(), new Array()];
@@ -73,6 +75,19 @@ class TwistedPolygon{
      */
     updateVertices() {
         this.verticesToShow = Reconstruct.reconstructMonodromy(this.monodromy, this.cornerCoords, this.n, this.numVertexToShow);
+        // update the training vertices
+        const m = this.numTrailing;
+        const Tinv = MathHelper.invert3(this.monodromy);
+        this.trailingVertices = new Array(m);
+        for (let i = 0; i < m; i++) {
+            if (i < this.n) {
+                const v = MathHelper.matrixMult(Tinv, MathHelper.vec(this.verticesToShow[this.n-1-i]));
+                this.trailingVertices[m-1-i] = [v[0][0], v[1][0], v[2][0]];
+            } else {
+                const v = MathHelper.matrixMult(Tinv, MathHelper.vec(this.trailingVertices[this.n+m-1-i]));
+                this.trailingVertices[m-1-i] = [v[0][0], v[1][0], v[2][0]];
+            }
+        }
     }
 
     /**
@@ -232,6 +247,7 @@ class TwistedPolygon{
         
         // default number of vertices to show
         this.numVertexToShow = this.n+4;
+        this.numTrailing = 0;
 
         // compute the coords of the vertices to show
         this.updateInfo(true, true);
@@ -255,10 +271,27 @@ class TwistedPolygon{
         // translate the coordinate system 
         translate(xt, yt);
 
+        // draw axes
+        strokeWeight(1);
+        // x-axis
+        line(-10*this.scale, this.scale, 10*this.scale, this.scale);
+        // y-axis
+        line(-this.scale, -10*this.scale, -this.scale, 10*this.scale);
+
         // draw edges
-        fill(255, 255, 255, 127);
-        stroke(255, 255, 255);
+        fill(0, 0, 0, 20);
+        stroke(0, 0, 0);
         beginShape();
+        // attach the trailing terms
+        for (let i = 0; i < this.numTrailing; i++) {
+            if (MathHelper.round(this.trailingVertices[i][2]) == 0) {
+                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
+            }
+            const x = this.trailingVertices[i][0] / this.trailingVertices[i][2];
+            const y = this.trailingVertices[i][1] / this.trailingVertices[i][2];
+            vertex((1-2*x) * this.scale, (1-2*y) * this.scale);
+        }
+        // attach the ordinary terms
         for (let i = 0; i < this.numVertexToShow; i++) {
             if (MathHelper.round(this.verticesToShow[i][2]) == 0) {
                 throw new Error("Vertex " + i.toString() + " is not on the affine patch");
@@ -269,11 +302,22 @@ class TwistedPolygon{
         }
         endShape();
 
+        strokeWeight(1);
         // draw vertices
-        fill(color.WHITE);
+        fill(color.BLACK);
         noStroke();
+        // draw trailing vertices
+        for (let i = 0; i < this.numTrailing; i++) {
+            if (MathHelper.round(this.trailingVertices[i][2]) == 0) {
+                throw new Error("Vertex " + i.toString() + " is not on the affine patch");
+            }
+            const x = this.trailingVertices[i][0] / this.trailingVertices[i][2];
+            const y = this.trailingVertices[i][1] / this.trailingVertices[i][2];
+            circle((1-2*x) * this.scale, (1-2*y) * this.scale, 0);
+        }
+        // draw ordinary vertices
         for (let i = 0; i < this.numVertexToShow; i++) {
-            if (MathHelper.round(this.verticesToShow[i][2]) == 0) {
+            if (MathHelper.round(this.verticesToShow[i][2]) == 3) {
                 throw new Error("Vertex " + i.toString() + " is not on the affine patch");
             }
             const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
@@ -282,19 +326,19 @@ class TwistedPolygon{
         }
 
 
-        // emphasize vertices to drag
-        if (this.canDrag) {
-            for (let i = 0; i < this.n; i++) {
-                fill(this.vertexColor[i%6]);
-                stroke(color.BLACK);
-                if (MathHelper.round(this.verticesToShow[i+4][2]) == 0) {
-                    throw new Error("Vertex 1 is not on the affine patch");
-                }
-                const x1 = this.verticesToShow[i+4][0] / this.verticesToShow[i+4][2];
-                const y1 = this.verticesToShow[i+4][1] / this.verticesToShow[i+4][2];
-                circle((1-2*x1) * this.scale, (1-2*y1) * this.scale, this.vertexSize);
-            }
-        }
+        // // emphasize vertices to drag
+        // if (this.canDrag) {
+        //     for (let i = 0; i < this.n; i++) {
+        //         fill(this.vertexColor[i%6]);
+        //         stroke(color.BLACK);
+        //         if (MathHelper.round(this.verticesToShow[i+4][2]) == 0) {
+        //             throw new Error("Vertex 1 is not on the affine patch");
+        //         }
+        //         const x1 = this.verticesToShow[i+4][0] / this.verticesToShow[i+4][2];
+        //         const y1 = this.verticesToShow[i+4][1] / this.verticesToShow[i+4][2];
+        //         circle((1-2*x1) * this.scale, (1-2*y1) * this.scale, this.vertexSize);
+        //     }
+        // }
 
         // display trajectories
         for (let i = 0; i < this.n; i++) {
