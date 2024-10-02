@@ -137,6 +137,18 @@ function keyPressed() {
         console.log(repl);
     }
 
+    if (key === 'P') {
+        // print the vertices
+        let repl = "i,x,y,z\n";
+        for (let i = 0; i < polygon.trailingVertices.length; i++) {
+            repl = repl + (i-2-polygon.numTrailing).toString() + ',' + polygon.trailingVertices[i][0].toString() + "," + polygon.trailingVertices[i][1].toString() + "," + polygon.trailingVertices[i][2].toString() + "\n";
+        }
+        for (let i = 0; i < polygon.verticesToShow.length; i++) {
+            repl = repl + (i-2).toString() + ',' + polygon.verticesToShow[i][0].toString() + "," + polygon.verticesToShow[i][1].toString() + "," + polygon.verticesToShow[i][2].toString() + "\n";
+        }
+        console.log(repl);
+    }
+
     // window toggle dragging
     if (key === 'w' || key === 'W') {
         shapeWindow.toggleDrag();
