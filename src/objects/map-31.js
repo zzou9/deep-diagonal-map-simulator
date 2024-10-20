@@ -9,6 +9,7 @@ class Map31 {
         this.prev = new Array(); // keep charge of previous operations (in the form of vertices)
         this.power = 1; // the power of the map (# of times to apply the map)
         this.numIterations = 0; // number of iterations applied to the map
+        this.k = 3;
     }
 
     /**

@@ -20,8 +20,12 @@ class TwistedPolygon{
         this.E = 1;
         this.numVertexToShow = 6;
         this.verticesToShow = new Array(this.numVertexToShow);
+
+        // dual vertices obtained from y-coords
+        this.dualVerticesToShow = new Array(this.numVertexToShow);
         this.vertexSize = 8;
         this.canDrag = false;
+        this.showDual = false;
         this.scale = scale; 
         this.vertexColor = [color.RED, color.GREEN, color.ORANGE, color.CYAN, color.YELLOW, color.PURPLE];
 
@@ -36,6 +40,7 @@ class TwistedPolygon{
         this.monodromy = new Array(3);
         this.eigenvalues = new Array(3);
         this.dualMonodromy = new Array(3);
+        this.Mdual = new Array(3);
         this.omega1 = 0;
         this.omega2 = 0;
 
@@ -73,6 +78,9 @@ class TwistedPolygon{
      */
     updateVertices() {
         this.verticesToShow = Reconstruct.reconstructMonodromy(this.monodromy, this.cornerCoords, this.n, this.numVertexToShow);
+        if (this.showDual) {
+            this.dualVerticesToShow = Reconstruct.reconstructMonodromy(this.Mdual, this.YCoords, this.n, this.numVertexToShow);
+        }
     }
 
     /**
@@ -102,6 +110,14 @@ class TwistedPolygon{
             MathHelper.cross(T[0], T[1])
         ];
         this.dualMonodromy = MathHelper.transpose(Tdual);
+
+        if (this.showDual) {
+            const v = Reconstruct.reconstruct3(this.YCoords, this.n+4);
+            const M1 = Normalize.getProjectiveLift(v[0], v[1], v[2], v[3]);
+            const M2 = Normalize.getProjectiveLift(v[this.n], v[this.n+1], v[this.n+2], v[this.n+3]);
+            const M2Inv = MathHelper.invert3(M2);
+            this.Mdual = MathHelper.matrixMult(M2Inv, M1);
+        }
     }
 
     /**
@@ -217,9 +233,11 @@ class TwistedPolygon{
     */
     setDefault() {
         // first, find the corner coordinates of a regular 8-gon
-        let vertices = new Array(this.n+6);
-        const angle = TWO_PI / (this.n+6);
-        for (let i = 0; i < this.n+6; i++) {
+        const n = Math.max(4, this.map.k+1);
+        console.log(this.map.k);
+        let vertices = new Array(n);
+        const angle = TWO_PI / n;
+        for (let i = 0; i < n; i++) {
             vertices[i] = [cos(angle*i), sin(angle*i), 1];
         }
         const coords = Geometry.getCornerCoords(vertices);
@@ -227,7 +245,7 @@ class TwistedPolygon{
         // update corner coordinates
         this.cornerCoords = new Array(2*this.n);
         for (let i = 0; i < 2*this.n; i++) {
-            this.cornerCoords[i] = coords[i];
+            this.cornerCoords[i] = coords[i%2];
         }
         
         // default number of vertices to show
@@ -255,6 +273,35 @@ class TwistedPolygon{
         // translate the coordinate system 
         translate(xt, yt);
 
+        // draw dual vertices
+        if (this.showDual) {
+            // draw edges
+            fill(255, 255, 255, 0);
+            stroke(color.WHITE);
+            beginShape();
+            for (let i = 0; i < this.numVertexToShow; i++) {
+                if (MathHelper.round(this.dualVerticesToShow[i][2]) == 0) {
+                    throw new Error("Vertex " + i.toString() + " is not on the affine patch");
+                }
+                const x = this.dualVerticesToShow[i][0] / this.dualVerticesToShow[i][2];
+                const y = this.dualVerticesToShow[i][1] / this.dualVerticesToShow[i][2];
+                vertex((1-2*x) * this.scale, (1-2*y) * this.scale);
+            }
+            endShape();
+
+            // draw vertices
+            fill(color.CYAN);
+            noStroke();
+            for (let i = 0; i < this.dualVerticesToShow; i++) {
+                if (MathHelper.round(this.dualVerticesToShow[i][2]) == 0) {
+                    throw new Error("Vertex " + i.toString() + " is not on the affine patch");
+                }
+                const x = this.dualVerticesToShow[i][0] / this.dualVerticesToShow[i][2];
+                const y = this.dualVerticesToShow[i][1] / this.dualVerticesToShow[i][2];
+                circle((1-2*x) * this.scale, (1-2*y) * this.scale, 3);
+            }
+        }
+
         // draw edges
         fill(255, 255, 255, 127);
         stroke(255, 255, 255);
@@ -280,7 +327,6 @@ class TwistedPolygon{
             const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
             circle((1-2*x) * this.scale, (1-2*y) * this.scale, 3);
         }
-
 
         // emphasize vertices to drag
         if (this.canDrag) {

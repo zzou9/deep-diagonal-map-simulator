@@ -22,7 +22,7 @@ class TwistedPolygonMap {
      * @param {boolean} checkAfine check whether the image vertices are on the affine plane
      * @returns {Array<Array<Number>>} the resulting homogeneous coordinates of the vertices
      */
-    applyMap(coords, p, checkAfine) {
+    applyMap(coords, p) {
         const k = this.k;
         const l = this.l;
         let imgCoords = new Array(coords.length);
