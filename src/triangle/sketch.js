@@ -91,7 +91,7 @@ function draw() {
     textAlign(CENTER, CENTER);
     textFont("Georgia", 20);
     fill(color.WHITE);
-    text("Pentagram Map Simulator", xT, 20);
+    text("Deep Diagonal Map Simulator", xT, 20);
     
     // showing panels
     ctrlPanel.show();
