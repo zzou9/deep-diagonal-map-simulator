@@ -247,7 +247,7 @@ class TwistedBigon{
             }
             const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
             const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
-            vertex((1-2*x) * this.scale, (1-2*y) * this.scale);
+            vertex((2*x-1) * this.scale, (1-2*y) * this.scale);
         }
         endShape(CLOSE);
 
@@ -260,7 +260,7 @@ class TwistedBigon{
             }
             const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
             const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
-            circle((1-2*x) * this.scale, (1-2*y) * this.scale, 3);
+            circle((2*x-1) * this.scale, (1-2*y) * this.scale, 3);
         }
 
 
@@ -274,7 +274,7 @@ class TwistedBigon{
             }
             const x1 = this.verticesToShow[4][0] / this.verticesToShow[4][2];
             const y1 = this.verticesToShow[4][1] / this.verticesToShow[4][2];
-            circle((1-2*x1) * this.scale, (1-2*y1) * this.scale, this.vertexSize);
+            circle((2*x1-1) * this.scale, (1-2*y1) * this.scale, this.vertexSize);
 
             // second vertex
             fill(color.GREEN);
@@ -284,7 +284,7 @@ class TwistedBigon{
             }
             const x2 = this.verticesToShow[5][0] / this.verticesToShow[5][2];
             const y2 = this.verticesToShow[5][1] / this.verticesToShow[5][2];
-            circle((1-2*x2) * this.scale, (1-2*y2) * this.scale, this.vertexSize);
+            circle((2*x2-1) * this.scale, (1-2*y2) * this.scale, this.vertexSize);
         }
 
         // display trajectories
@@ -297,7 +297,7 @@ class TwistedBigon{
                 }
                 const x = this.trajectory1[i][0]  / this.trajectory1[i][2];
                 const y = this.trajectory1[i][1] / this.trajectory1[i][2];
-                circle((1-2*x) * this.scale, (1-2*y) * this.scale, this.traj1Size);
+                circle((2*x-1) * this.scale, (1-2*y) * this.scale, this.traj1Size);
             }
         }
 
@@ -311,7 +311,7 @@ class TwistedBigon{
                 }
                 const x = this.trajectory2[i][0]  / this.trajectory2[i][2];
                 const y = this.trajectory2[i][1] / this.trajectory2[i][2];
-                circle((1-2*x) * this.scale, (1-2*y) * this.scale, this.traj2Size);
+                circle((2*x-1) * this.scale, (1-2*y) * this.scale, this.traj2Size);
             }
         }
 
@@ -332,12 +332,12 @@ class TwistedBigon{
             for (let i = 4; i < 6; i++) {
                 const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
                 const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
-                if (mX - w <= (1-2*x) && mX + w >= (1-2*x) && mY - w <= (1-2*y) && mY + w >= (1-2*y)) {
+                if (mX - w <= (2*x-1) && mX + w >= (2*x-1) && mY - w <= (1-2*y) && mY + w >= (1-2*y)) {
                     try {
                         // record the new vertex and check whether the bigon breaks
                         if (this.inscribed) {
                         } else {
-                            this.verticesToShow[i] = [(1-mX)/2, (1-mY)/2, 1];
+                            this.verticesToShow[i] = [(1+mX)/2, (1-mY)/2, 1];
                         }
                         // change the corner coordinates accordingly, also change the rest of the vertices
                         const tempCoords = Geometry.getCornerCoords(this.verticesToShow.map(a => a.slice()));

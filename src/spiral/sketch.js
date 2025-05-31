@@ -140,7 +140,18 @@ function keyPressed() {
     }
 
     if (key === 'p') {
-        console.log(polygon.getInvariantsFrom31());
+        console.log(polygon.flags);
+        let prod = 1;
+        for (let i = 0; i < polygon.flags.length; i++) {
+            prod *= polygon.flags[i];
+        }
+        console.log("Flags", prod);
+        console.log(polygon.chi);
+        let prod2 = 1;
+        for (let i = 0; i < polygon.chi.length; i++) {
+            prod2 *= polygon.chi[i];
+        }
+        console.log("Chi", prod2);
     }
 
     // window toggle dragging

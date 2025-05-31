@@ -70,7 +70,7 @@ class MapWindow extends Window {
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
-            this.canvas.vertex((1-2*x) * scale, (1-2*y) * scale);
+            this.canvas.vertex((2*x-1) * scale, (1-2*y) * scale);
         }
         this.canvas.endShape(CLOSE);
 
@@ -83,7 +83,7 @@ class MapWindow extends Window {
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
-            this.canvas.circle((1-2*x) * scale, (1-2*y) * scale, 3);
+            this.canvas.circle((2*x-1) * scale, (1-2*y) * scale, 3);
         }
 
         // display trajectories
@@ -96,7 +96,7 @@ class MapWindow extends Window {
                 }
                 const x = trajectory1[i][0] / trajectory1[i][2];
                 const y = trajectory1[i][1] / trajectory1[i][2];
-                this.canvas.circle((1-2*x) * scale, (1-2*y) * scale, traj1Size);
+                this.canvas.circle((2*x-1) * scale, (1-2*y) * scale, traj1Size);
             }
         }
 
@@ -110,7 +110,7 @@ class MapWindow extends Window {
                 }
                 const x = trajectory2[i][0]  / trajectory2[i][2];
                 const y = trajectory2[i][1] / trajectory2[i][2];
-                this.canvas.circle((1-2*x) * scale, (1-2*y) * scale, traj2Size);
+                this.canvas.circle((2*x-1) * scale, (1-2*y) * scale, traj2Size);
             }
         }
 
@@ -122,7 +122,7 @@ class MapWindow extends Window {
         }
         const x1 = verticesToShow[4][0] / verticesToShow[4][2];
         const y1 = verticesToShow[4][1] / verticesToShow[4][2];
-        this.canvas.circle((1-2*x1) * scale, (1-2*y1) * scale, 5);
+        this.canvas.circle((2*x1-1) * scale, (1-2*y1) * scale, 5);
 
         // second vertex
         this.canvas.fill(color.GREEN);
@@ -132,7 +132,7 @@ class MapWindow extends Window {
         }
         const x2 = verticesToShow[5][0] / verticesToShow[5][2];
         const y2 = verticesToShow[5][1] / verticesToShow[5][2];
-        this.canvas.circle((1-2*x2) * scale, (1-2*y2) * scale, 5);
+        this.canvas.circle((2*x2-1) * scale, (1-2*y2) * scale, 5);
 
         this.canvas.translate(-this.w/2, -this.h/2);
     }

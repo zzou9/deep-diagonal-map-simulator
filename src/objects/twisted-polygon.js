@@ -15,9 +15,12 @@ class TwistedPolygon{
         this.cornerCoords = new Array(4);
         this.energyCoords = new Array(4);
         this.YCoords = new Array(4);
-        this.energy = 1;
-        this.O = 1;
-        this.E = 1;
+        this.flags = new Array(2);
+        this.chi = new Array(2);
+        this.F1 = 1;
+        this.F2 = 1;
+        this.F3 = 1;
+        this.F4 = 1;
         this.numVertexToShow = 6;
         this.verticesToShow = new Array(this.numVertexToShow);
 
@@ -43,6 +46,7 @@ class TwistedPolygon{
         this.Mdual = new Array(3);
         this.omega1 = 0;
         this.omega2 = 0;
+        this.Y;
 
         this.setDefault();
     }
@@ -71,6 +75,8 @@ class TwistedPolygon{
             this.referenceCoords = this.cornerCoords;
             this.map.numIterations = 0;
         }
+        this.updateFlags();
+        this.updateChi();
     }
 
     /**
@@ -165,13 +171,59 @@ class TwistedPolygon{
     updateEnergyCoords() {
         this.energyCoords = Geometry.translate21To31(this.cornerCoords.slice());
         // update energy, O, E
-        this.O = 1;
-        this.E = 1;
+        this.F1 = 1;
+        this.F2 = 1;
+        this.F3 = 1;
         for (let i = 0; i < this.n; i++) {
-            this.O *= this.energyCoords[2*i];
-            this.E *= this.energyCoords[2*i+1];
+            this.F1 *= this.cornerCoords[2*i] / (this.cornerCoords[2*i] - 1);
+            this.F2 *= this.cornerCoords[2*i+1] / (this.cornerCoords[2*i+1] - 1);
+            this.F3 *= (this.cornerCoords[2*i] / this.cornerCoords[2*i+1]);
         }
-        this.energy = this.O * this.E;
+        this.F4 = this.F2 * this.F3 / this.F1;
+    }
+
+    /**
+     * Compute the flags of a twisted polygon
+     */
+    updateFlags() {
+        const n = this.n;
+        const k = this.map.k;
+        const v = Reconstruct.reconstructMonodromy(this.monodromy, this.cornerCoords, n, n+k+3);
+        this.flags = new Array(n);
+        for (let i = 0; i < n; i++) {
+            let v1 = v[i+2];
+            let v2 = Geometry.getIntersection(v[i+1], v[i+k+1], v[i+2], v[i+k+2]);
+            let v3 = Geometry.getIntersection(v[i+2], v[i+k+2], v[i+3], v[i+k+3]);
+            let v4 = v[i+k+2];
+            this.flags[i] = Geometry.inverseCrossRatio(v1, v2, v3, v4);
+        }
+    }
+
+    /**
+     * Compute the energy of each vertex
+     */
+    updateChi() {
+        const n = this.n;
+        const k = this.map.k;
+        const v = Reconstruct.reconstructMonodromy(this.monodromy, this.cornerCoords, n, k+n+2);
+        this.chi = new Array(n);
+        for (let i = 0; i < n; i++) {
+            let v1 = v[i+1];
+            let v2 = MathHelper.cross(MathHelper.cross(v[i+1], v[i+k+1]), MathHelper.cross(v[i], v[i+k]));
+            let v3 = MathHelper.cross(MathHelper.cross(v[i+1], v[i+k+1]), MathHelper.cross(v[i+2], v[i+k+2]));
+            let v4 = v[i+k+1];
+
+            // let v1 = MathHelper.cross(v[i+k],v[i]);
+            // let v2 = MathHelper.cross(v[i+k],v[i+k-1]);
+            // let v3 = MathHelper.cross(v[i+k],v[i+k+1]);
+            // let v4 = MathHelper.cross(v[i+k],v[i+2*k]);
+
+            this.chi[(i+1)%n] = Geometry.inverseCrossRatio(v1, v2, v3, v4);
+        }
+        this.Y = 1;
+        for (let i = 0; i < n; i++) {
+            this.Y *= this.chi[i];
+        }
     }
 
     /**
@@ -234,7 +286,6 @@ class TwistedPolygon{
     setDefault() {
         // first, find the corner coordinates of a regular 8-gon
         const n = Math.max(4, this.map.k+1);
-        console.log(this.map.k);
         let vertices = new Array(n);
         const angle = TWO_PI / n;
         for (let i = 0; i < n; i++) {
@@ -285,7 +336,7 @@ class TwistedPolygon{
                 }
                 const x = this.dualVerticesToShow[i][0] / this.dualVerticesToShow[i][2];
                 const y = this.dualVerticesToShow[i][1] / this.dualVerticesToShow[i][2];
-                vertex((1-2*x) * this.scale, (1-2*y) * this.scale);
+                vertex((2*x-1) * this.scale, (1-2*y) * this.scale);
             }
             endShape();
 
@@ -298,7 +349,7 @@ class TwistedPolygon{
                 }
                 const x = this.dualVerticesToShow[i][0] / this.dualVerticesToShow[i][2];
                 const y = this.dualVerticesToShow[i][1] / this.dualVerticesToShow[i][2];
-                circle((1-2*x) * this.scale, (1-2*y) * this.scale, 3);
+                circle((2*x-1) * this.scale, (1-2*y) * this.scale, 3);
             }
         }
 
@@ -312,7 +363,7 @@ class TwistedPolygon{
             }
             const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
             const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
-            vertex((1-2*x) * this.scale, (1-2*y) * this.scale);
+            vertex((2*x-1) * this.scale, (1-2*y) * this.scale);
         }
         endShape();
 
@@ -325,7 +376,7 @@ class TwistedPolygon{
             }
             const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
             const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
-            circle((1-2*x) * this.scale, (1-2*y) * this.scale, 3);
+            circle((2*x-1) * this.scale, (1-2*y) * this.scale, 3);
         }
 
         // emphasize vertices to drag
@@ -338,7 +389,7 @@ class TwistedPolygon{
                 }
                 const x1 = this.verticesToShow[i+4][0] / this.verticesToShow[i+4][2];
                 const y1 = this.verticesToShow[i+4][1] / this.verticesToShow[i+4][2];
-                circle((1-2*x1) * this.scale, (1-2*y1) * this.scale, this.vertexSize);
+                circle((2*x1-1) * this.scale, (1-2*y1) * this.scale, this.vertexSize);
             }
         }
 
@@ -353,7 +404,7 @@ class TwistedPolygon{
                     }
                     const x = this.trajectory[i][j][0]  / this.trajectory[i][j][2];
                     const y = this.trajectory[i][j][1] / this.trajectory[i][j][2];
-                    circle((1-2*x) * this.scale, (1-2*y) * this.scale, this.trajSize[i]);
+                    circle((2*x-1) * this.scale, (1-2*y) * this.scale, this.trajSize[i]);
                 }
             }
         }
@@ -375,10 +426,10 @@ class TwistedPolygon{
             for (let i = 4; i < this.n+4; i++) {
                 const x = this.verticesToShow[i][0] / this.verticesToShow[i][2];
                 const y = this.verticesToShow[i][1] / this.verticesToShow[i][2];
-                if (mX - w <= (1-2*x) && mX + w >= (1-2*x) && mY - w <= (1-2*y) && mY + w >= (1-2*y)) {
+                if (mX - w <= (2*x-1) && mX + w >= (2*x-1) && mY - w <= (1-2*y) && mY + w >= (1-2*y)) {
                     try {
                         // record the new vertex and check whether the bigon breaks
-                        this.verticesToShow[i] = [(1-mX)/2, (1-mY)/2, 1];
+                        this.verticesToShow[i] = [(1+mX)/2, (1-mY)/2, 1];
                         // change the corner coordinates accordingly, also change the rest of the vertices
                         const tempCoords = Geometry.getCornerCoords(this.verticesToShow.map(a => a.slice()));
                         for (let j = 0; j < 2*this.n; j++) {

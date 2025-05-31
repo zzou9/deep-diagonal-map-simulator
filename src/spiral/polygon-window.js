@@ -58,7 +58,7 @@ class PolygonWindow extends Window {
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
-            this.canvas.vertex((1-2*x) * this.polygonScale, (1-2*y) * this.polygonScale);
+            this.canvas.vertex((2*x-1) * this.polygonScale, (1-2*y) * this.polygonScale);
         }
         this.canvas.endShape(CLOSE);
 
@@ -71,7 +71,7 @@ class PolygonWindow extends Window {
             }
             const x = verticesToShow[i][0] / verticesToShow[i][2];
             const y = verticesToShow[i][1] / verticesToShow[i][2];
-            this.canvas.circle((1-2*x) * this.polygonScale, (1-2*y) * this.polygonScale, 3);
+            this.canvas.circle((2*x-1) * this.polygonScale, (1-2*y) * this.polygonScale, 3);
         }
 
         // emphasize vertices to drag
@@ -84,7 +84,7 @@ class PolygonWindow extends Window {
                 }
                 const x1 = verticesToShow[i+4][0] / verticesToShow[i+4][2];
                 const y1 = verticesToShow[i+4][1] / verticesToShow[i+4][2];
-                this.canvas.circle((1-2*x1) * this.polygonScale, (1-2*y1) * this.polygonScale, vertexSize);
+                this.canvas.circle((2*x1-1) * this.polygonScale, (1-2*y1) * this.polygonScale, vertexSize);
             }
         }
 

@@ -12,7 +12,7 @@ class InfoPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, map, w=200, h=440) {
+    constructor(x, y, polygon, map, w=200, h=420) {
         super(x, y, w, h, "Information", color.KHAKI);
         this.polygon = polygon;
         this.map = map;
@@ -68,18 +68,15 @@ class InfoPanel extends Panel {
         this.coordBoxes.push(this.x12Box);
         this.coordBoxes.push(this.x13Box);
 
-        // record the energy
-        this.oBox = new Button(this.x+25, this.x13Box.y+20, 150, 20, [["O(3, 1): " + MathHelper.round(this.polygon.O, 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.oBox);
-        this.eBox = new Button(this.x+25, this.oBox.y+20, 150, 20, [["E(3, 1): " + MathHelper.round(this.polygon.E, 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.eBox);
-        this.energyBox = new Button(this.x+25, this.eBox.y+20, 150, 20, [["(3, 1) Energy: " + MathHelper.round(this.polygon.energy, 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.energyBox);
-
-        this.invariant1Box = new Button(this.x+25, this.energyBox.y+20, 150, 20, [["Invariant 1: " + MathHelper.round(this.polygon.omega1, 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.invariant1Box);
-        this.invariant2Box = new Button(this.x+25, this.invariant1Box.y+20, 150, 20, [["Invariant 2: " + MathHelper.round(this.polygon.omega2, 5), color.BLACK]], color.KHAKI);
-        this.buttons.push(this.invariant2Box);
+        // record the invariants
+        this.F1Box = new Button(this.x+25, this.x13Box.y+20, 150, 20, [["F1: " + MathHelper.round(this.polygon.F1, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.F1Box);
+        this.F2Box = new Button(this.x+25, this.F1Box.y+20, 150, 20, [["F2: " + MathHelper.round(this.polygon.F2, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.F2Box);
+        this.F3Box = new Button(this.x+25, this.F2Box.y+20, 150, 20, [["F3: " + MathHelper.round(this.polygon.F3, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.F3Box);
+        this.F4Box = new Button(this.x+25, this.F3Box.y+20, 150, 20, [["F4: " + MathHelper.round(this.polygon.F4, 5), color.BLACK]], color.KHAKI);
+        this.buttons.push(this.F4Box);
     }
 
     /**
@@ -105,14 +102,11 @@ class InfoPanel extends Panel {
             }
         }
 
-        // energy
-        this.oBox.text[0][0] = "O(3, 1): " + MathHelper.round(this.polygon.O, 5).toString();
-        this.eBox.text[0][0] = "E(3, 1): " + MathHelper.round(this.polygon.E, 5).toString();
-        this.energyBox.text[0][0] = "(3, 1) Energy: " + MathHelper.round(this.polygon.energy, 5).toString();
-
         // invariants
-        this.invariant1Box.text[0][0] = "Invariant 1: " + MathHelper.round(this.polygon.omega1, 5);
-        this.invariant2Box.text[0][0] = "Invariant 2: " + MathHelper.round(this.polygon.omega2, 5);
+        this.F1Box.text[0][0] = "F1: " + MathHelper.round(this.polygon.F1, 5).toString();
+        this.F2Box.text[0][0] = "F2: " + MathHelper.round(this.polygon.F2, 5).toString();
+        this.F3Box.text[0][0] = "F3: " + MathHelper.round(this.polygon.F3, 5).toString();
+        this.F4Box.text[0][0] = "F4: " + MathHelper.round(this.polygon.F4, 5).toString();
     }
 
     /**

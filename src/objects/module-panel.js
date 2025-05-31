@@ -25,7 +25,7 @@ class ModulePanel extends Panel {
         // this.triangleButton = new Button(this.bigonButton.x+this.bigonButton.w+10, y+25, 50, 20, [["Spiral", color.BLACK]], color.WHITE);
         this.spiralButton = new Button(this.bigonButton.x+this.bigonButton.w+10, y+25, 50, 20, [["Spiral", color.BLACK]], color.WHITE);
         this.multiButton = new Button(this.spiralButton.x+this.spiralButton.w+10, y+25, 50, 20, [["Multi", color.BLACK]], color.WHITE);
-        this.map31Button = new Button(this.multiButton.x+this.multiButton.w+10, y+25, 50, 20, [["(3, 1)", color.BLACK]], color.WHITE);
+        this.map31Button = new Button(this.multiButton.x+this.multiButton.w+10, y+25, 50, 20, [["T3", color.BLACK]], color.WHITE);
         this.buttons.push(this.homeButton);
         this.buttons.push(this.convexButton);
         this.buttons.push(this.rotationButton);

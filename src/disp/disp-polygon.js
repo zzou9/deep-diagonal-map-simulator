@@ -20,6 +20,7 @@ class DispPolygon{
         this.E = 1;
         this.numVertexToShow = 6;
         this.verticesToShow = new Array(this.numVertexToShow);
+        this.dualVerticesToShow = new Array(this.numVertexToShow); // vertices of the dual under the D1 map
         this.numTrailing = 0;
         this.trailingVertices = new Array();
         this.vertexSize = 8;
@@ -75,7 +76,10 @@ class DispPolygon{
      */
     updateVertices() {
         this.verticesToShow = Reconstruct.reconstructMonodromy(this.monodromy, this.cornerCoords, this.n, this.numVertexToShow);
-        // update the training vertices
+
+        // update the dual vertices
+
+        // update the trailing vertices
         const m = this.numTrailing;
         const Tinv = MathHelper.invert3(this.monodromy);
         this.trailingVertices = new Array(m);
