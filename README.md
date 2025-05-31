@@ -1,6 +1,6 @@
 # Deep Diagonal Map Simulator
 
-A visualization program for **deep diagonal maps** acting on **closed and twisted polygons**.
+An accompanying visualization program of **deep diagonal maps** acting on **closed and twisted polygons** for the [paper](https://arxiv.org/abs/2412.15561) "Spirals, Tic-Tac-Toe Partition, and Deep Diagonal Maps."
 
 Click [here](https://zzou9.github.io/pentagram-map/spiral.html) to launch the program.
 
