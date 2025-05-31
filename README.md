@@ -10,6 +10,21 @@ Click [here](https://zzou9.github.io/pentagram-map/spiral.html) to launch the pr
 
 This user manual is designed for the **"spiral"** module of the program. The functions of the other modules are analogous.
 
+### Keyboard Actions
+
+- **SPACE**: Act the map on the polygon once.
+- **A**: Start/pause the map animation.
+- **W**: Toggle dragging of draggable panels.
+- **E**: Increase rate (see "Rate" button in Coordinate panel).
+- **Q**: Decrease rate (see "Rate" button in Coordinate panel).
+- **Z**: Undo the previous action.
+- **UP_ARROW**: Increase the periodicity constant (n).
+- **DOWN_ARROW**: Decrease the periodicity constant (n).
+- **LEFT_ARROW**: Increase the vertices to display.
+- **RIGHT_ARROW**: Decrease the vertices to display.
+
+---
+
 ### Panels Overview
 
 There are three types of panels in the program, distinguished by their background colors:
