@@ -49,11 +49,21 @@ function setup() {
     shapePolygon = new TwistedPolygon(map);
     shapePolygon.canDrag = true;
 
+    // preset the polygons
+    polygon.n = 4;
+    polygon.numVertexToShow = 8;
+    polygon.cornerCoords = [1.21, 0.95, 1.37, 0.9, 1.19, 0.92, 1.36, 0.93];
+    polygon.updateInfo();
+    shapePolygon.n = 4;
+    shapePolygon.numVertexToShow = 8;
+    shapePolygon.cornerCoords = [1.21, 0.95, 1.37, 0.9, 1.19, 0.92, 1.36, 0.93];
+    shapePolygon.updateInfo();
+
     // create windows
     shapeWindow = new PolygonWindow(xT*2-310, 500, 300, 300, shapePolygon, "Edit Shape", [polygon], color.INDIGO);
 
     // instantiate panels
-    ctrlPanel = new CtrlPanel(10, 10, shapePolygon, [polygon]);
+    ctrlPanel = new CtrlPanel(10, 10, shapePolygon, [polygon], map);
     coordPanel = new CoordPanel(10, ctrlPanel.y+ctrlPanel.h+10, shapePolygon, [polygon]);
     actionPanel = new ActionPanel(10, coordPanel.y+coordPanel.h+10, map, polygon);
     trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, polygon);

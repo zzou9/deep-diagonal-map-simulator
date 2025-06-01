@@ -9,13 +9,15 @@ class CtrlPanel extends Panel {
      * @param {Number} y y coordinate
      * @param {TwistedBigon} polygon the polygon
      * @param {Array<TwistedBigon>} mapPolygons polygon mirrors
+     * @param {TwistedPolygonMap} map the map
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, mapPolygons, map, w=200, h=185) {
-        super(x, y, w, h, "Control", color.CADET_BLUE);
+    constructor(x, y, polygon, mapPolygons, map, w=200, h=305) {
+        super(x, y, w, h, "Polygon Control", color.CADET_BLUE);
         this.polygon = polygon;
         this.mapPolygons = mapPolygons;
+        this.map = map;
         this.rate = -2;
 
         // populate the buttons
@@ -41,8 +43,16 @@ class CtrlPanel extends Panel {
         // polygon control
         this.defaultButton = new Button(this.x+25, this.sizeBox.y+30, 150, 20, [["Set Default", color.BLACK]]);
         this.buttons.push(this.defaultButton);
-        this.dragButton = new Button(this.x+25, this.defaultButton.y+30, 150, 20, [["Drag: ", color.BLACK], ["On", color.GREEN]]);
+        this.random1Button = new Button(this.x+25, this.defaultButton.y+30, 150, 20, [["Rand. Type-α 3-Spiral", color.BLACK]]);
+        this.buttons.push(this.random1Button);
+        this.random2Button = new Button(this.x+25, this.random1Button.y+30, 150, 20, [["Rand. Type-β 3-Spiral", color.BLACK]]);
+        this.buttons.push(this.random2Button);
+        this.random3Button = new Button(this.x+25, this.random2Button.y+30, 150, 20, [["Rand. Type-β 2-Spiral", color.BLACK]]);
+        this.buttons.push(this.random3Button);
+        this.dragButton = new Button(this.x+25, this.random3Button.y+30, 150, 20, [["Drag: ", color.BLACK], ["On", color.GREEN]]);
         this.buttons.push(this.dragButton);
+        this.normalizationButton = new Button(this.x+25, this.dragButton.y+30, 150, 20, [["Normalization: Square", color.BLACK]]);
+        this.buttons.push(this.normalizationButton);
     }
 
     /**
@@ -52,6 +62,11 @@ class CtrlPanel extends Panel {
         this.nBox.text[0][0] = "n: " + this.polygon.n;
         this.numVertexBox.text[0][0] = "# Vertices: " + this.polygon.numVertexToShow;
         this.sizeBox.text[0][0] = "Vertex Size: " + this.polygon.vertexSize;
+        if (this.polygon.triangleNormalize) {
+            this.normalizationButton.text[0][0] = "Normalization: Triangle", color.BLACK;
+        } else {
+            this.normalizationButton.text[0][0] = "Normalization: Square", color.BLACK;
+        }
         super.show();
     }
 
@@ -131,6 +146,40 @@ class CtrlPanel extends Panel {
                 }
             }
 
+            // randomly generating twisted polygons
+            if (this.random1Button.isHovering()) {
+                this.map.k = 3;
+                this.polygon.triangleNormalize = true;
+                this.polygon.randomTypeAlphaThree();
+                for (let i = 0; i < this.mapPolygons.length; i++) {
+                    this.mapPolygons[i].cornerCoords = this.polygon.cornerCoords;
+                    this.mapPolygons[i].triangleNormalize = true;
+                    this.mapPolygons[i].updateInfo(true, true);
+                }
+            }
+
+            if (this.random2Button.isHovering()) {
+                this.map.k = 3;
+                this.polygon.triangleNormalize = false;
+                this.polygon.randomTypeBetaThree();
+                for (let i = 0; i < this.mapPolygons.length; i++) {
+                    this.mapPolygons[i].cornerCoords = this.polygon.cornerCoords;
+                    this.mapPolygons[i].triangleNormalize = false;
+                    this.mapPolygons[i].updateInfo(true, true);
+                }
+            }
+
+            if (this.random3Button.isHovering()) {
+                this.map.k = 2;
+                this.polygon.triangleNormalize = true;
+                this.polygon.randomTypeBetaTwo();
+                for (let i = 0; i < this.mapPolygons.length; i++) {
+                    this.mapPolygons[i].cornerCoords = this.polygon.cornerCoords;
+                    this.mapPolygons[i].triangleNormalize = true;
+                    this.mapPolygons[i].updateInfo(true, true);
+                }
+            }
+
             // dragging control
             if (this.dragButton.isHovering()) {
                 if (this.polygon.canDrag) {
@@ -139,6 +188,28 @@ class CtrlPanel extends Panel {
                 } else {
                     this.polygon.canDrag = true;
                     this.dragButton.text = [["Drag: ", color.BLACK], ["On", color.GREEN]];
+                }
+            }
+
+            // toggle normalization
+            if (this.normalizationButton.isHovering()) {
+                if (this.polygon.triangleNormalize) {
+                    this.polygon.triangleNormalize = false;
+                    this.polygon.updateInfo(true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].triangleNormalize = false;
+                        this.mapPolygons[i].updateInfo(true, true);
+                    }
+                }
+                else {
+                    this.polygon.triangleNormalize = true;
+                    this.polygon.updateInfo(true, true);
+                    // broadcast to mirrors
+                    for (let i = 0; i < this.mapPolygons.length; i++) {
+                        this.mapPolygons[i].triangleNormalize = true;
+                        this.mapPolygons[i].updateInfo(true, true);
+                    }
                 }
             }
         }
@@ -154,7 +225,7 @@ class CtrlPanel extends Panel {
                 this.h = 30
             } else {
                 this.showPanel = true;
-                this.h = 185;
+                this.h = 305;
             }
         }
     }

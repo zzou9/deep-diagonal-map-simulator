@@ -14,7 +14,7 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=215) {
+    constructor(x, y, map, polygon, w=200, h=155) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
@@ -35,24 +35,24 @@ class ActionPanel extends Panel {
         this.incDiagonal = new TriangleButton(this.x+155, this.diagonalBox.y+5, 10, 10, "right");
         this.buttons.push(this.incDiagonal);
 
-        // control l
-        this.spacingBox = new Button(this.x+25, this.diagonalBox.y+30, 100, 20, [["Spacing: " + this.map.l, color.BLACK]]);
-        this.buttons.push(this.spacingBox);
-        this.decSpacing = new TriangleButton(this.x+135, this.spacingBox.y+5, 10, 10, "left");
-        this.buttons.push(this.decSpacing);
-        this.incSpacing = new TriangleButton(this.x+155, this.spacingBox.y+5, 10, 10, "right");
-        this.buttons.push(this.incSpacing);
+        // // control l
+        // this.spacingBox = new Button(this.x+25, this.diagonalBox.y+30, 100, 20, [["Spacing: " + this.map.l, color.BLACK]]);
+        // this.buttons.push(this.spacingBox);
+        // this.decSpacing = new TriangleButton(this.x+135, this.spacingBox.y+5, 10, 10, "left");
+        // this.buttons.push(this.decSpacing);
+        // this.incSpacing = new TriangleButton(this.x+155, this.spacingBox.y+5, 10, 10, "right");
+        // this.buttons.push(this.incSpacing);
 
-        // control shifting (numbering of vertices)
-        this.shiftsBox = new Button(this.x+25, this.spacingBox.y+30, 100, 20, [["Shifts: " + this.map.shifts, color.BLACK]]);
-        this.buttons.push(this.shiftsBox);
-        this.decShifts = new TriangleButton(this.x+135, this.shiftsBox.y+5, 10, 10, "left");
-        this.buttons.push(this.decShifts);
-        this.incShifts = new TriangleButton(this.x+155, this.shiftsBox.y+5, 10, 10, "right");
-        this.buttons.push(this.incShifts);
+        // // control shifting (numbering of vertices)
+        // this.shiftsBox = new Button(this.x+25, this.spacingBox.y+30, 100, 20, [["Shifts: " + this.map.shifts, color.BLACK]]);
+        // this.buttons.push(this.shiftsBox);
+        // this.decShifts = new TriangleButton(this.x+135, this.shiftsBox.y+5, 10, 10, "left");
+        // this.buttons.push(this.decShifts);
+        // this.incShifts = new TriangleButton(this.x+155, this.shiftsBox.y+5, 10, 10, "right");
+        // this.buttons.push(this.incShifts);
 
         // control the speed the map acts
-        this.speedBox = new Button(this.x+25, this.shiftsBox.y+30, 100, 20, [["Speed: " + this.speed, color.BLACK]]);
+        this.speedBox = new Button(this.x+25, this.diagonalBox.y+30, 100, 20, [["Speed: " + this.speed, color.BLACK]]);
         this.buttons.push(this.speedBox);
         this.decSpeed = new TriangleButton(this.x+135, this.speedBox.y+5, 10, 10, "left");
         this.buttons.push(this.decSpeed);
@@ -76,6 +76,7 @@ class ActionPanel extends Panel {
      * Display the panel
      */
     show() {
+        this.diagonalBox.text[0][0] = "Diagonal: " + this.map.k;
         super.show();
     }
 
@@ -128,31 +129,6 @@ class ActionPanel extends Panel {
                 this.polygon.updateInfo(true, false);
             }
 
-            // spacing control
-            if (this.decSpacing.isHovering() && this.map.l > 1) {
-                this.map.l--;
-                this.spacingBox.text = [["Spacing: " + this.map.l, color.BLACK]];
-                this.polygon.updateInfo(true, false);
-            }
-            if (this.incSpacing.isHovering() && this.map.l < this.map.k-1) {
-                this.map.l++;
-                this.spacingBox.text = [["Spacing: " + this.map.l, color.BLACK]];
-                this.polygon.updateInfo(true, false);
-            }
-
-            // shifting control
-            if (this.decShifts.isHovering() && this.map.shifts > 0) {
-                this.map.shifts--;
-                this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
-                this.polygon.updateInfo(true, false);
-            }
-            if (this.incShifts.isHovering() && this.map.shifts < this.polygon.n-1) {
-                this.map.shifts++;
-                this.shiftsBox.text = [["Shifts: " + this.map.shifts, color.BLACK]];
-                this.polygon.updateInfo(true, false);
-            }
-
-
             // speed control
             if (this.decSpeed.isHovering() && this.speed > 1) {
                 this.speed--;
@@ -192,7 +168,7 @@ class ActionPanel extends Panel {
                 this.h = 30;
             } else {
                 this.showPanel = true;
-                this.h = 215;
+                this.h = 155;
             }
         }
     }
@@ -206,15 +182,15 @@ class ActionPanel extends Panel {
         this.decDiagonal.y = this.diagonalBox.y+5;
         this.incDiagonal.y = this.diagonalBox.y+5;
 
-        // control l
-        this.spacingBox.y = this.diagonalBox.y+30;
-        this.decSpacing.y = this.spacingBox.y+5;
-        this.incSpacing.y = this.spacingBox.y+5;
+        // // control l
+        // this.spacingBox.y = this.diagonalBox.y+30;
+        // this.decSpacing.y = this.spacingBox.y+5;
+        // this.incSpacing.y = this.spacingBox.y+5;
 
-        // control shifting (numbering of vertices)
-        this.shiftsBox.y = this.spacingBox.y+30;
-        this.decShifts.y = this.shiftsBox.y+5;
-        this.incShifts.y = this.shiftsBox.y+5;
+        // // control shifting (numbering of vertices)
+        // this.shiftsBox.y = this.spacingBox.y+30;
+        // this.decShifts.y = this.shiftsBox.y+5;
+        // this.incShifts.y = this.shiftsBox.y+5;
 
         // control the speed the map acts
         this.speedBox.y = this.shiftsBox.y+30;

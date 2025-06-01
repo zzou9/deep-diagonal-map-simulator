@@ -242,4 +242,24 @@ class Normalize {
         }
         return newVertices;
     }
+
+    /**
+     * Apply a projective transformation that changes the square normalization to a triangle normalization
+     *  (0,0,1) -> (0,0,1)
+     *  (1,0,1) -> (1,0,1)
+     *  (1,1,1) -> (0.5,1,1)
+     *  (0,1,1) -> (0,5,0.25,1)
+     * @param {Array<number>} v the original vertex
+     * @returns the image vertex
+     */
+    static squareToTriangle(v) {
+        // const M = [[-1, 4/3, 0], [0, 2/3, 0], [-2, 5/3, 1]]; // projective transformation 
+        const M = [
+            [-0.175, 0.2, 0],
+            [0, 0.05, 0],
+            [-0.95, 0.225, 0.775]
+        ]; // projective transformation 
+        let vNew = MathHelper.matrixMult(M, MathHelper.vec(v));
+        return [vNew[0][0], vNew[1][0], vNew[2][0]];
+    }
 }

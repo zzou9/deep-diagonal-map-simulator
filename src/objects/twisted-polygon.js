@@ -9,7 +9,7 @@ class TwistedPolygon{
      * @param {Number} scale scaling when plotting
      */
     constructor(map, 
-        scale=(windowWidth + windowHeight)/20) {
+        scale=(windowWidth + windowHeight)/15) {
         this.map = map;
         this.n = 2;
         this.cornerCoords = new Array(4);
@@ -29,6 +29,7 @@ class TwistedPolygon{
         this.vertexSize = 8;
         this.canDrag = false;
         this.showDual = false;
+        this.triangleNormalize = false;
         this.scale = scale; 
         this.vertexColor = [color.RED, color.GREEN, color.ORANGE, color.CYAN, color.YELLOW, color.PURPLE];
 
@@ -86,6 +87,11 @@ class TwistedPolygon{
         this.verticesToShow = Reconstruct.reconstructMonodromy(this.monodromy, this.cornerCoords, this.n, this.numVertexToShow);
         if (this.showDual) {
             this.dualVerticesToShow = Reconstruct.reconstructMonodromy(this.Mdual, this.YCoords, this.n, this.numVertexToShow);
+        }
+        if (this.triangleNormalize) {
+            for (let i = 0; i < this.numVertexToShow; i++) {
+                this.verticesToShow[i] = Normalize.squareToTriangle(this.verticesToShow[i]);
+            }
         }
     }
 
@@ -307,6 +313,56 @@ class TwistedPolygon{
     }
 
     /**
+     * Set the vertices to a random type-alpha 3-spiral.
+     */
+    randomTypeAlphaThree() {
+        for (let i = 0; i < this.n; i++) {
+            let x = random();
+            if (x == 0) {x = 0.5;}
+            let y = random();
+            if (y == 0) {y = 0.5;}
+            this.cornerCoords[2*i] = x; // even corner invariants are in (0, 1)
+            this.cornerCoords[2*i+1] = y / (y-1); // odd corner invariants are in (-infty, 0)
+        }
+        this.updateInfo(true, true);
+    }
+
+    /**
+     * Set the vertices to a random type-beta 3-spiral.
+     */
+    randomTypeBetaThree() {
+        for (let i = 0; i < this.n; i++) {
+            let x = random();
+            if (x == 0) {x = 0.5;}
+            let y = random();
+            if (y == 0) {y = 0.5;}
+            this.cornerCoords[2*i] = 1 / (1 - x); // even corner invariants are in (1, infty)
+            this.cornerCoords[2*i+1] = y; // odd corner invariants are in (0, 1)
+        }
+        this.updateInfo(true, true);
+    }
+
+    /**
+     * Set the vertices to a random type-beta 2-spiral.
+     */
+    randomTypeBetaTwo() {
+        for (let i = 0; i < this.n; i++) {
+            let x = random();
+            if (x == 0) {x = 0.5;}
+            let y = random();
+            if (y == 0) {y = 0.5;}
+            let r = random();
+            if (r < 0.5) {
+                this.cornerCoords[2*i] = 1 / (1 - x); // even corner invariants > 0
+            } else {
+                this.cornerCoords[2*i] = x; // even corner invariants > 0
+            }
+            this.cornerCoords[2*i+1] = y / (y-1); // odd corner invariants < 0
+        }
+        this.updateInfo(true, true);
+    }
+
+    /**
     * Reset the polygon to some given corner coordinates
     * @param {Array<Array<Number>>} coords the coords of the polygon to set to
     */
@@ -404,9 +460,17 @@ class TwistedPolygon{
                     if (MathHelper.round(this.trajectory[i][j][2] == 0)) {
                         continue;
                     }
-                    const x = this.trajectory[i][j][0]  / this.trajectory[i][j][2];
-                    const y = this.trajectory[i][j][1] / this.trajectory[i][j][2];
-                    circle((2*x-1) * this.scale, (1-2*y) * this.scale, this.trajSize[i]);
+                    if (this.triangleNormalize) {
+                        let v = Normalize.squareToTriangle(this.trajectory[i][j]);
+                        let x = v[0] / v[2];
+                        let y = v[1] / v[2];
+                        circle((2*x-1) * this.scale, (1-2*y) * this.scale, this.trajSize[i]);
+                    } 
+                    else {
+                        let x = this.trajectory[i][j][0]  / this.trajectory[i][j][2];
+                        let y = this.trajectory[i][j][1] / this.trajectory[i][j][2];
+                        circle((2*x-1) * this.scale, (1-2*y) * this.scale, this.trajSize[i]);
+                    }
                 }
             }
         }
