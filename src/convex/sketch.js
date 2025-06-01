@@ -50,14 +50,14 @@ function setup() {
 }
 
 function draw() {
-    background(color.CYAN);
+    background(color.BLACK);
     polygon.show();
 
     // title
     noStroke();
     textAlign(CENTER, CENTER);
     textFont("Georgia", 20);
-    fill(color.BLACK);
+    fill(color.WHITE);
     text("Deep Diagonal Map Simulator", xT, 20);
     
     ctrlPanel.show();

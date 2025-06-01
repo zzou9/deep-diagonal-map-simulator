@@ -14,21 +14,21 @@ class ActionPanel extends Panel {
      * @param {Number} w the width of the panel
      * @param {Number} h the height of the panel
      */
-    constructor(x, y, map, polygon, w=200, h=30) {
+    constructor(x, y, map, polygon, w=200, h=125) {
         super(x, y, w, h, "Action", color.CADET_BLUE);
         this.map = map;
         this.polygon = polygon;
         this.speed = 10;
         this.action = null;
         this.isRunning = false;
-        this.showPanel = false;
+        this.showPanel = true;
 
         /**
          * Populate the buttons
          */
 
         // control the speed the map acts
-        this.speedBox = new Button(this.x+25, this.y+40, 100, 20, [["Speed: " + this.speed, color.BLACK]]);
+        this.speedBox = new Button(this.x+25, this.y+35, 100, 20, [["Speed: " + this.speed, color.BLACK]]);
         this.buttons.push(this.speedBox);
         this.decSpeed = new TriangleButton(this.x+135, this.speedBox.y+5, 10, 10, "left");
         this.buttons.push(this.decSpeed);

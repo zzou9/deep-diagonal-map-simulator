@@ -11,7 +11,7 @@ class TrajectoryPanel extends Panel {
      * @param {Number} w (optional) width of the panel
      * @param {Number} h (optional) height of the panel
      */
-    constructor(x, y, polygon, w=200, h=160) {
+    constructor(x, y, polygon, w=200, h=155) {
         super(x, y, w, h, "Trajectories", color.CADET_BLUE);
         this.polygon = polygon;
         this.showPanel = true;
@@ -111,7 +111,7 @@ class TrajectoryPanel extends Panel {
                 this.h = 30;
             } else {
                 this.showPanel = true;
-                this.h = 160;
+                this.h = 155;
             }
         }
     }

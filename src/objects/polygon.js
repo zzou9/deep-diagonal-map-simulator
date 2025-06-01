@@ -265,8 +265,8 @@ class Polygon{
         }
 
         // draw edges
-        fill(color.WHITE);
-        stroke(color.BLACK);
+        fill(255, 255, 255, 127);
+        noStroke();
         beginShape();
         for (let i = 0; i < this.numVertex; i++) {
             if (MathHelper.round(this.vertices[i][2]) == 0) {

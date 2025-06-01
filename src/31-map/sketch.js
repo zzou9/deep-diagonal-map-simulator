@@ -50,14 +50,13 @@ function setup() {
     shapePolygon.canDrag = true;
 
     // create windows
-    shapeWindow = new PolygonWindow(10, 500, 300, 300, shapePolygon, "Edit Shape", [polygon], color.INDIGO);
+    shapeWindow = new PolygonWindow(xT*2-310, 500, 300, 300, shapePolygon, "Edit Shape", [polygon], color.INDIGO);
     // planeWindow = new PlaneWindow(2*xT-310, 500, 300, 300, shapePolygon, "Plane", [polygon], [1, 3]);
 
     // instantiate panels
     ctrlPanel = new CtrlPanel(10, 10, shapePolygon, [polygon]);
     coordPanel = new CoordPanel(10, ctrlPanel.y+ctrlPanel.h+10, shapePolygon, [polygon]);
     actionPanel = new ActionPanel(10, coordPanel.y+coordPanel.h+10, map, polygon);
-    actionPanel.showPanel = false;
     trajPanel = new TrajectoryPanel(10, actionPanel.y+actionPanel.h+10, polygon);
     infoPanel = new InfoPanel(2*xT - 210, 10, polygon, map);
     modulePanel = new ModulePanel("31-Map");

@@ -356,6 +356,7 @@ class TwistedPolygon{
         // draw edges
         fill(255, 255, 255, 127);
         stroke(255, 255, 255);
+        strokeWeight(3);
         beginShape();
         for (let i = 0; i < this.numVertexToShow; i++) {
             if (MathHelper.round(this.verticesToShow[i][2]) == 0) {
@@ -366,6 +367,7 @@ class TwistedPolygon{
             vertex((2*x-1) * this.scale, (1-2*y) * this.scale);
         }
         endShape();
+        strokeWeight(1);
 
         // draw vertices
         fill(color.WHITE);
