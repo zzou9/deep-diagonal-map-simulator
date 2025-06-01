@@ -35,22 +35,6 @@ class ActionPanel extends Panel {
         this.incDiagonal = new TriangleButton(this.x+155, this.diagonalBox.y+5, 10, 10, "right");
         this.buttons.push(this.incDiagonal);
 
-        // // control l
-        // this.spacingBox = new Button(this.x+25, this.diagonalBox.y+30, 100, 20, [["Spacing: " + this.map.l, color.BLACK]]);
-        // this.buttons.push(this.spacingBox);
-        // this.decSpacing = new TriangleButton(this.x+135, this.spacingBox.y+5, 10, 10, "left");
-        // this.buttons.push(this.decSpacing);
-        // this.incSpacing = new TriangleButton(this.x+155, this.spacingBox.y+5, 10, 10, "right");
-        // this.buttons.push(this.incSpacing);
-
-        // // control shifting (numbering of vertices)
-        // this.shiftsBox = new Button(this.x+25, this.spacingBox.y+30, 100, 20, [["Shifts: " + this.map.shifts, color.BLACK]]);
-        // this.buttons.push(this.shiftsBox);
-        // this.decShifts = new TriangleButton(this.x+135, this.shiftsBox.y+5, 10, 10, "left");
-        // this.buttons.push(this.decShifts);
-        // this.incShifts = new TriangleButton(this.x+155, this.shiftsBox.y+5, 10, 10, "right");
-        // this.buttons.push(this.incShifts);
-
         // control the speed the map acts
         this.speedBox = new Button(this.x+25, this.diagonalBox.y+30, 100, 20, [["Speed: " + this.speed, color.BLACK]]);
         this.buttons.push(this.speedBox);
@@ -181,16 +165,6 @@ class ActionPanel extends Panel {
         this.diagonalBox.y = this.y+35;
         this.decDiagonal.y = this.diagonalBox.y+5;
         this.incDiagonal.y = this.diagonalBox.y+5;
-
-        // // control l
-        // this.spacingBox.y = this.diagonalBox.y+30;
-        // this.decSpacing.y = this.spacingBox.y+5;
-        // this.incSpacing.y = this.spacingBox.y+5;
-
-        // // control shifting (numbering of vertices)
-        // this.shiftsBox.y = this.spacingBox.y+30;
-        // this.decShifts.y = this.shiftsBox.y+5;
-        // this.incShifts.y = this.shiftsBox.y+5;
 
         // control the speed the map acts
         this.speedBox.y = this.shiftsBox.y+30;
