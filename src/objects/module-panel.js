@@ -58,7 +58,7 @@ class ModulePanel extends Panel {
                 window.location.href = 'spiral.html';
             }
             if (this.manualButton.isHovering()) {
-                window.location.href = 'https://github.com/zzou9/deep-diagonal-map-simulator';
+                window.location.href = 'https://github.com/zzou9/pentagram-map';
             }
         } 
     }
