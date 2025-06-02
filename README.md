@@ -51,7 +51,9 @@ This panel controls the basic properties of the twisted polygon:
 - **Rand. Type-Beta 3-Spiral**: Generate a random type-beta 3-spiral.
 - **Rand. Type-Beta 2-Spiral**: Generate a random type-beta 2-spiral.
 - **Drag**: Toggle dragging (see **Edit Shape Panel**).
-- **Normalization**: Toggle the normalization applied to the image polygon under the map action. Square: normalizing the first four vertices to the vertices of a unit square, counter-clockwise direction. Triangle: normalizing the first four vertices to the vertices of a triangle and a vertex in the interior of the triangle. 
+- **Normalization**: Toggle the normalization applied to the image polygon under the map action. 
+  - Square: normalizing the first four vertices to the vertices of a unit square, counter-clockwise direction. 
+  - Triangle: normalizing the first four vertices to the vertices of a triangle and a vertex in the interior of the triangle. 
 
 #### 2. **Coordinate Panel**
 
